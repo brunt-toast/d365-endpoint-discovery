@@ -1,0 +1,1 @@
+Please report any security concerns to the maintainer of this repository via email.
