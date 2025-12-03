@@ -21,6 +21,7 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
     private readonly GrepGroupsOption _grepGroupsOption = new();
     private readonly GrepServicesOption _grepServicesOption = new();
     private readonly GrepOperationsOption _grepOperationsOption = new();
+    private readonly PostmanCollectionNameOption _postmanCollectionNameOption = new();
 
     private readonly PostmanFlag _postmanFlag = new();
 
@@ -34,6 +35,7 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
         Options.Add(_grepGroupsOption);
         Options.Add(_grepServicesOption);
         Options.Add(_grepOperationsOption);
+        Options.Add(_postmanCollectionNameOption);
 
         Options.Add(_postmanFlag);
 
@@ -51,6 +53,7 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
         Regex grepServicesRegex = new(parseResult.GetValue(_grepServicesOption) ?? string.Empty);
         Regex grepOperationsRegex = new(parseResult.GetValue(_grepOperationsOption) ?? string.Empty);
         bool doPostman = parseResult.GetValue(_postmanFlag);
+        string postmanCollectionName = parseResult.GetValue(_postmanCollectionNameOption) ?? string.Empty;
 
         var config = new AppConfig
         {
@@ -68,7 +71,7 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
 
         if (doPostman)
         {
-            var postman = new PostmanCollectionBuilderService().BuildPostmanCollection(services);
+            var postman = new PostmanCollectionBuilderService().BuildPostmanCollection(services, postmanCollectionName);
             parseResult.InvocationConfiguration.Output.WriteLine(JsonConvert.SerializeObject(postman, Formatting.Indented));
         }
         else
