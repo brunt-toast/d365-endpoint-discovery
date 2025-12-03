@@ -15,6 +15,12 @@ jobs:
       version: ${{ steps.get_version.outputs.version }}
 
     steps:
+
+      - name: Setup .NET 10.0
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
       - name: Get project version
         id: get_version
         shell: bash

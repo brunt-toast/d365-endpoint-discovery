@@ -4,6 +4,11 @@ A CLI tool to automate discovery of Dynamics 365 service endpoints.
 
 ## Installation 
 
+Install as a .NET tool: 
+```bash
+dotnet tool install -g dynsvcdiscovery
+```
+
 Compile from source: 
 ```bash
 make install

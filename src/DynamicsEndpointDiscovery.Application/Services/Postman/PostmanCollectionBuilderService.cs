@@ -48,16 +48,19 @@ public class PostmanCollectionBuilderService
     private PostmanItem GetPostmanItem(DynSvcOp operation)
     {
         StringBuilder sb = new();
-        sb.Append("{");
-        foreach (var parameter in operation.Parameters)
+        sb.AppendLine("{");
+        for (int i = 0; i < operation.Parameters.Length; i++)
         {
+            var parameter = operation.Parameters[i];
+
             string value =
                 parameter.Type == "String" ? "\"\"" :
                 parameter.Type == "Int" ? "0" :
                 "{}";
-            sb.Append($"\"{parameter.Name}\": {value},");
+
+            sb.AppendLine($"\t\"{parameter.Name}\": {value}{(i == operation.Parameters.Length - 1 ? "" : ',')}");
         }
-        sb.Append("}");
+        sb.AppendLine("}");
 
         PostmanBody body = new()
         {
