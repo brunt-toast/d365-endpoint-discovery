@@ -17,7 +17,7 @@ internal class ClientIdOption : Option<string>
     {
         if (string.IsNullOrWhiteSpace(opt.GetValue(this)))
         {
-            opt.AddError("The value must be populated.");
+            opt.AddError($"The value for {nameof(ClientIdOption)} must be populated.");
         }
     }
 
@@ -25,7 +25,7 @@ internal class ClientIdOption : Option<string>
     {
         if (!Guid.TryParse(opt.GetValue(this), out _))
         {
-            opt.AddError("The value must be a valid GUID.");
+            opt.AddError($"The value for {nameof(ClientIdOption)} must be a valid GUID.");
         }
     }
 }

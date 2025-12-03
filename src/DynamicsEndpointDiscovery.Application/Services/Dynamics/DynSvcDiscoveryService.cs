@@ -5,7 +5,7 @@ using DynamicsEndpointDiscovery.Application.Types;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace DynamicsEndpointDiscovery.Application.Services;
+namespace DynamicsEndpointDiscovery.Application.Services.Dynamics;
 
 public class DynSvcDiscoveryService
 {
@@ -46,6 +46,7 @@ public class DynSvcDiscoveryService
 
         foreach (var service in res.Services.Where(x => _grepServicesRegex?.IsMatch(x.Name) ?? true))
         {
+            service.ServiceGroupName = group;
             service.Operations = GetOperations(group, service.Name).ToArray();
             yield return service;
         }
@@ -60,6 +61,8 @@ public class DynSvcDiscoveryService
         {
             var opRes = JsonConvert.DeserializeObject<DynGetOperationResponse>(GetHttp($"{_resource}/api/services/{group}/{service}/{operation.Name}")) ?? throw new ArgumentNullException();
 
+            operation.ServiceGroupName = group;
+            operation.ServiceName = service;
             operation.Parameters = opRes.Parameters;
             operation.Return = opRes.Return;
             yield return operation;
