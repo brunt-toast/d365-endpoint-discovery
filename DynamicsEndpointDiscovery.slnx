@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/DynamicsEndpointDiscovery.Application/DynamicsEndpointDiscovery.Application.csproj" Id="4cab96cb-92a6-4f79-9f7f-9505662d4b69" />
+  <Project Path="src/DynamicsEndpointDiscovery.Cli/DynamicsEndpointDiscovery.Cli.csproj" Id="ecb8e751-8b94-49f3-984d-4a672059cb50" />
+</Solution>

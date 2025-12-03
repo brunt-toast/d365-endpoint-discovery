@@ -1,0 +1,15 @@
+{
+  "recommendations": [
+    "jetbrains.resharper-code",
+    "ms-vscode.makefile-tools",
+    "yzhang.markdown-all-in-one",
+    "ms-vscode.powershell",
+    "cake-build.cake-vscode"
+  ],
+  "unwantedRecommendations": [
+    "vscjava.migrate-java-to-azure",
+    "vscjava.vscode-java-upgrade",
+    "github.copilot-chat",
+    "github.copilot"
+  ]
+}
