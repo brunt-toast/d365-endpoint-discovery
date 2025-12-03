@@ -17,13 +17,13 @@
     <Authors>Josh Brunton</Authors>
     <Description>Discovery Dynamics 365 Service Endpoints</Description>
     <Copyright>Josh Brunton 2025</Copyright>
-    <PackageProjectUrl></PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/brunt-toast/d365-endpoint-discovery</PackageProjectUrl>
     <PackageIcon></PackageIcon>
-    <RepositoryUrl></RepositoryUrl>
+    <RepositoryUrl>https://github.com/brunt-toast/d365-endpoint-discovery</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags></PackageTags>
+    <PackageTags>cli tool dynamics dynamics-365 d365 ax</PackageTags>
     <PackageReleaseNotes></PackageReleaseNotes>
-    <PackageLicenseExpression></PackageLicenseExpression>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
