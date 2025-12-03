@@ -5,7 +5,7 @@ using DynamicsEndpointDiscovery.Application.Types;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace DynamicsEndpointDiscovery.Application.Services;
+namespace DynamicsEndpointDiscovery.Application.Services.Dynamics;
 
 public class DynSvcDiscoveryService
 {

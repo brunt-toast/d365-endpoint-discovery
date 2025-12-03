@@ -1,7 +1,7 @@
 ﻿using System.CommandLine;
 using System.Text.RegularExpressions;
 using DynamicsEndpointDiscovery.Application.Config;
-using DynamicsEndpointDiscovery.Application.Services;
+using DynamicsEndpointDiscovery.Application.Services.Dynamics;
 using DynamicsEndpointDiscovery.Cli.Logging;
 using DynamicsEndpointDiscovery.Cli.Options;
 using Microsoft.Extensions.Logging;
