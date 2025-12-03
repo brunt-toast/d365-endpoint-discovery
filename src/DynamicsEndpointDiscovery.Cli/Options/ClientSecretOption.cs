@@ -16,7 +16,7 @@ internal class ClientSecretOption : Option<string>
     {
         if (string.IsNullOrWhiteSpace(opt.GetValue(this)))
         {
-            opt.AddError("The value must be populated.");
+            opt.AddError($"The value for {nameof(ClientSecretOption)} must be populated.");
         }
     }
 }

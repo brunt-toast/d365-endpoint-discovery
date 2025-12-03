@@ -10,14 +10,14 @@ internal class TokenRequestEndpointOption : Option<string>
         DefaultValueFactory = _ => Environment.GetEnvironmentVariable("DYNAMICS_TOKEN_REQUEST_ENDPOINT") ?? string.Empty;
         Validators.Add(NotNullOrWhitespaceValidator);
         Validators.Add(ValidUriValidator);
-        Description = "An endpoint from which we can request a Dynamics 365 bearer token. Must be a valid URI.";
+        Description = "An endpoint from which we can request a Dynamics 365 bearer token. Must be a valid URI. Usually looks like 'https://login.microsoftonline.com/GUID/oauth2/token'";
     }
 
     private void NotNullOrWhitespaceValidator(OptionResult opt)
     {
         if (string.IsNullOrWhiteSpace(opt.GetValue(this)))
         {
-            opt.AddError("The value must be populated.");
+            opt.AddError($"The value for {nameof(TokenRequestEndpointOption)} must be populated.");
         }
     }
 
@@ -25,7 +25,7 @@ internal class TokenRequestEndpointOption : Option<string>
     {
         if (!Uri.TryCreate(opt.GetValue(this), UriKind.Absolute, out _))
         {
-            opt.AddError("The value must be a valid URI.");
+            opt.AddError($"The value for {nameof(TokenRequestEndpointOption)} must be a valid URI.");
         }
     }
 }
