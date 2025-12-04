@@ -69,16 +69,16 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
 
         if (outputFormat is OutputFormats.Default)
         {
-            parseResult.InvocationConfiguration.Output.WriteLine(JsonConvert.SerializeObject(services, Formatting.Indented));
+            await parseResult.InvocationConfiguration.Output.WriteLineAsync(JsonConvert.SerializeObject(services, Formatting.Indented));
         }
         else if (outputFormat is OutputFormats.Postman_2_1_0)
         {
             var postman = new PostmanCollectionBuilderService().BuildPostmanCollection(services, postmanCollectionName);
-            parseResult.InvocationConfiguration.Output.WriteLine(JsonConvert.SerializeObject(postman, Formatting.Indented));
+            await parseResult.InvocationConfiguration.Output.WriteLineAsync(JsonConvert.SerializeObject(postman, Formatting.Indented));
         }
         else
         {
-            parseResult.InvocationConfiguration.Error.WriteLine($"The strategy {outputFormat} wasn't recognised.");
+            await parseResult.InvocationConfiguration.Error.WriteLineAsync($"The strategy {outputFormat} wasn't recognised.");
             return 1;
         }
 
