@@ -18,7 +18,7 @@ public class DynAuthService
         _logger = logger;
     }
 
-    public string GetBearerToken()
+    public async Task<string> GetBearerToken()
     {
         if (_cachedResponse is not null && DateTimeOffset.FromUnixTimeSeconds(_cachedResponse.ExpiresOn) >= DateTimeOffset.Now)
         {
@@ -37,15 +37,15 @@ public class DynAuthService
                 ["resource"] = _config.Resource
             })
         };
-        HttpResponseMessage response = client.Send(request);
+        HttpResponseMessage response = await client.SendAsync(request);
 
-        string content = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+        string content = await response.Content.ReadAsStringAsync();
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("A request for a bearer token returned HTTP status {statusInt} ({status}). We'll have to try again. Content was: {newLine}{content}", (int)response.StatusCode, response.StatusCode, Environment.NewLine, content);
         }
 
         _cachedResponse = JsonConvert.DeserializeObject<DynTokenResponse>(content);
-        return GetBearerToken();
+        return await GetBearerToken();
     }
 }

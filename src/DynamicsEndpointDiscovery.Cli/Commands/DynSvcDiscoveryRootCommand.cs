@@ -42,7 +42,7 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
         SetAction(ExecuteAction);
     }
 
-    private int ExecuteAction(ParseResult parseResult)
+    private async Task<int> ExecuteAction(ParseResult parseResult)
     {
         string clientId = parseResult.GetValue(_clientIdOption) ?? string.Empty;
         string clientSecret = parseResult.GetValue(_clientSecretOption) ?? string.Empty;
@@ -67,7 +67,7 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
         var auth = new DynAuthService(config, logger);
         var serviceDiscovery = new DynSvcDiscoveryService(auth, config, logger, grepGroupsRegex, grepServicesRegex, grepOperationsRegex);
 
-        var services = serviceDiscovery.MapServices().ToArray();
+        var services = (await serviceDiscovery.MapServicesAsync()).ToArray();
 
         if (doPostman)
         {
