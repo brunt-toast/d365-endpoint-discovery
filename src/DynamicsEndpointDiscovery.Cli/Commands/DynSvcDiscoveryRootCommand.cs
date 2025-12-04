@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using DynamicsEndpointDiscovery.Application.Config;
 using DynamicsEndpointDiscovery.Application.Services.Dynamics;
 using DynamicsEndpointDiscovery.Application.Services.Postman;
-using DynamicsEndpointDiscovery.Cli.Flags;
+using DynamicsEndpointDiscovery.Cli.Enums;
 using DynamicsEndpointDiscovery.Cli.Logging;
 using DynamicsEndpointDiscovery.Cli.Options;
 using Microsoft.Extensions.Logging;
@@ -22,8 +22,7 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
     private readonly GrepServicesOption _grepServicesOption = new();
     private readonly GrepOperationsOption _grepOperationsOption = new();
     private readonly PostmanCollectionNameOption _postmanCollectionNameOption = new();
-
-    private readonly PostmanFlag _postmanFlag = new();
+    private readonly FormatOption _formatOption = new();
 
     public DynSvcDiscoveryRootCommand() : base("Discover Dynamics 365 service endpoints automatically.")
     {
@@ -36,8 +35,7 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
         Options.Add(_grepServicesOption);
         Options.Add(_grepOperationsOption);
         Options.Add(_postmanCollectionNameOption);
-
-        Options.Add(_postmanFlag);
+        Options.Add(_formatOption);
 
         SetAction(ExecuteAction);
     }
@@ -52,7 +50,7 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
         Regex grepGroupsRegex = new(parseResult.GetValue(_grepGroupsOption) ?? string.Empty);
         Regex grepServicesRegex = new(parseResult.GetValue(_grepServicesOption) ?? string.Empty);
         Regex grepOperationsRegex = new(parseResult.GetValue(_grepOperationsOption) ?? string.Empty);
-        bool doPostman = parseResult.GetValue(_postmanFlag);
+        OutputFormats outputFormat = parseResult.GetValue(_formatOption);
         string postmanCollectionName = parseResult.GetValue(_postmanCollectionNameOption) ?? string.Empty;
 
         var config = new AppConfig
@@ -69,14 +67,19 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
 
         var services = (await serviceDiscovery.MapServicesAsync()).ToArray();
 
-        if (doPostman)
+        if (outputFormat is OutputFormats.Default)
+        {
+            parseResult.InvocationConfiguration.Output.WriteLine(JsonConvert.SerializeObject(services, Formatting.Indented));
+        }
+        else if (outputFormat is OutputFormats.Postman_2_1_0)
         {
             var postman = new PostmanCollectionBuilderService().BuildPostmanCollection(services, postmanCollectionName);
             parseResult.InvocationConfiguration.Output.WriteLine(JsonConvert.SerializeObject(postman, Formatting.Indented));
         }
         else
         {
-            parseResult.InvocationConfiguration.Output.WriteLine(JsonConvert.SerializeObject(services, Formatting.Indented));
+            parseResult.InvocationConfiguration.Error.WriteLine($"The strategy {outputFormat} wasn't recognised.");
+            return 1;
         }
 
         return 0;
