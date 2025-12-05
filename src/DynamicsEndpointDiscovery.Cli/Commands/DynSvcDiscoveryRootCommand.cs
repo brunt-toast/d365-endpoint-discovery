@@ -1,6 +1,5 @@
 ﻿using DynamicsEndpointDiscovery.Application.Config;
 using DynamicsEndpointDiscovery.Application.Services.Dynamics;
-using DynamicsEndpointDiscovery.Application.Services.OpenApi_3_0;
 using DynamicsEndpointDiscovery.Application.Services.Postman;
 using DynamicsEndpointDiscovery.Cli.Enums;
 using DynamicsEndpointDiscovery.Cli.Logging;
@@ -9,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.CommandLine;
 using System.Text.RegularExpressions;
+using DynamicsEndpointDiscovery.Application.Services.OpenApi;
 
 namespace DynamicsEndpointDiscovery.Cli.Commands;
 
@@ -74,12 +74,12 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
         }
         else if (outputFormat is OutputFormats.Postman)
         {
-            var postman = new PostmanCollectionBuilderService().BuildPostmanCollection(services, postmanCollectionName);
+            var postman = PostmanCollectionBuilderService.BuildPostmanCollection(services, postmanCollectionName);
             await parseResult.InvocationConfiguration.Output.WriteLineAsync(JsonConvert.SerializeObject(postman, Formatting.Indented));
         }
         else if (outputFormat is OutputFormats.OpenApi)
         {
-            var sc = new OpenApiCollectionBuilderService().BuildOpenApiCollection(services, config.Resource);
+            var sc = OpenApiCollectionBuilderService.BuildOpenApiCollection(services, config.Resource);
             await parseResult.InvocationConfiguration.Output.WriteLineAsync(JsonConvert.SerializeObject(sc, Formatting.Indented));
         }
         else

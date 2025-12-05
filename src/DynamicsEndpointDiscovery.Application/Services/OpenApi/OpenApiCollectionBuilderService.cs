@@ -1,12 +1,11 @@
-﻿using DynamicsEndpointDiscovery.Application.Types;
-using DynamicsEndpointDiscovery.Application.Types.Dynamics;
+﻿using DynamicsEndpointDiscovery.Application.Types.Dynamics;
 using DynamicsEndpointDiscovery.Application.Types.OpenApi;
 
-namespace DynamicsEndpointDiscovery.Application.Services.OpenApi_3_0;
+namespace DynamicsEndpointDiscovery.Application.Services.OpenApi;
 
-public class OpenApiCollectionBuilderService
+public static class OpenApiCollectionBuilderService
 {
-    public OpenApiCollection BuildOpenApiCollection(IEnumerable<DynSvcGroup> groups, string resource)
+    public static OpenApiCollection BuildOpenApiCollection(IEnumerable<DynSvcGroup> groups, string resource)
     {
         var groupsList = groups.ToList();
 
@@ -44,7 +43,7 @@ public class OpenApiCollectionBuilderService
         };
     }
 
-    private IEnumerable<KeyValuePair<string, OpenApiSchemaDefn>> GetSchemaDefns(IEnumerable<DynSvcGroup> groups)
+    private static IEnumerable<KeyValuePair<string, OpenApiSchemaDefn>> GetSchemaDefns(IEnumerable<DynSvcGroup> groups)
     {
         var operations = groups.SelectMany(x => x.Services).SelectMany(x => x.Operations);
         foreach (var operation in operations)
@@ -68,7 +67,7 @@ public class OpenApiCollectionBuilderService
         }
     }
 
-    private IEnumerable<KeyValuePair<string, OpenApiPathDefn>> GetPathDefns(IEnumerable<DynSvcGroup> groups)
+    private static IEnumerable<KeyValuePair<string, OpenApiPathDefn>> GetPathDefns(IEnumerable<DynSvcGroup> groups)
     {
         var operations = groups.SelectMany(x => x.Services).SelectMany(x => x.Operations);
         foreach (var operation in operations)
