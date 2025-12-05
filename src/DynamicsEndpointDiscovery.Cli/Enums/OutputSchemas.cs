@@ -2,7 +2,7 @@
 
 namespace DynamicsEndpointDiscovery.Cli.Enums;
 
-internal enum OutputFormats
+internal enum OutputSchemas
 {
     Default, 
     Postman,

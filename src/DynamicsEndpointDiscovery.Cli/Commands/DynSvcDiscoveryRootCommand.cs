@@ -23,7 +23,7 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
     private readonly GrepServicesOption _grepServicesOption = new();
     private readonly GrepOperationsOption _grepOperationsOption = new();
     private readonly CollectionNameOption _collectionNameOption = new();
-    private readonly FormatOption _formatOption = new();
+    private readonly SchemaOption _schemaOption = new();
 
     public DynSvcDiscoveryRootCommand() : base("Discover Dynamics 365 service endpoints automatically.")
     {
@@ -36,7 +36,7 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
         Options.Add(_grepServicesOption);
         Options.Add(_grepOperationsOption);
         Options.Add(_collectionNameOption);
-        Options.Add(_formatOption);
+        Options.Add(_schemaOption);
 
         SetAction(ExecuteAction);
     }
@@ -51,7 +51,7 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
         Regex grepGroupsRegex = new(parseResult.GetValue(_grepGroupsOption) ?? string.Empty);
         Regex grepServicesRegex = new(parseResult.GetValue(_grepServicesOption) ?? string.Empty);
         Regex grepOperationsRegex = new(parseResult.GetValue(_grepOperationsOption) ?? string.Empty);
-        OutputFormats outputFormat = parseResult.GetValue(_formatOption);
+        OutputSchemas outputSchema = parseResult.GetValue(_schemaOption);
         string collectionName = parseResult.GetValue(_collectionNameOption) ?? string.Empty;
 
         var config = new AppConfig
@@ -68,23 +68,23 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
 
         var services = (await serviceDiscovery.MapServicesAsync()).ToArray();
 
-        if (outputFormat is OutputFormats.Default)
+        if (outputSchema is OutputSchemas.Default)
         {
             await parseResult.InvocationConfiguration.Output.WriteLineAsync(JsonConvert.SerializeObject(services, Formatting.Indented));
         }
-        else if (outputFormat is OutputFormats.Postman)
+        else if (outputSchema is OutputSchemas.Postman)
         {
             var postman = PostmanCollectionBuilderService.BuildPostmanCollection(services, collectionName);
             await parseResult.InvocationConfiguration.Output.WriteLineAsync(JsonConvert.SerializeObject(postman, Formatting.Indented));
         }
-        else if (outputFormat is OutputFormats.OpenApi)
+        else if (outputSchema is OutputSchemas.OpenApi)
         {
             var sc = OpenApiCollectionBuilderService.BuildOpenApiCollection(services, config.Resource, collectionName);
             await parseResult.InvocationConfiguration.Output.WriteLineAsync(JsonConvert.SerializeObject(sc, Formatting.Indented));
         }
         else
         {
-            await parseResult.InvocationConfiguration.Error.WriteLineAsync($"The strategy {outputFormat} wasn't recognised.");
+            await parseResult.InvocationConfiguration.Error.WriteLineAsync($"The strategy {outputSchema} wasn't recognised.");
             return 1;
         }
 

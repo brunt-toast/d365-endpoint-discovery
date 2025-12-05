@@ -6,11 +6,11 @@ using DynamicsEndpointDiscovery.Cli.Enums;
 
 namespace DynamicsEndpointDiscovery.Cli.Options;
 
-internal class FormatOption : Option<OutputFormats>
+internal class SchemaOption : Option<OutputSchemas>
 {
-    public FormatOption() : base("--format", "-f")
+    public SchemaOption() : base("--schema")
     {
-        Description = "Specify the output format.";
+        Description = "Specify the output schema.";
         Validators.Add(IsImplementedValidator);
     }
 
