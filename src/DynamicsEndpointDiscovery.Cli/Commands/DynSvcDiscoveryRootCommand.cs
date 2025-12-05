@@ -1,13 +1,16 @@
-﻿using System.CommandLine;
-using System.Text.RegularExpressions;
-using DynamicsEndpointDiscovery.Application.Config;
+﻿using DynamicsEndpointDiscovery.Application.Config;
 using DynamicsEndpointDiscovery.Application.Services.Dynamics;
 using DynamicsEndpointDiscovery.Application.Services.Postman;
-using DynamicsEndpointDiscovery.Cli.Flags;
+using DynamicsEndpointDiscovery.Cli.Enums;
 using DynamicsEndpointDiscovery.Cli.Logging;
 using DynamicsEndpointDiscovery.Cli.Options;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using System.CommandLine;
+using System.Text.RegularExpressions;
+using DynamicsEndpointDiscovery.Application.Enums;
+using DynamicsEndpointDiscovery.Application.Services;
+using DynamicsEndpointDiscovery.Application.Services.OpenApi;
+using DynamicsEndpointDiscovery.Cli.Flags;
 
 namespace DynamicsEndpointDiscovery.Cli.Commands;
 
@@ -21,9 +24,11 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
     private readonly GrepGroupsOption _grepGroupsOption = new();
     private readonly GrepServicesOption _grepServicesOption = new();
     private readonly GrepOperationsOption _grepOperationsOption = new();
-    private readonly PostmanCollectionNameOption _postmanCollectionNameOption = new();
+    private readonly CollectionNameOption _collectionNameOption = new();
+    private readonly SchemaOption _schemaOption = new();
+    private readonly FormatOption _formatOption = new();
 
-    private readonly PostmanFlag _postmanFlag = new();
+    private readonly MinifyFlag _minifyFlag = new();
 
     public DynSvcDiscoveryRootCommand() : base("Discover Dynamics 365 service endpoints automatically.")
     {
@@ -35,14 +40,16 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
         Options.Add(_grepGroupsOption);
         Options.Add(_grepServicesOption);
         Options.Add(_grepOperationsOption);
-        Options.Add(_postmanCollectionNameOption);
+        Options.Add(_collectionNameOption);
+        Options.Add(_schemaOption);
+        Options.Add(_formatOption);
 
-        Options.Add(_postmanFlag);
+        Options.Add(_minifyFlag);
 
         SetAction(ExecuteAction);
     }
 
-    private int ExecuteAction(ParseResult parseResult)
+    private async Task<int> ExecuteAction(ParseResult parseResult)
     {
         string clientId = parseResult.GetValue(_clientIdOption) ?? string.Empty;
         string clientSecret = parseResult.GetValue(_clientSecretOption) ?? string.Empty;
@@ -52,8 +59,10 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
         Regex grepGroupsRegex = new(parseResult.GetValue(_grepGroupsOption) ?? string.Empty);
         Regex grepServicesRegex = new(parseResult.GetValue(_grepServicesOption) ?? string.Empty);
         Regex grepOperationsRegex = new(parseResult.GetValue(_grepOperationsOption) ?? string.Empty);
-        bool doPostman = parseResult.GetValue(_postmanFlag);
-        string postmanCollectionName = parseResult.GetValue(_postmanCollectionNameOption) ?? string.Empty;
+        OutputSchemas outputSchema = parseResult.GetValue(_schemaOption);
+        OutputFormats outputFormat = parseResult.GetValue(_formatOption);
+        string collectionName = parseResult.GetValue(_collectionNameOption) ?? string.Empty;
+        bool minify = parseResult.GetValue(_minifyFlag);
 
         var config = new AppConfig
         {
@@ -67,17 +76,19 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
         var auth = new DynAuthService(config, logger);
         var serviceDiscovery = new DynSvcDiscoveryService(auth, config, logger, grepGroupsRegex, grepServicesRegex, grepOperationsRegex);
 
-        var services = serviceDiscovery.MapServices().ToArray();
+        var services = (await serviceDiscovery.MapServicesAsync()).ToArray();
 
-        if (doPostman)
+        object data = outputSchema switch
         {
-            var postman = new PostmanCollectionBuilderService().BuildPostmanCollection(services, postmanCollectionName);
-            parseResult.InvocationConfiguration.Output.WriteLine(JsonConvert.SerializeObject(postman, Formatting.Indented));
-        }
-        else
-        {
-            parseResult.InvocationConfiguration.Output.WriteLine(JsonConvert.SerializeObject(services, Formatting.Indented));
-        }
+            OutputSchemas.Default => services,
+            OutputSchemas.Postman => PostmanCollectionBuilderService.BuildPostmanCollection(services, collectionName),
+            OutputSchemas.OpenApi => OpenApiCollectionBuilderService.BuildOpenApiCollection(services, config.Resource, collectionName),
+            _ => services
+        };
+
+        string serialisation = Serialiser.Serialise(data, outputFormat, minify);
+
+        await parseResult.InvocationConfiguration.Output.WriteLineAsync(serialisation);
 
         return 0;
     }

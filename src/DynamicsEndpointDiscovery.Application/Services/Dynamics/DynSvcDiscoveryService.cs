@@ -1,7 +1,9 @@
 ﻿using System.Text.RegularExpressions;
 using DynamicsEndpointDiscovery.Application.Config;
 using DynamicsEndpointDiscovery.Application.Responses;
+using DynamicsEndpointDiscovery.Application.Responses.Dynamics;
 using DynamicsEndpointDiscovery.Application.Types;
+using DynamicsEndpointDiscovery.Application.Types.Dynamics;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -27,58 +29,61 @@ public class DynSvcDiscoveryService
         _grepOperationsRegex = grepOperationsRegex;
     }
 
-    public IEnumerable<DynSvcGroup> MapServices()
+    public async Task<IEnumerable<DynSvcGroup>> MapServicesAsync()
     {
         _logger.LogInformation("Mapping services");
-        var res = JsonConvert.DeserializeObject<DynGetSvcGroupsResponse>(GetHttp($"{_resource}/api/services")) ?? throw new ArgumentNullException();
+        var res = JsonConvert.DeserializeObject<DynGetSvcGroupsResponse>(await GetHttp($"{_resource}/api/services")) ?? throw new ArgumentNullException();
 
         foreach (var group in res.Groups.Where(x => _grepGroupsRegex?.IsMatch(x.Name) ?? true))
         {
-            group.Services = GetServices(group.Name).ToArray();
-            yield return group;
+            group.Services = (await GetServices(group.Name)).ToArray();
         }
+
+        return res.Groups.Where(x => _grepGroupsRegex?.IsMatch(x.Name) ?? true);
     }
 
-    private IEnumerable<DynSvc> GetServices(string group)
+    private async Task< IEnumerable<DynSvc>> GetServices(string group)
     {
         _logger.LogInformation("Getting services for group {group}", group);
-        var res = JsonConvert.DeserializeObject<DynGetSvcGroupResponse>(GetHttp($"{_resource}/api/services/{group}")) ?? throw new ArgumentNullException();
+        var res = JsonConvert.DeserializeObject<DynGetSvcGroupResponse>(await GetHttp($"{_resource}/api/services/{group}")) ?? throw new ArgumentNullException();
 
         foreach (var service in res.Services.Where(x => _grepServicesRegex?.IsMatch(x.Name) ?? true))
         {
             service.ServiceGroupName = group;
-            service.Operations = GetOperations(group, service.Name).ToArray();
-            yield return service;
+            service.Operations = (await GetOperations(group, service.Name)).ToArray();
         }
+
+        return res.Services.Where(x => _grepServicesRegex?.IsMatch(x.Name) ?? true);
     }
 
-    private IEnumerable<DynSvcOp> GetOperations(string group, string service)
+    private async Task< IEnumerable<DynSvcOp>> GetOperations(string group, string service)
     {
         _logger.LogInformation("Getting services for group {group}'s service {service}", group, service);
-        var res = JsonConvert.DeserializeObject<DynGetSvcResponse>(GetHttp($"{_resource}/api/services/{group}/{service}")) ?? throw new ArgumentNullException();
+        var res = JsonConvert.DeserializeObject<DynGetSvcResponse>(await GetHttp($"{_resource}/api/services/{group}/{service}")) ?? throw new ArgumentNullException();
 
         foreach (var operation in res.Operations.Where(x => _grepOperationsRegex?.IsMatch(x.Name) ?? true))
         {
-            var opRes = JsonConvert.DeserializeObject<DynGetOperationResponse>(GetHttp($"{_resource}/api/services/{group}/{service}/{operation.Name}")) ?? throw new ArgumentNullException();
+            var opRes = JsonConvert.DeserializeObject<DynGetOperationResponse>(await GetHttp($"{_resource}/api/services/{group}/{service}/{operation.Name}")) ?? throw new ArgumentNullException();
 
             operation.ServiceGroupName = group;
             operation.ServiceName = service;
             operation.Parameters = opRes.Parameters;
             operation.Return = opRes.Return;
-            yield return operation;
         }
+
+        return res.Operations.Where(x => _grepOperationsRegex?.IsMatch(x.Name) ?? true);
     }
 
-    private string GetHttp(string endpoint)
+    private async Task<string> GetHttp(string endpoint)
     {
-        string bearer = _authSvc.GetBearerToken();
+        string bearer = await _authSvc.GetBearerToken();
         using HttpClient client = new();
         HttpRequestMessage request = new(HttpMethod.Get, endpoint);
         request.Headers.Clear();
         request.Headers.Add("Authorization", $"Bearer {bearer}");
-        var response = client.Send(request);
+        var response = await client.SendAsync(request);
 
-        string content = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+        string content = await response.Content.ReadAsStringAsync();
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("A request to {endpoint} returned HTTP status {statusInt} ({status}). Content was: {newLine}{content}", endpoint, (int)response.StatusCode, response.StatusCode, Environment.NewLine, content);

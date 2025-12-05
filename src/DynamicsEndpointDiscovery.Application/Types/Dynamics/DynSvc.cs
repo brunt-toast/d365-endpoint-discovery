@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace DynamicsEndpointDiscovery.Application.Types;
+namespace DynamicsEndpointDiscovery.Application.Types.Dynamics;
 
 public class DynSvc
 {

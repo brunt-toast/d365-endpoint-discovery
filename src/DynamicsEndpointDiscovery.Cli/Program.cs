@@ -1,3 +1,3 @@
 ﻿using DynamicsEndpointDiscovery.Cli.Commands;
 
-new DynSvcDiscoveryRootCommand().Parse(args).Invoke();
+await new DynSvcDiscoveryRootCommand().Parse(args).InvokeAsync();

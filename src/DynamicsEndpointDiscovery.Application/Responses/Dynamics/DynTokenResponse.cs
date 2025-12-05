@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace DynamicsEndpointDiscovery.Application.Responses;
+namespace DynamicsEndpointDiscovery.Application.Responses.Dynamics;
 
 internal class DynTokenResponse
 {

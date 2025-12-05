@@ -1,12 +1,13 @@
 ﻿using System.Text;
 using DynamicsEndpointDiscovery.Application.Types;
+using DynamicsEndpointDiscovery.Application.Types.Dynamics;
 using DynamicsEndpointDiscovery.Application.Types.Postman;
 
 namespace DynamicsEndpointDiscovery.Application.Services.Postman;
 
-public class PostmanCollectionBuilderService
+public static class PostmanCollectionBuilderService
 {
-    public PostmanCollection BuildPostmanCollection(IEnumerable<DynSvcGroup> groups, string collectionName = "Collection")
+    public static PostmanCollection BuildPostmanCollection(IEnumerable<DynSvcGroup> groups, string collectionName = "Collection")
     {
         var collectionInfo = new PostmanCollectionInfo
         {
@@ -23,7 +24,7 @@ public class PostmanCollectionBuilderService
         };
     }
 
-    private PostmanItem GetPostmanItem(DynSvcGroup group)
+    private static PostmanItem GetPostmanItem(DynSvcGroup group)
     {
         return new PostmanItem
         {
@@ -34,7 +35,7 @@ public class PostmanCollectionBuilderService
         };
     }
 
-    private PostmanItem GetPostmanItem(DynSvc service)
+    private static PostmanItem GetPostmanItem(DynSvc service)
     {
         return new PostmanItem
         {
@@ -45,7 +46,7 @@ public class PostmanCollectionBuilderService
         };
     }
 
-    private PostmanItem GetPostmanItem(DynSvcOp operation)
+    private static PostmanItem GetPostmanItem(DynSvcOp operation)
     {
         StringBuilder sb = new();
         sb.AppendLine("{");

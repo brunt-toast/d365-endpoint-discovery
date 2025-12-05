@@ -23,13 +23,15 @@ internal class CommandLogger : ILogger
             return;
         }
 
+        string message = $"{DateTime.UtcNow:O}|{logLevel}|{formatter.Invoke(state, exception)}";
+
         if (logLevel >= LogLevel.Warning)
         {
-            _errStream.WriteLine(formatter.Invoke(state, exception));
+            _errStream.WriteLine(message);
         }
         else
         {
-            _outStream.WriteLine(formatter.Invoke(state, exception));
+            _outStream.WriteLine(message);
         }
     }
 
