@@ -1,7 +1,9 @@
 ﻿using System.Text.RegularExpressions;
 using DynamicsEndpointDiscovery.Application.Config;
 using DynamicsEndpointDiscovery.Application.Responses;
+using DynamicsEndpointDiscovery.Application.Responses.Dynamics;
 using DynamicsEndpointDiscovery.Application.Types;
+using DynamicsEndpointDiscovery.Application.Types.Dynamics;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 

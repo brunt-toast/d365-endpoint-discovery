@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace DynamicsEndpointDiscovery.Application.Types.OpenApi_3_0;
+namespace DynamicsEndpointDiscovery.Application.Types.OpenApi;
 
 public class OpenApiServerDefn
 {

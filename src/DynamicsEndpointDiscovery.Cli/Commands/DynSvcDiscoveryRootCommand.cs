@@ -72,14 +72,14 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
         {
             await parseResult.InvocationConfiguration.Output.WriteLineAsync(JsonConvert.SerializeObject(services, Formatting.Indented));
         }
-        else if (outputFormat is OutputFormats.Postman_2_1_0)
+        else if (outputFormat is OutputFormats.Postman)
         {
             var postman = new PostmanCollectionBuilderService().BuildPostmanCollection(services, postmanCollectionName);
             await parseResult.InvocationConfiguration.Output.WriteLineAsync(JsonConvert.SerializeObject(postman, Formatting.Indented));
         }
-        else if (outputFormat is OutputFormats.OpenApi_3_0_Json)
+        else if (outputFormat is OutputFormats.OpenApi)
         {
-            var sc = new OpenApi_3_0_CollectionBuilderService().BuildOpenApiCollection(services, config.Resource);
+            var sc = new OpenApiCollectionBuilderService().BuildOpenApiCollection(services, config.Resource);
             await parseResult.InvocationConfiguration.Output.WriteLineAsync(JsonConvert.SerializeObject(sc, Formatting.Indented));
         }
         else

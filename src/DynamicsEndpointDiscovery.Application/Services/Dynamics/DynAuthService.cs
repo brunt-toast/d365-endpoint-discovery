@@ -1,5 +1,6 @@
 ﻿using DynamicsEndpointDiscovery.Application.Config;
 using DynamicsEndpointDiscovery.Application.Responses;
+using DynamicsEndpointDiscovery.Application.Responses.Dynamics;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 

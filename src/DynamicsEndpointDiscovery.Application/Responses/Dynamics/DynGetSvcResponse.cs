@@ -1,6 +1,6 @@
-﻿using DynamicsEndpointDiscovery.Application.Types;
+﻿using DynamicsEndpointDiscovery.Application.Types.Dynamics;
 
-namespace DynamicsEndpointDiscovery.Application.Responses;
+namespace DynamicsEndpointDiscovery.Application.Responses.Dynamics;
 
 internal class DynGetSvcResponse
 {

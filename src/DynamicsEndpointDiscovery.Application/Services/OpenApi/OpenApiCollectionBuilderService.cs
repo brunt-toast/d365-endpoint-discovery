@@ -1,9 +1,10 @@
 ﻿using DynamicsEndpointDiscovery.Application.Types;
-using DynamicsEndpointDiscovery.Application.Types.OpenApi_3_0;
+using DynamicsEndpointDiscovery.Application.Types.Dynamics;
+using DynamicsEndpointDiscovery.Application.Types.OpenApi;
 
 namespace DynamicsEndpointDiscovery.Application.Services.OpenApi_3_0;
 
-public class OpenApi_3_0_CollectionBuilderService
+public class OpenApiCollectionBuilderService
 {
     public OpenApiCollection BuildOpenApiCollection(IEnumerable<DynSvcGroup> groups, string resource)
     {

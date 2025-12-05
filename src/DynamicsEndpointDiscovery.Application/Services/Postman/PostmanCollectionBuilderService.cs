@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using DynamicsEndpointDiscovery.Application.Types;
+using DynamicsEndpointDiscovery.Application.Types.Dynamics;
 using DynamicsEndpointDiscovery.Application.Types.Postman;
 
 namespace DynamicsEndpointDiscovery.Application.Services.Postman;
