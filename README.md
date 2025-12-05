@@ -27,10 +27,10 @@ dynsvcdiscovery \
     -c '00000000-0000-0000-0000-000000000000' \
     -s '1ab2C~...' \
     -r 'https://org00000000.operations.dynamics.com' \
-    -t 'https://login.microsoftonline.com/00000000-0000-0000-0000-000000000000/oauth2/token' \
+    -t 'https://login.microsoftonline.com/00000000-0000-0000-0000-000000000000/oauth2/token' 
  ```
 
- Additional options and sub-command can be found using `dynsvcdiscovery -?`.
+ Additional options and sub-commands can be found using `dynsvcdiscovery -?`.
 
 ## 🐛 Debug 
 
