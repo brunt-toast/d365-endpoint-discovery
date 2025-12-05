@@ -5,9 +5,10 @@ using DynamicsEndpointDiscovery.Cli.Enums;
 using DynamicsEndpointDiscovery.Cli.Logging;
 using DynamicsEndpointDiscovery.Cli.Options;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System.CommandLine;
 using System.Text.RegularExpressions;
+using DynamicsEndpointDiscovery.Application.Enums;
+using DynamicsEndpointDiscovery.Application.Services;
 using DynamicsEndpointDiscovery.Application.Services.OpenApi;
 
 namespace DynamicsEndpointDiscovery.Cli.Commands;
@@ -24,6 +25,7 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
     private readonly GrepOperationsOption _grepOperationsOption = new();
     private readonly CollectionNameOption _collectionNameOption = new();
     private readonly SchemaOption _schemaOption = new();
+    private readonly FormatOption _formatOption = new();
 
     public DynSvcDiscoveryRootCommand() : base("Discover Dynamics 365 service endpoints automatically.")
     {
@@ -37,6 +39,7 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
         Options.Add(_grepOperationsOption);
         Options.Add(_collectionNameOption);
         Options.Add(_schemaOption);
+        Options.Add(_formatOption);
 
         SetAction(ExecuteAction);
     }
@@ -52,6 +55,7 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
         Regex grepServicesRegex = new(parseResult.GetValue(_grepServicesOption) ?? string.Empty);
         Regex grepOperationsRegex = new(parseResult.GetValue(_grepOperationsOption) ?? string.Empty);
         OutputSchemas outputSchema = parseResult.GetValue(_schemaOption);
+        OutputFormats outputFormat = parseResult.GetValue(_formatOption);
         string collectionName = parseResult.GetValue(_collectionNameOption) ?? string.Empty;
 
         var config = new AppConfig
@@ -68,25 +72,17 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
 
         var services = (await serviceDiscovery.MapServicesAsync()).ToArray();
 
-        if (outputSchema is OutputSchemas.Default)
+        object data = outputSchema switch
         {
-            await parseResult.InvocationConfiguration.Output.WriteLineAsync(JsonConvert.SerializeObject(services, Formatting.Indented));
-        }
-        else if (outputSchema is OutputSchemas.Postman)
-        {
-            var postman = PostmanCollectionBuilderService.BuildPostmanCollection(services, collectionName);
-            await parseResult.InvocationConfiguration.Output.WriteLineAsync(JsonConvert.SerializeObject(postman, Formatting.Indented));
-        }
-        else if (outputSchema is OutputSchemas.OpenApi)
-        {
-            var sc = OpenApiCollectionBuilderService.BuildOpenApiCollection(services, config.Resource, collectionName);
-            await parseResult.InvocationConfiguration.Output.WriteLineAsync(JsonConvert.SerializeObject(sc, Formatting.Indented));
-        }
-        else
-        {
-            await parseResult.InvocationConfiguration.Error.WriteLineAsync($"The strategy {outputSchema} wasn't recognised.");
-            return 1;
-        }
+            OutputSchemas.Default => services,
+            OutputSchemas.Postman => PostmanCollectionBuilderService.BuildPostmanCollection(services, collectionName),
+            OutputSchemas.OpenApi => OpenApiCollectionBuilderService.BuildOpenApiCollection(services, config.Resource, collectionName),
+            _ => services
+        };
+
+        string serialisation = Serialiser.Serialise(data, outputFormat);
+
+        await parseResult.InvocationConfiguration.Output.WriteLineAsync(serialisation);
 
         return 0;
     }
