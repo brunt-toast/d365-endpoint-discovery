@@ -48,6 +48,9 @@ dynsvcdiscovery \
 
 For more verbose results, set the log level to Trace. Note that there will be no way to separate the final output from logging messages below the Warning level. 
 
+## ✏️ Contributors' Notice
+The use of AI-generated code is strictly prohibited in this repository. See [CONTRIBUTING.md](./CONTRIBUTING.md).
+
 ## 🪪 License
 
 This code is released under the MIT license. See [LICENSE.md](./LICENSE.md).
