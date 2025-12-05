@@ -11,7 +11,7 @@ public static class Serialiser
         return format switch
         {
             OutputFormats.Json => JsonConvert.SerializeObject(data, minify ? Formatting.None : Formatting.Indented),
-            OutputFormats.Yaml => new Serializer().Serialize(data),
+            OutputFormats.Yaml => new SerializerBuilder().ConfigureDefaultValuesHandling(DefaultValuesHandling.Preserve).Build().Serialize(data),
             _ => data.ToString() ?? string.Empty
         };
     }
