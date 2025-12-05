@@ -22,7 +22,7 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
     private readonly GrepGroupsOption _grepGroupsOption = new();
     private readonly GrepServicesOption _grepServicesOption = new();
     private readonly GrepOperationsOption _grepOperationsOption = new();
-    private readonly PostmanCollectionNameOption _postmanCollectionNameOption = new();
+    private readonly CollectionNameOption _collectionNameOption = new();
     private readonly FormatOption _formatOption = new();
 
     public DynSvcDiscoveryRootCommand() : base("Discover Dynamics 365 service endpoints automatically.")
@@ -35,7 +35,7 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
         Options.Add(_grepGroupsOption);
         Options.Add(_grepServicesOption);
         Options.Add(_grepOperationsOption);
-        Options.Add(_postmanCollectionNameOption);
+        Options.Add(_collectionNameOption);
         Options.Add(_formatOption);
 
         SetAction(ExecuteAction);
@@ -52,7 +52,7 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
         Regex grepServicesRegex = new(parseResult.GetValue(_grepServicesOption) ?? string.Empty);
         Regex grepOperationsRegex = new(parseResult.GetValue(_grepOperationsOption) ?? string.Empty);
         OutputFormats outputFormat = parseResult.GetValue(_formatOption);
-        string postmanCollectionName = parseResult.GetValue(_postmanCollectionNameOption) ?? string.Empty;
+        string collectionName = parseResult.GetValue(_collectionNameOption) ?? string.Empty;
 
         var config = new AppConfig
         {
@@ -74,7 +74,7 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
         }
         else if (outputFormat is OutputFormats.Postman)
         {
-            var postman = PostmanCollectionBuilderService.BuildPostmanCollection(services, postmanCollectionName);
+            var postman = PostmanCollectionBuilderService.BuildPostmanCollection(services, collectionName);
             await parseResult.InvocationConfiguration.Output.WriteLineAsync(JsonConvert.SerializeObject(postman, Formatting.Indented));
         }
         else if (outputFormat is OutputFormats.OpenApi)
