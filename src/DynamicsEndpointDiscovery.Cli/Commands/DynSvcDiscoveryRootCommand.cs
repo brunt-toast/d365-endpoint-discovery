@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using DynamicsEndpointDiscovery.Application.Enums;
 using DynamicsEndpointDiscovery.Application.Services;
 using DynamicsEndpointDiscovery.Application.Services.OpenApi;
+using DynamicsEndpointDiscovery.Cli.Flags;
 
 namespace DynamicsEndpointDiscovery.Cli.Commands;
 
@@ -27,6 +28,8 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
     private readonly SchemaOption _schemaOption = new();
     private readonly FormatOption _formatOption = new();
 
+    private readonly MinifyFlag _minifyFlag = new();
+
     public DynSvcDiscoveryRootCommand() : base("Discover Dynamics 365 service endpoints automatically.")
     {
         Options.Add(_clientIdOption);
@@ -40,6 +43,8 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
         Options.Add(_collectionNameOption);
         Options.Add(_schemaOption);
         Options.Add(_formatOption);
+
+        Options.Add(_minifyFlag);
 
         SetAction(ExecuteAction);
     }
@@ -57,6 +62,7 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
         OutputSchemas outputSchema = parseResult.GetValue(_schemaOption);
         OutputFormats outputFormat = parseResult.GetValue(_formatOption);
         string collectionName = parseResult.GetValue(_collectionNameOption) ?? string.Empty;
+        bool minify = parseResult.GetValue(_minifyFlag);
 
         var config = new AppConfig
         {
@@ -80,7 +86,7 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
             _ => services
         };
 
-        string serialisation = Serialiser.Serialise(data, outputFormat);
+        string serialisation = Serialiser.Serialise(data, outputFormat, minify);
 
         await parseResult.InvocationConfiguration.Output.WriteLineAsync(serialisation);
 
