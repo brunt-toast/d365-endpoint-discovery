@@ -1,6 +1,5 @@
 ﻿using System.CommandLine;
 using DynamicsEndpointDiscovery.Application.Enums;
-using DynamicsEndpointDiscovery.Cli.Enums;
 
 namespace DynamicsEndpointDiscovery.Cli.Options;
 

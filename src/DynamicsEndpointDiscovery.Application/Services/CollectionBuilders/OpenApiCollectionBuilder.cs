@@ -1,11 +1,11 @@
 ﻿using DynamicsEndpointDiscovery.Application.Types.Dynamics;
 using DynamicsEndpointDiscovery.Application.Types.OpenApi;
 
-namespace DynamicsEndpointDiscovery.Application.Services.OpenApi;
+namespace DynamicsEndpointDiscovery.Application.Services.CollectionBuilders;
 
-public static class OpenApiCollectionBuilderService
+public class OpenApiCollectionBuilder  : CollectionBuilderBase<OpenApiCollection>
 {
-    public static OpenApiCollection BuildOpenApiCollection(IEnumerable<DynSvcGroup> groups, string resource, string collectionName = "Collection")
+    protected override OpenApiCollection BuildTypedCollection(IEnumerable<DynSvcGroup> groups, string resource, string collectionName = "Collection")
     {
         var groupsList = groups.ToList();
 

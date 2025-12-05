@@ -3,11 +3,11 @@ using DynamicsEndpointDiscovery.Application.Types;
 using DynamicsEndpointDiscovery.Application.Types.Dynamics;
 using DynamicsEndpointDiscovery.Application.Types.Postman;
 
-namespace DynamicsEndpointDiscovery.Application.Services.Postman;
+namespace DynamicsEndpointDiscovery.Application.Services.CollectionBuilders;
 
-public static class PostmanCollectionBuilderService
+public class PostmanCollectionBuilder : CollectionBuilderBase<PostmanCollection>
 {
-    public static PostmanCollection BuildPostmanCollection(IEnumerable<DynSvcGroup> groups, string collectionName = "Collection")
+    protected override PostmanCollection BuildTypedCollection(IEnumerable<DynSvcGroup> groups, string resource, string collectionName = "Collection")
     {
         var collectionInfo = new PostmanCollectionInfo
         {

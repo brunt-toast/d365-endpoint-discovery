@@ -1,7 +1,5 @@
 ﻿using DynamicsEndpointDiscovery.Application.Config;
 using DynamicsEndpointDiscovery.Application.Services.Dynamics;
-using DynamicsEndpointDiscovery.Application.Services.Postman;
-using DynamicsEndpointDiscovery.Cli.Enums;
 using DynamicsEndpointDiscovery.Cli.Logging;
 using DynamicsEndpointDiscovery.Cli.Options;
 using Microsoft.Extensions.Logging;
@@ -9,8 +7,8 @@ using System.CommandLine;
 using System.Text.RegularExpressions;
 using DynamicsEndpointDiscovery.Application.Enums;
 using DynamicsEndpointDiscovery.Application.Services;
-using DynamicsEndpointDiscovery.Application.Services.OpenApi;
 using DynamicsEndpointDiscovery.Cli.Flags;
+using DynamicsEndpointDiscovery.Application.Services.CollectionBuilders;
 
 namespace DynamicsEndpointDiscovery.Cli.Commands;
 
@@ -78,14 +76,8 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
 
         var services = (await serviceDiscovery.MapServicesAsync()).ToArray();
 
-        object data = outputSchema switch
-        {
-            OutputSchemas.Default => services,
-            OutputSchemas.Postman => PostmanCollectionBuilderService.BuildPostmanCollection(services, collectionName),
-            OutputSchemas.OpenApi => OpenApiCollectionBuilderService.BuildOpenApiCollection(services, config.Resource, collectionName),
-            _ => services
-        };
-
+        ICollectionBuilder collectionBuilder = CollectionBuilderFactory.GetCollectionBuilder(outputSchema);
+        object data = collectionBuilder.BuildCollection(services, config.Resource, collectionName);
         string serialisation = Serialiser.Serialise(data, outputFormat, minify);
 
         await parseResult.InvocationConfiguration.Output.WriteLineAsync(serialisation);
