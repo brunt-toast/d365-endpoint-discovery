@@ -79,7 +79,7 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
         }
         else if (outputFormat is OutputFormats.OpenApi)
         {
-            var sc = OpenApiCollectionBuilderService.BuildOpenApiCollection(services, config.Resource);
+            var sc = OpenApiCollectionBuilderService.BuildOpenApiCollection(services, config.Resource, collectionName);
             await parseResult.InvocationConfiguration.Output.WriteLineAsync(JsonConvert.SerializeObject(sc, Formatting.Indented));
         }
         else

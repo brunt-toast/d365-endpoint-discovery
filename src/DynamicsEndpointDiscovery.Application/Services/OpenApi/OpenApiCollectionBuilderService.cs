@@ -5,14 +5,14 @@ namespace DynamicsEndpointDiscovery.Application.Services.OpenApi;
 
 public static class OpenApiCollectionBuilderService
 {
-    public static OpenApiCollection BuildOpenApiCollection(IEnumerable<DynSvcGroup> groups, string resource)
+    public static OpenApiCollection BuildOpenApiCollection(IEnumerable<DynSvcGroup> groups, string resource, string collectionName = "Collection")
     {
         var groupsList = groups.ToList();
 
         var info = new OpenApiInfo
         {
             Version = "3.0.0",
-            Title = "Collection",
+            Title = collectionName,
             Description = "Dynamics 365 service endpoints",
             TermsOfService = "http://swagger.io/terms/",
             Contact = new OpenApiContactInfo
