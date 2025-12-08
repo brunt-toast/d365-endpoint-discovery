@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using DynamicsEndpointDiscovery.Application.Types;
+using DynamicsEndpointDiscovery.Application.Mapping;
 using DynamicsEndpointDiscovery.Application.Types.Dynamics;
 using DynamicsEndpointDiscovery.Application.Types.Postman;
 
@@ -54,11 +54,7 @@ public class PostmanCollectionBuilder : CollectionBuilderBase<PostmanCollection>
         {
             var parameter = operation.Parameters[i];
 
-            string value =
-                parameter.Type == "String" ? "\"\"" :
-                parameter.Type == "Int" ? "0" :
-                "{}";
-
+            var value = DynamicsToJsonTypeMapper.GetDefaultValue(parameter.Type);
             sb.AppendLine($"\t\"{parameter.Name}\": {value}{(i == operation.Parameters.Length - 1 ? "" : ',')}");
         }
         sb.AppendLine("}");

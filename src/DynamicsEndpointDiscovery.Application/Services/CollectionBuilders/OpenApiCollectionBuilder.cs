@@ -1,4 +1,5 @@
-﻿using DynamicsEndpointDiscovery.Application.Types.Dynamics;
+﻿using DynamicsEndpointDiscovery.Application.Mapping;
+using DynamicsEndpointDiscovery.Application.Types.Dynamics;
 using DynamicsEndpointDiscovery.Application.Types.OpenApi;
 
 namespace DynamicsEndpointDiscovery.Application.Services.CollectionBuilders;
@@ -56,7 +57,7 @@ public class OpenApiCollectionBuilder  : CollectionBuilderBase<OpenApiCollection
                         Required = [],
                         Properties = operation.Parameters.Select(parameter => new KeyValuePair<string, OpenApiTypeDefn>(parameter.Name, new OpenApiTypeDefn
                         {
-                            Type = "string"
+                            Type = DynamicsToJsonTypeMapper.MapType(parameter.Type)
                         })).ToDictionary()
                     }
                 ]
