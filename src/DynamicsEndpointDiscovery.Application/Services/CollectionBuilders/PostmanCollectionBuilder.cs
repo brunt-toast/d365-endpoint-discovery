@@ -1,13 +1,13 @@
 ﻿using System.Text;
-using DynamicsEndpointDiscovery.Application.Types;
+using DynamicsEndpointDiscovery.Application.Mapping;
 using DynamicsEndpointDiscovery.Application.Types.Dynamics;
 using DynamicsEndpointDiscovery.Application.Types.Postman;
 
-namespace DynamicsEndpointDiscovery.Application.Services.Postman;
+namespace DynamicsEndpointDiscovery.Application.Services.CollectionBuilders;
 
-public static class PostmanCollectionBuilderService
+public class PostmanCollectionBuilder : CollectionBuilderBase<PostmanCollection>
 {
-    public static PostmanCollection BuildPostmanCollection(IEnumerable<DynSvcGroup> groups, string collectionName = "Collection")
+    protected override PostmanCollection BuildTypedCollection(IEnumerable<DynSvcGroup> groups, string resource, string collectionName = "Collection")
     {
         var collectionInfo = new PostmanCollectionInfo
         {
@@ -54,11 +54,7 @@ public static class PostmanCollectionBuilderService
         {
             var parameter = operation.Parameters[i];
 
-            string value =
-                parameter.Type == "String" ? "\"\"" :
-                parameter.Type == "Int" ? "0" :
-                "{}";
-
+            var value = DynamicsToJsonTypeMapper.GetDefaultValue(parameter.Type);
             sb.AppendLine($"\t\"{parameter.Name}\": {value}{(i == operation.Parameters.Length - 1 ? "" : ',')}");
         }
         sb.AppendLine("}");

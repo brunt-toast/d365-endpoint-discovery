@@ -16,6 +16,9 @@ jobs:
 
     steps:
 
+      - name: Install cURL (prerequisite for .NET install)
+        run: apt install -y curl
+
       - name: Setup .NET 10.0
         uses: actions/setup-dotnet@v4
         with:
@@ -36,6 +39,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Install cURL (prerequisite for .NET install)
+        run: apt install -y curl
 
       - name: Setup .NET 10.0
         uses: actions/setup-dotnet@v4

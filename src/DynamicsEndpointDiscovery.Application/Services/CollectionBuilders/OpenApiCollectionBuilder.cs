@@ -1,11 +1,12 @@
-﻿using DynamicsEndpointDiscovery.Application.Types.Dynamics;
+﻿using DynamicsEndpointDiscovery.Application.Mapping;
+using DynamicsEndpointDiscovery.Application.Types.Dynamics;
 using DynamicsEndpointDiscovery.Application.Types.OpenApi;
 
-namespace DynamicsEndpointDiscovery.Application.Services.OpenApi;
+namespace DynamicsEndpointDiscovery.Application.Services.CollectionBuilders;
 
-public static class OpenApiCollectionBuilderService
+public class OpenApiCollectionBuilder  : CollectionBuilderBase<OpenApiCollection>
 {
-    public static OpenApiCollection BuildOpenApiCollection(IEnumerable<DynSvcGroup> groups, string resource, string collectionName = "Collection")
+    protected override OpenApiCollection BuildTypedCollection(IEnumerable<DynSvcGroup> groups, string resource, string collectionName = "Collection")
     {
         var groupsList = groups.ToList();
 
@@ -56,7 +57,7 @@ public static class OpenApiCollectionBuilderService
                         Required = [],
                         Properties = operation.Parameters.Select(parameter => new KeyValuePair<string, OpenApiTypeDefn>(parameter.Name, new OpenApiTypeDefn
                         {
-                            Type = "string"
+                            Type = DynamicsToJsonTypeMapper.MapType(parameter.Type)
                         })).ToDictionary()
                     }
                 ]
@@ -76,11 +77,11 @@ public static class OpenApiCollectionBuilderService
             {
                 Post = new OpenApiPostRequestDefn
                 {
-                    Description = $"{operation.ServiceGroupName}/{operation.ServiceName}/{operation.Name}",
-                    OperationId = $"{operation.ServiceGroupName}/{operation.ServiceName}/{operation.Name}",
+                    Description = $"/api/services/{operation.ServiceGroupName}/{operation.ServiceName}/{operation.Name}",
+                    OperationId = $"/api/services/{operation.ServiceGroupName}/{operation.ServiceName}/{operation.Name}",
                     RequestBody = new OpenApiRequestBodyDefn
                     {
-                        Description = $"{operation.ServiceGroupName}/{operation.ServiceName}/{operation.Name}",
+                        Description = $"/api/services/{operation.ServiceGroupName}/{operation.ServiceName}/{operation.Name}",
                         IsRequired = false,
                         ContentTypesToSchemaRefs = new Dictionary<string, OpenApiSchema>
                         {
@@ -98,7 +99,7 @@ public static class OpenApiCollectionBuilderService
             };
 
             yield return new KeyValuePair<string, OpenApiPathDefn>(
-                $"{operation.ServiceGroupName}/{operation.ServiceName}/{operation.Name}", pd);
+                $"/api/services/{operation.ServiceGroupName}/{operation.ServiceName}/{operation.Name}", pd);
         }
     }
 }
