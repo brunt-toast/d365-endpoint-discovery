@@ -77,11 +77,11 @@ public class OpenApiCollectionBuilder  : CollectionBuilderBase<OpenApiCollection
             {
                 Post = new OpenApiPostRequestDefn
                 {
-                    Description = $"{operation.ServiceGroupName}/{operation.ServiceName}/{operation.Name}",
-                    OperationId = $"{operation.ServiceGroupName}/{operation.ServiceName}/{operation.Name}",
+                    Description = $"/api/services/{operation.ServiceGroupName}/{operation.ServiceName}/{operation.Name}",
+                    OperationId = $"/api/services/{operation.ServiceGroupName}/{operation.ServiceName}/{operation.Name}",
                     RequestBody = new OpenApiRequestBodyDefn
                     {
-                        Description = $"{operation.ServiceGroupName}/{operation.ServiceName}/{operation.Name}",
+                        Description = $"/api/services/{operation.ServiceGroupName}/{operation.ServiceName}/{operation.Name}",
                         IsRequired = false,
                         ContentTypesToSchemaRefs = new Dictionary<string, OpenApiSchema>
                         {
@@ -99,7 +99,7 @@ public class OpenApiCollectionBuilder  : CollectionBuilderBase<OpenApiCollection
             };
 
             yield return new KeyValuePair<string, OpenApiPathDefn>(
-                $"{operation.ServiceGroupName}/{operation.ServiceName}/{operation.Name}", pd);
+                $"/api/services/{operation.ServiceGroupName}/{operation.ServiceName}/{operation.Name}", pd);
         }
     }
 }
