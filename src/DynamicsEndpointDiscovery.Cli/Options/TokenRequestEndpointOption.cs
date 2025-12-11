@@ -10,7 +10,7 @@ internal class TokenRequestEndpointOption : Option<string>
         DefaultValueFactory = _ => Environment.GetEnvironmentVariable("DYNAMICS_TOKEN_REQUEST_ENDPOINT") ?? string.Empty;
         Validators.Add(NotNullOrWhitespaceValidator);
         Validators.Add(ValidUriValidator);
-        Description = "An endpoint from which we can request a Dynamics 365 bearer token. Must be a valid URI. Usually looks like 'https://login.microsoftonline.com/GUID/oauth2/token'";
+        Description = "An endpoint from which we can request a Dynamics 365 bearer token. Must be a valid URI. Usually looks like 'https://login.microsoftonline.com/GUID/oauth2/token', where GUID is usually the Direcory (tenant) ID of the tenant containing the application described by --client-id.";
     }
 
     private void NotNullOrWhitespaceValidator(OptionResult opt)
