@@ -28,7 +28,7 @@ jobs:
         id: get_version
         shell: bash
         run: |
-          VERSION=$(dotnet msbuild src/DynamicsEndpointDiscovery.Cli/DynamicsEndpointDiscovery.Cli.csproj -nologo -getproperty:Version | tail -n 1)
+          VERSION=$(dotnet msbuild src/Cli/Cli.csproj -nologo -getproperty:Version | tail -n 1)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
   pack:
@@ -50,7 +50,7 @@ jobs:
 
       - name: Pack NuGet package
         run: >
-          dotnet pack src/DynamicsEndpointDiscovery.Cli/DynamicsEndpointDiscovery.Cli.csproj
+          dotnet pack src/Cli/Cli.csproj
           -c Release
           -p:PackageVersion=${{ needs.get-version.outputs.version }}
           -o ./artifacts/nuget
@@ -58,6 +58,6 @@ jobs:
       - name: Upload NuGet package artifact
         uses: actions/upload-artifact@v4
         with:
-          name: DynamicsEndpointDiscovery.Cli-${{ needs.get-version.outputs.version }}
+          name: Cli-${{ needs.get-version.outputs.version }}
           path: artifacts/nuget/*.nupkg
 
