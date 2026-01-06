@@ -31,7 +31,7 @@ internal class MainService : IMainService
         var collectionBuilder = _collectionBuilderFactory.GetCollectionBuilder(request.OutputSchema);
         var serialiser = _serialiserFactory.GetSerialiser(request.OutputFormat);
 
-        var services = await _discoveryService.MapServicesAsync();
+        var services = await _discoveryService.MapServicesAsync(request.GrepGroupsRegex, request.GrepServicesRegex, request.GrepOperationsRegex);
         var collection = collectionBuilder.BuildCollection(services, request.Resource, request.CollectionName);
         var serialisation = serialiser.Serialise(collection, request.Minify);
 
