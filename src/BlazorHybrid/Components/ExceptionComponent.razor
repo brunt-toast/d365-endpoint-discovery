@@ -1,0 +1,18 @@
+<p>
+    @Message
+</p>
+
+<FluentAccordion>
+    <FluentAccordionItem Heading="Details">
+        <pre style="max-width: 90%; max-height: 400px; overflow: auto;">
+@Exception.ToString();
+        </pre>
+    </FluentAccordionItem>
+</FluentAccordion>
+
+
+@code
+{
+    [Parameter] public Exception Exception { get; set; } = null!;
+    [Parameter] public string Message { get; set; } = string.Empty;
+}

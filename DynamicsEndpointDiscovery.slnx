@@ -7,5 +7,6 @@
     <Project Path="test/Cli.Tests/Cli.Tests.csproj" Id="98d46212-1d23-46ec-816b-4e6ae063126e" />
   </Folder>
   <Project Path="src/Application/Application.csproj" />
+  <Project Path="src/BlazorHybrid/BlazorHybrid.csproj" Id="ccfa5e3b-7fbe-4db9-b075-1855e2e655c8" />
   <Project Path="src/Cli/Cli.csproj" />
 </Solution>
