@@ -2,8 +2,9 @@
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Config;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Responses;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Serilog;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Extensions.Serilog;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services;
 

@@ -1,4 +1,5 @@
-﻿using BlazorHybrid.ViewModels;
+﻿using BlazorHybrid.Ioc;
+using BlazorHybrid.ViewModels;
 using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Storage;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Ioc;
@@ -20,16 +21,9 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
             });
 
-        builder.Services.AddFluentUIComponents();
-        builder.Services.AddMauiBlazorWebView();
-
-        builder.Services.AddSingleton<IFileSaver>(_ => FileSaver.Default);
-
-        ApplicationServiceRegistrar.RegisterServices(builder.Services);
-        builder.Services.AddTransient<IServiceDiscoveryViewModel, ServiceDiscoveryViewModel>();
+       BlazorHybridServiceRegistrar.RegisterServices(builder.Services);
 
 #if DEBUG
-		builder.Services.AddBlazorWebViewDeveloperTools();
 		builder.Logging.AddDebug();
 #endif
 

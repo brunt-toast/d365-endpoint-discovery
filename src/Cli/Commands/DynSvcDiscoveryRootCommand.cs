@@ -4,7 +4,6 @@ using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Requests;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Flags;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Options;
-using Microsoft.Extensions.Logging;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Commands;
 
