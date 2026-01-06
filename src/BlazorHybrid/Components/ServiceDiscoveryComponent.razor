@@ -17,9 +17,9 @@
             </FluentWizardStep>
 
             <FluentWizardStep Label="Filter redundant resources">
-                <FluentTextField style="width: 100%;" Label="Groups filter" @bind-Value="ViewModel.GrepGroups" />
-                <FluentTextField style="width: 100%;" Label="Services filter" @bind-Value="ViewModel.GrepServices" />
-                <FluentTextField style="width: 100%;" Label="Operations filter" @bind-Value="ViewModel.GrepOperations" />
+                <FluentTextField style="width: 100%;" Placeholder=".* (All)" Label="Groups filter" @bind-Value="ViewModel.GrepGroups" />
+                <FluentTextField style="width: 100%;" Placeholder=".* (All)" Label="Services filter" @bind-Value="ViewModel.GrepServices" />
+                <FluentTextField style="width: 100%;" Placeholder=".* (All)" Label="Operations filter" @bind-Value="ViewModel.GrepOperations" />
             </FluentWizardStep>
 
             <FluentWizardStep Label="Choose output format">
