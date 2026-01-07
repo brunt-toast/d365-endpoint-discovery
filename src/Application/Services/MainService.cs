@@ -64,6 +64,15 @@ internal class MainService : IMainService
         _config.Resource = credentials.Resource;
         _config.TokenRequestEndpoint = credentials.TokenRequestEndpoint;
     }
+
+    public string BuildCustomCollection(BuildCustomCollectionRequest request)
+    {
+        var collectionBuilder = _collectionBuilderFactory.GetCollectionBuilder(request.OutputSchema);
+        var serialiser = _serialiserFactory.GetSerialiser(request.OutputFormat);
+        var collection = collectionBuilder.BuildCollection(request.Services, request.Resource, request.CollectionName);
+        var serialisation = serialiser.Serialise(collection, request.Minify);
+        return serialisation;
+    }
 }
 
 public interface IMainService
@@ -72,4 +81,5 @@ public interface IMainService
     Task<IEnumerable<DynSvcGroup>> GetAllGroups(GetAllGroupsRequest request);
     Task<IEnumerable<DynSvc>> GetServicesForGroups(GetServicesForGroupsRequest request);
     Task<IEnumerable<DynSvcOp>> GetOperationsForServices(GetOperationsForServicesRequest request);
+    string BuildCustomCollection(BuildCustomCollectionRequest request);
 }

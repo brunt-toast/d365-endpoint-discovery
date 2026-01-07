@@ -1,0 +1,38 @@
+@using BlazorHybrid.ViewModels
+
+<FluentStack Orientation="Orientation.Horizontal">
+    <FluentSearch @bind-Value="ViewModel.Query" Immediate="true" Style="width: 100%;" />
+    <FluentCheckbox Label="All" @bind-Value="ViewModel.SelectAll" />
+</FluentStack>
+
+<hr />
+
+<FluentTreeView style="max-height: 180px; overflow-y: auto;">
+
+    @foreach (var group in ViewModel.Operations
+                  .Where(x => x.Item.Name.Contains(ViewModel.Query, StringComparison.InvariantCultureIgnoreCase))
+                  .GroupBy(x => x.Item.ServiceGroupName)
+                  .OrderBy(x => x.Key))
+    {
+        <FluentTreeItem InitiallyExpanded="true">
+            <FluentCheckbox Label="@group.Key" CheckStateChanged="(isChecked) => ViewModel.ToggleGroup(group, isChecked)" />
+            @foreach (var service in group.OrderBy(x => x.Item.ServiceName).GroupBy(x => x.Item.ServiceName))
+            {
+                <FluentTreeItem Style="padding-left: 1em;">
+                    <FluentCheckbox Label="@service.Key" CheckStateChanged="(isChecked) => ViewModel.ToggleGroup(group, isChecked)" />
+                    @foreach (var operation in service)
+                    {
+                        <FluentTreeItem>
+                            <FluentCheckbox Label="@operation.Item.Name" @bind-Value="@operation.IsSelected" />
+                        </FluentTreeItem>
+                    }
+                 </FluentTreeItem>
+            }
+          </FluentTreeItem>
+    }
+</FluentTreeView>
+
+@code 
+{
+    [Parameter] public ISelectOperationsViewModel ViewModel { get; set; } = null!;
+}

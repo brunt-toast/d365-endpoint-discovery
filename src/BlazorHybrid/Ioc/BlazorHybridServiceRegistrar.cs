@@ -28,9 +28,13 @@ internal static class BlazorHybridServiceRegistrar
         sc.AddSingleton<IMessenger, WeakReferenceMessenger>();
 
         sc.AddSingleton<ILogEventSink, ToastSink>();
-        
-        sc.AddTransient<IServiceDiscoveryViewModel, ServiceDiscoveryViewModel>();
-        
+
+        sc.AddTransient<ICredentialsViewModel, CredentialsViewModel>();
+        sc.AddTransient<ISelectGroupsViewModel, SelectGroupsViewModel>();
+        sc.AddTransient<ISelectServicesViewModel, SelectServicesViewModel>();
+        sc.AddTransient<ISelectOperationsViewModel, SelectOperationsViewModel>();
+        sc.AddTransient<IBuildCollectionViewModel, BuildCollectionViewModel>();
+
 
 #if DEBUG
         sc.AddBlazorWebViewDeveloperTools();

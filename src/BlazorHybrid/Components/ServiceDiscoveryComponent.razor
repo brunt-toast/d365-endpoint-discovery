@@ -1,49 +1,35 @@
 @using BlazorHybrid.ViewModels
 @using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Enums
-@inject IServiceDiscoveryViewModel ViewModel
+@inject ICredentialsViewModel CredentialsVm
+@inject ISelectGroupsViewModel SelectGroupsVm
+@inject ISelectServicesViewModel SelectServicesVm
+@inject ISelectOperationsViewModel SelectOperationsVm
+@inject IBuildCollectionViewModel BuildCollectionVm
 
 <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
     <FluentWizard Width="500px"
                   StepperPosition="StepperPosition.Top"
                   DisplayStepNumber="@(WizardStepStatus.Current | WizardStepStatus.Next)"
                   Border="WizardBorder.Outside"
-                  OnFinish="ViewModel.DiscoverServices">
+                  OnFinish="BuildCollectionVm.SaveToFileAsync">
         <Steps>
-            <FluentWizardStep Label="Authenticate with Dynamics 365">
-                <FluentTextField style="width: 100%;" Label="Client ID" @bind-Value="ViewModel.ClientId" />
-                <FluentTextField style="width: 100%;" Label="Client secret" TextFieldType="TextFieldType.Password" @bind-Value="ViewModel.ClientSecret" />
-                <FluentTextField style="width: 100%;" Label="Token request endpoint" @bind-Value="ViewModel.TokenRequestEndpoint" />
-                <FluentTextField style="width: 100%;" Label="Resource" @bind-Value="ViewModel.Resource" />
+            <FluentWizardStep Label="Connect to D365" OnChange="async () => await SelectGroupsVm.InitAsync(CredentialsVm)">
+                <CredentialsComponent ViewModel="CredentialsVm" />
             </FluentWizardStep>
 
-            <FluentWizardStep Label="Filter redundant resources">
-                <FluentTextField style="width: 100%;" Placeholder=".* (All)" Label="Groups filter" @bind-Value="ViewModel.GrepGroups" />
-                <FluentTextField style="width: 100%;" Placeholder=".* (All)" Label="Services filter" @bind-Value="ViewModel.GrepServices" />
-                <FluentTextField style="width: 100%;" Placeholder=".* (All)" Label="Operations filter" @bind-Value="ViewModel.GrepOperations" />
+            <FluentWizardStep Label="Select groups" OnChange="async () => await SelectServicesVm.InitAsync(CredentialsVm, SelectGroupsVm)">
+                <SelectGroupsComponent ViewModel="SelectGroupsVm" />
             </FluentWizardStep>
-
-            <FluentWizardStep Label="Choose output format">
-                <FluentSelect TOption="OutputSchemas"
-                              Label="Schema"
-                              Items="ViewModel.OutputSchemaOptions"
-                              @bind-SelectedOption="@ViewModel.OutputSchema" />
-
-                <FluentSelect TOption="OutputFormats"
-                              Label="Format"
-                              Items="ViewModel.OutputFormatOptions"
-                              @bind-SelectedOption="@ViewModel.OutputFormat" />
-
-                <FluentTextField style="width: 100%;" Label="Collection name" @bind-Value="ViewModel.CollectionName" />
-
-                <FluentCheckbox Style="margin-top: .5em;" @bind-Value="ViewModel.Minify" Label="Minify" />
-
-                @if (ViewModel.IsLoading)
-                {
-                    <FluentStack Orientation="Orientation.Horizontal">
-                        <FluentSpacer />
-                        <FluentProgressRing />
-                    </FluentStack>
-                }
+            
+            <FluentWizardStep Label="Select services" OnChange="async () => await SelectOperationsVm.InitAsync(CredentialsVm, SelectGroupsVm, SelectServicesVm)">
+                <SelectServicesComponent ViewModel="SelectServicesVm" />
+            </FluentWizardStep>
+            
+            <FluentWizardStep Label="Select operations" OnChange="() => BuildCollectionVm.Init(CredentialsVm, SelectOperationsVm)">    
+                <SelectOperationsComponent ViewModel="SelectOperationsVm" />
+            </FluentWizardStep>
+            <FluentWizardStep Label="Build collection">
+                <BuildCollectionComponent ViewModel="BuildCollectionVm" />
             </FluentWizardStep>
         </Steps>
     </FluentWizard>
