@@ -166,7 +166,9 @@ internal class ServiceDiscoveryViewModel : IServiceDiscoveryViewModel
         {
             await _dialogService.ShowComponentAsync(new TextComponent
             {
+#pragma warning disable BL0005
                 Text = new MarkupString(string.Join(string.Empty, errors.Select(x => $"- {x}<br />")))
+#pragma warning restore BL0005
             },
                 new DialogParameters
                 {
