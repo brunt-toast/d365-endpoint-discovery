@@ -3,6 +3,7 @@ using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.CollectionB
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.Serialisers;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Config;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
 
@@ -23,10 +24,7 @@ internal class MainService : IMainService
 
     public async Task<string> GetServiceCollectionAsync(GetServiceCollectionRequest request)
     {
-        _config.ClientId = request.ClientId;
-        _config.ClientSecret = request.ClientSecret;
-        _config.Resource = request.Resource;
-        _config.TokenRequestEndpoint = request.TokenRequestEndpoint;
+        UpdateConfig(request);
 
         var collectionBuilder = _collectionBuilderFactory.GetCollectionBuilder(request.OutputSchema);
         var serialiser = _serialiserFactory.GetSerialiser(request.OutputFormat);
@@ -37,9 +35,41 @@ internal class MainService : IMainService
 
         return serialisation;
     }
+
+    public async Task<IEnumerable<DynSvcGroup>> GetAllGroups(GetAllGroupsRequest request)
+    {
+        UpdateConfig(request);
+        var ret = await _discoveryService.GetAllGroups();
+        return ret;
+    }
+
+    public async Task<IEnumerable<DynSvc>> GetServicesForGroups(GetServicesForGroupsRequest request)
+    {
+        UpdateConfig(request);
+        var ret = await _discoveryService.GetServicesForGroups(request.Groups);
+        return ret;
+    }
+
+    public async Task<IEnumerable<DynSvcOp>> GetOperationsForServices(GetOperationsForServicesRequest request)
+    {
+        UpdateConfig(request);
+        var ret = await _discoveryService.GetOperationsForServices(request.Services);
+        return ret;
+    }
+
+    private void UpdateConfig(IHasAxCredentials credentials)
+    {
+        _config.ClientId = credentials.ClientId;
+        _config.ClientSecret = credentials.ClientSecret;
+        _config.Resource = credentials.Resource;
+        _config.TokenRequestEndpoint = credentials.TokenRequestEndpoint;
+    }
 }
 
 public interface IMainService
 {
     Task<string> GetServiceCollectionAsync(GetServiceCollectionRequest request);
+    Task<IEnumerable<DynSvcGroup>> GetAllGroups(GetAllGroupsRequest request);
+    Task<IEnumerable<DynSvc>> GetServicesForGroups(GetServicesForGroupsRequest request);
+    Task<IEnumerable<DynSvcOp>> GetOperationsForServices(GetOperationsForServicesRequest request);
 }

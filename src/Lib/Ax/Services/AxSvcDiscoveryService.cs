@@ -47,13 +47,13 @@ internal class AxSvcDiscoveryService : IAxScvDiscoveryService
         return groups;
     }
 
-    private async Task<IEnumerable<DynSvcGroup>> GetAllGroups()
+    public async Task<IEnumerable<DynSvcGroup>> GetAllGroups()
     {
         var res = JsonConvert.DeserializeObject<GetSvcGroupsResponse>(await GetHttp($"{_config.Resource}/api/services")) ?? throw new ArgumentNullException();
         return res.Groups;
     }
 
-    private async Task<IEnumerable<DynSvc>> GetServicesForGroups(IEnumerable<DynSvcGroup> groups)
+    public async Task<IEnumerable<DynSvc>> GetServicesForGroups(IEnumerable<DynSvcGroup> groups)
     {
         var ret = await Task.WhenAll(groups.Select(GetServicesForGroup));
         return ret.SelectMany(x => x);
@@ -69,7 +69,7 @@ internal class AxSvcDiscoveryService : IAxScvDiscoveryService
         return res.Services;
     }
 
-    private async Task<IEnumerable<DynSvcOp>> GetOperationsForServices(IEnumerable<DynSvc> services)
+    public async Task<IEnumerable<DynSvcOp>> GetOperationsForServices(IEnumerable<DynSvc> services)
     {
         var ret = await Task.WhenAll(services.Select(GetOperationsForService));
         return ret.SelectMany(x => x);
@@ -115,4 +115,8 @@ public interface IAxScvDiscoveryService
     Task<IEnumerable<DynSvcGroup>> MapServicesAsync(string grepGroupsRegexString = ".*",
         string grepServicesRegexString = ".*",
         string grepOperationsRegexString = ".*");
+
+    Task<IEnumerable<DynSvcGroup>> GetAllGroups();
+    Task<IEnumerable<DynSvc>> GetServicesForGroups(IEnumerable<DynSvcGroup> groups);
+    Task<IEnumerable<DynSvcOp>> GetOperationsForServices(IEnumerable<DynSvc> services);
 }
