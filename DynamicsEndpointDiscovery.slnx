@@ -1,4 +1,13 @@
 <Solution>
-  <Project Path="src/DynamicsEndpointDiscovery.Application/DynamicsEndpointDiscovery.Application.csproj" Id="4cab96cb-92a6-4f79-9f7f-9505662d4b69" />
-  <Project Path="src/DynamicsEndpointDiscovery.Cli/DynamicsEndpointDiscovery.Cli.csproj" Id="ecb8e751-8b94-49f3-984d-4a672059cb50" />
+  <Folder Name="/Lib/">
+    <Project Path="src/Lib/Ax/Ax.csproj" Id="675e0375-2ab8-4568-a859-de974ded1332" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="test/Application.Tests/Application.Tests.csproj" Id="06c8c477-f9f9-4a6f-83fa-ca83be92d5dc" />
+    <Project Path="test/Cli.Tests/Cli.Tests.csproj" Id="98d46212-1d23-46ec-816b-4e6ae063126e" />
+  </Folder>
+  <Project Path="src/Application/Application.csproj" />
+  <Project Path="src/BlazorHybrid/BlazorHybrid.csproj" Id="ccfa5e3b-7fbe-4db9-b075-1855e2e655c8" />
+  <Project Path="src/Cli/Cli.csproj" />
+  <Project Path="src/Core/Core.csproj" Id="18009f68-d19e-4209-90b4-48a9efc0eaa2" />
 </Solution>

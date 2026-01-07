@@ -1,0 +1,6 @@
+<Project>
+    <PropertyGroup>
+        <CsprojName>$([System.IO.Path]::GetFileNameWithoutExtension($(MSBuildProjectFile)))</CsprojName>
+        <RootNamespace>Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.$(CsprojName)</RootNamespace>
+    </PropertyGroup>
+</Project>

@@ -1,0 +1,36 @@
+@using BlazorHybrid.ViewModels
+@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Enums
+@inject ICredentialsViewModel CredentialsVm
+@inject ISelectGroupsViewModel SelectGroupsVm
+@inject ISelectServicesViewModel SelectServicesVm
+@inject ISelectOperationsViewModel SelectOperationsVm
+@inject IBuildCollectionViewModel BuildCollectionVm
+
+<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+    <FluentWizard Width="500px"
+                  StepperPosition="StepperPosition.Top"
+                  DisplayStepNumber="@(WizardStepStatus.Current | WizardStepStatus.Next)"
+                  Border="WizardBorder.Outside"
+                  OnFinish="BuildCollectionVm.SaveToFileAsync">
+        <Steps>
+            <FluentWizardStep Label="Connect to D365" OnChange="async () => await SelectGroupsVm.InitAsync(CredentialsVm)">
+                <CredentialsComponent ViewModel="CredentialsVm" />
+            </FluentWizardStep>
+
+            <FluentWizardStep Label="Select groups" OnChange="async () => await SelectServicesVm.InitAsync(CredentialsVm, SelectGroupsVm)">
+                <SelectGroupsComponent ViewModel="SelectGroupsVm" />
+            </FluentWizardStep>
+            
+            <FluentWizardStep Label="Select services" OnChange="async () => await SelectOperationsVm.InitAsync(CredentialsVm, SelectGroupsVm, SelectServicesVm)">
+                <SelectServicesComponent ViewModel="SelectServicesVm" />
+            </FluentWizardStep>
+            
+            <FluentWizardStep Label="Select operations" OnChange="() => BuildCollectionVm.Init(CredentialsVm, SelectOperationsVm)">    
+                <SelectOperationsComponent ViewModel="SelectOperationsVm" />
+            </FluentWizardStep>
+            <FluentWizardStep Label="Build collection">
+                <BuildCollectionComponent ViewModel="BuildCollectionVm" />
+            </FluentWizardStep>
+        </Steps>
+    </FluentWizard>
+</div>
