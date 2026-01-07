@@ -21,8 +21,8 @@ internal class AxSvcDiscoveryService : IAxScvDiscoveryService
         _logger = logger;
     }
 
-    public async Task<IEnumerable<DynSvcGroup>> MapServicesAsync(string grepGroupsRegexString = ".*", 
-        string grepServicesRegexString = ".*", 
+    public async Task<IEnumerable<DynSvcGroup>> MapServicesAsync(string grepGroupsRegexString = ".*",
+        string grepServicesRegexString = ".*",
         string grepOperationsRegexString = ".*")
     {
         Regex grepGroupsRegex = new Regex(grepGroupsRegexString);
@@ -30,46 +30,65 @@ internal class AxSvcDiscoveryService : IAxScvDiscoveryService
         Regex grepOperationsRegex = new Regex(grepOperationsRegexString);
 
         _logger.LogInformation("Mapping services");
+
+        var groups = (await GetAllGroups()).Where(x => grepGroupsRegex.IsMatch(x.Name)).ToList();
+        var services = (await GetServicesForGroups(groups)).Where(x => grepServicesRegex.IsMatch(x.Name)).ToList();
+        var operations = (await GetOperationsForServices(services)).Where(x => grepOperationsRegex.IsMatch(x.Name)).ToList();
+
+        foreach (var group in groups)
+        {
+            group.Services = services.Where(x => x.ServiceGroupName == group.Name).ToArray();
+            foreach (var service in group.Services)
+            {
+                service.Operations = operations.Where(x => x.ServiceGroupName == group.Name && x.ServiceName == service.Name).ToArray();
+            }
+        }
+        
+        return groups;
+    }
+
+    private async Task<IEnumerable<DynSvcGroup>> GetAllGroups()
+    {
         var res = JsonConvert.DeserializeObject<GetSvcGroupsResponse>(await GetHttp($"{_config.Resource}/api/services")) ?? throw new ArgumentNullException();
-
-        foreach (var group in res.Groups.Where(x => grepGroupsRegex?.IsMatch(x.Name) ?? true))
-        {
-            group.Services = (await GetServices(group.Name, grepServicesRegex, grepOperationsRegex)).ToArray();
-        }
-
-        return res.Groups.Where(x => grepGroupsRegex?.IsMatch(x.Name) ?? true);
+        return res.Groups;
     }
 
-    private async Task<IEnumerable<DynSvc>> GetServices(string group, Regex grepServicesRegex, Regex grepOperationsRegex)
+    private async Task<IEnumerable<DynSvc>> GetServicesForGroups(IEnumerable<DynSvcGroup> groups)
     {
-        _logger.LogInformation("Getting services for group {group}", group);
-        var res = JsonConvert.DeserializeObject<GetSvcGroupResponse>(await GetHttp($"{_config.Resource}/api/services/{group}")) ?? throw new ArgumentNullException();
-
-        foreach (var service in res.Services.Where(x => grepServicesRegex?.IsMatch(x.Name) ?? true))
-        {
-            service.ServiceGroupName = group;
-            service.Operations = (await GetOperations(group, service.Name, grepOperationsRegex)).ToArray();
-        }
-
-        return res.Services.Where(x => grepServicesRegex?.IsMatch(x.Name) ?? true);
+        var ret = await Task.WhenAll(groups.Select(GetServicesForGroup));
+        return ret.SelectMany(x => x);
     }
 
-    private async Task<IEnumerable<DynSvcOp>> GetOperations(string group, string service, Regex grepOperationsRegex)
+    private async Task<IEnumerable<DynSvc>> GetServicesForGroup(DynSvcGroup group)
     {
-        _logger.LogInformation("Getting services for group {group}'s service {service}", group, service);
-        var res = JsonConvert.DeserializeObject<GetSvcResponse>(await GetHttp($"{_config.Resource}/api/services/{group}/{service}")) ?? throw new ArgumentNullException();
-
-        foreach (var operation in res.Operations.Where(x => grepOperationsRegex?.IsMatch(x.Name) ?? true))
+        var res = JsonConvert.DeserializeObject<GetSvcGroupResponse>(await GetHttp($"{_config.Resource}/api/services/{group.Name}")) ?? throw new ArgumentNullException();
+        foreach (var service in res.Services)
         {
-            var opRes = JsonConvert.DeserializeObject<GetOperationResponse>(await GetHttp($"{_config.Resource}/api/services/{group}/{service}/{operation.Name}")) ?? throw new ArgumentNullException();
-
-            operation.ServiceGroupName = group;
-            operation.ServiceName = service;
-            operation.Parameters = opRes.Parameters;
-            operation.Return = opRes.Return;
+            service.ServiceGroupName = group.Name;
         }
+        return res.Services;
+    }
 
-        return res.Operations.Where(x => grepOperationsRegex?.IsMatch(x.Name) ?? true);
+    private async Task<IEnumerable<DynSvcOp>> GetOperationsForServices(IEnumerable<DynSvc> services)
+    {
+        var ret = await Task.WhenAll(services.Select(GetOperationsForService));
+        return ret.SelectMany(x => x);
+    }
+
+    private async Task<IEnumerable<DynSvcOp>> GetOperationsForService(DynSvc service)
+    {
+        var res = JsonConvert.DeserializeObject<GetSvcResponse>(await GetHttp($"{_config.Resource}/api/services/{service.ServiceGroupName}/{service.Name}")) ?? throw new ArgumentNullException();
+        await Task.WhenAll(res.Operations.Select(x => MutateOperationWithParamsAndReturnType(service, x)));
+        return res.Operations;
+    }
+
+    private async Task MutateOperationWithParamsAndReturnType(DynSvc service, DynSvcOp operation)
+    {
+        var opRes = JsonConvert.DeserializeObject<GetOperationResponse>(await GetHttp($"{_config.Resource}/api/services/{service.ServiceGroupName}/{service.Name}/{operation.Name}")) ?? throw new ArgumentNullException();
+        operation.ServiceGroupName = service.ServiceGroupName;
+        operation.ServiceName = service.Name;
+        operation.Parameters = opRes.Parameters;
+        operation.Return = opRes.Return;
     }
 
     private async Task<string> GetHttp(string endpoint)
