@@ -1,3 +1,4 @@
+@using BlazorHybrid.Icons
 @using BlazorHybrid.ViewModels
 @inject ICredentialsViewModel CredentialsVm
 @inject ISelectGroupsViewModel SelectGroupsVm
@@ -13,7 +14,11 @@
                   Border="WizardBorder.Outside"
                   OnFinish="OnWizardFinish">
         <Steps>
-            <FluentWizardStep Label="Intro">
+            <FluentWizardStep Label="Intro"
+                              DisplayStepNumber="false"
+                              IconPrevious="FluentIconRepository.IntroStepPrevIcon"
+                              IconCurrent="FluentIconRepository.IntroStepCurIcon"
+                              IconNext="FluentIconRepository.IntroStepNextIcon">
                 <h2 style="text-align: center;">Service Endpoint Discovery Wizard</h2>
                 <p>
                     To use this wizard, you'll need credentials for an Azure app registration 
@@ -29,27 +34,51 @@
                 </p>
             </FluentWizardStep>
 
-            <FluentWizardStep Label="Connect to D365" OnChange="async () => await SelectGroupsVm.InitAsync(CredentialsVm)">
+            <FluentWizardStep Label="Connect to D365" OnChange="async () => await SelectGroupsVm.InitAsync(CredentialsVm)"
+                              DisplayStepNumber="false"
+                              IconPrevious="FluentIconRepository.ConnectStepPrevIcon"
+                              IconCurrent="FluentIconRepository.ConnectStepCurIcon"
+                              IconNext="FluentIconRepository.ConnectStepNextIcon">
                 <CredentialsComponent ViewModel="CredentialsVm"/>
             </FluentWizardStep>
 
-            <FluentWizardStep Label="Select groups" OnChange="async () => await SelectServicesVm.InitAsync(CredentialsVm, SelectGroupsVm)">
+            <FluentWizardStep Label="Select groups" OnChange="async () => await SelectServicesVm.InitAsync(CredentialsVm, SelectGroupsVm)"
+                              DisplayStepNumber="false"
+                              IconPrevious="FluentIconRepository.GroupsStepPrevIcon"
+                              IconCurrent="FluentIconRepository.GroupsStepCurIcon"
+                              IconNext="FluentIconRepository.GroupsStepNextIcon">
                 <SelectGroupsComponent ViewModel="SelectGroupsVm"/>
             </FluentWizardStep>
 
-            <FluentWizardStep Label="Select services" OnChange="async () => await SelectOperationsVm.InitAsync(CredentialsVm, SelectGroupsVm, SelectServicesVm)">
+            <FluentWizardStep Label="Select services" OnChange="async () => await SelectOperationsVm.InitAsync(CredentialsVm, SelectGroupsVm, SelectServicesVm)"
+                              DisplayStepNumber="false"
+                              IconPrevious="FluentIconRepository.ServicesStepPrevIcon"
+                              IconCurrent="FluentIconRepository.ServicesStepCurIcon"
+                              IconNext="FluentIconRepository.ServicesStepNextIcon">
                 <SelectServicesComponent ViewModel="SelectServicesVm"/>
             </FluentWizardStep>
 
-            <FluentWizardStep Label="Select operations" OnChange="() => BuildCollectionVm.Init(CredentialsVm, SelectOperationsVm)">
+            <FluentWizardStep Label="Select operations" OnChange="() => BuildCollectionVm.Init(CredentialsVm, SelectOperationsVm)"
+                              DisplayStepNumber="false"
+                              IconPrevious="FluentIconRepository.OperationsStepPrevIcon"
+                              IconCurrent="FluentIconRepository.OperationsStepCurIcon"
+                              IconNext="FluentIconRepository.OperationsStepNextIcon">
                 <SelectOperationsComponent ViewModel="SelectOperationsVm"/>
             </FluentWizardStep>
 
-            <FluentWizardStep Label="Build collection" OnChange="BuildCollectionVm.SaveToFileAsync">
+            <FluentWizardStep Label="Build collection" OnChange="BuildCollectionVm.SaveToFileAsync"
+                              DisplayStepNumber="false"
+                              IconPrevious="FluentIconRepository.CollectionStepPrevIcon"
+                              IconCurrent="FluentIconRepository.CollectionStepCurIcon"
+                              IconNext="FluentIconRepository.CollectionStepNextIcon">
                 <BuildCollectionComponent ViewModel="BuildCollectionVm"/>
             </FluentWizardStep>
             
-            <FluentWizardStep Label="Finish">
+            <FluentWizardStep Label="Finish"
+                              DisplayStepNumber="false"
+                              IconPrevious="FluentIconRepository.FinishStepPrevIcon"
+                              IconCurrent="FluentIconRepository.FinishStepCurIcon"
+                              IconNext="FluentIconRepository.FinishStepNextIcon">
                 <h2 style="text-align: center;">All done!</h2>
                 @if (string.IsNullOrWhiteSpace(BuildCollectionVm.OutputPath))
                 {
