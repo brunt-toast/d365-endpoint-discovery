@@ -18,6 +18,6 @@ restore:
 	find . -type f -name *.*proj | xargs -I{} sh -c 'dotnet workload restore --project "{}"' 
 
 install: restore
-	dotnet pack ./src/DynamicsEndpointDiscovery.Cli/DynamicsEndpointDiscovery.Cli.csproj -c Release
-
-	dotnet tool install -g --add-source ./src/DynamicsEndpointDiscovery.Cli/bin/nupkg dynsvcdiscovery
+	rm -r ./src/Cli/bin/nupkg/ || true
+	dotnet pack ./src/Cli/Cli.csproj -c Release
+	dotnet tool install -g --add-source ./src/Cli/bin/nupkg dynsvcdiscovery --allow-downgrade
