@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Logging.Sinks;
+using Serilog.Core;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Ioc;
 
@@ -13,5 +15,8 @@ public static class CliServiceRegistrar
     {
         ApplicationServiceRegistrar.RegisterServices(sc);
         sc.AddTransient<DynSvcDiscoveryRootCommand>();
+
+        sc.AddSingleton<ILogEventSink, CommandParseResultSink>();
+        sc.AddSingleton<ICommandParseResultSink>(x => (ICommandParseResultSink)x.GetServices<ILogEventSink>().First(y => y is ICommandParseResultSink));
     }
 }

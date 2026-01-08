@@ -3,13 +3,16 @@ using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Enums;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Requests;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Flags;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Logging.Sinks;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Options;
+using Serilog.Events;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Commands;
 
 internal class DynSvcDiscoveryRootCommand : RootCommand
 {
     private readonly IMainService _mainService;
+    private readonly ICommandParseResultSink _sink;
 
     private readonly ClientIdOption _clientIdOption = new();
     private readonly ClientSecretOption _clientSecretOption = new();
@@ -21,12 +24,14 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
     private readonly CollectionNameOption _collectionNameOption = new();
     private readonly SchemaOption _schemaOption = new();
     private readonly FormatOption _formatOption = new();
+    private readonly LogLevelOption _logLevelOption = new();
 
     private readonly MinifyFlag _minifyFlag = new();
 
-    public DynSvcDiscoveryRootCommand(IMainService mainService) : base("Discover Dynamics 365 service endpoints automatically.")
+    public DynSvcDiscoveryRootCommand(IMainService mainService, ICommandParseResultSink sink) : base("Discover Dynamics 365 service endpoints automatically.")
     {
         _mainService = mainService;
+        _sink = sink;
         Options.Add(_clientIdOption);
         Options.Add(_clientSecretOption);
         Options.Add(_resourceOption);
@@ -37,6 +42,7 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
         Options.Add(_collectionNameOption);
         Options.Add(_schemaOption);
         Options.Add(_formatOption);
+        Options.Add(_logLevelOption);
 
         Options.Add(_minifyFlag);
 
@@ -56,6 +62,9 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
         OutputFormats outputFormat = parseResult.GetValue(_formatOption);
         string collectionName = parseResult.GetValue(_collectionNameOption) ?? string.Empty;
         bool minify = parseResult.GetValue(_minifyFlag);
+        LogEventLevel logLevel = parseResult.GetValue(_logLevelOption);
+
+        using var _ = _sink.Configure(parseResult, logLevel);
 
         string output = await _mainService.GetServiceCollectionAsync(new GetServiceCollectionRequest
         {
