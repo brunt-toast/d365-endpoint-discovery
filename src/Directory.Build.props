@@ -1,7 +1,15 @@
 <Project>
     <PropertyGroup>
+        <ParentDirectoryBuildPropsPath>
+            $([MSBuild]::GetPathOfFileAbove('Directory.Build.props','$(MSBuildThisFileDirectory)..\'))
+        </ParentDirectoryBuildPropsPath>
+    </PropertyGroup>
+    <ImportGroup>
+        <Import Project="$(ParentDirectoryBuildPropsPath)" />
+    </ImportGroup>
+
+    <PropertyGroup>
         <CsprojName>$([System.IO.Path]::GetFileNameWithoutExtension($(MSBuildProjectFile)))</CsprojName>
         <RootNamespace>Dev.JoshBrunton.DynamicsEndpointDiscovery.$(CsprojName)</RootNamespace>
     </PropertyGroup>
 </Project>
-
