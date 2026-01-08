@@ -39,9 +39,11 @@ internal sealed class AppdataFileSink : ILogEventSink
 
     public void Emit(LogEvent logEvent)
     {
+        string message = $"[{logEvent.Timestamp:O} {logEvent.Level}] {logEvent.RenderMessage()}";
+
         lock (_sync)
         {
-            _buffer.AppendLine(logEvent.RenderMessage());
+            _buffer.AppendLine(message);
         }
 
         if (logEvent.Level >= LogEventLevel.Error)
