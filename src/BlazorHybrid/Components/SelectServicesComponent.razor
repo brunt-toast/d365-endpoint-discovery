@@ -14,7 +14,7 @@
         .GroupBy(x => x.Item.ServiceGroupName)
         .OrderBy(x => x.Key))
     {
-        <FluentTreeItem>
+        <FluentTreeItem InitiallyExpanded="true">
             <FluentCheckbox Label="@group.Key" CheckStateChanged="(isChecked) => ViewModel.ToggleGroup(group, isChecked)" />
             @foreach (var service in group)
             {
