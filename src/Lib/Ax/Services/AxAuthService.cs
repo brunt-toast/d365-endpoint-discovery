@@ -43,7 +43,9 @@ internal class AxAuthService
         string content = await response.Content.ReadAsStringAsync();
         if (!response.IsSuccessStatusCode)
         {
-            _logger.LogError("A request for a bearer token returned HTTP status {statusInt} ({status}). We'll have to try again. Content was: {newLine}{content}", (int)response.StatusCode, response.StatusCode, Environment.NewLine, content);
+            const int delay = 10_000;
+            _logger.LogError("A request for a bearer token returned HTTP status {statusInt} ({status}). Trying again in {delay}ms. Content was: {newLine}{content}", (int)response.StatusCode, response.StatusCode, delay, Environment.NewLine, content);
+            await Task.Delay(delay);
         }
 
         _cachedResponse = JsonConvert.DeserializeObject<TokenResponse>(content);
