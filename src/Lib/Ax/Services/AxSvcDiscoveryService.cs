@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Net;
+using System.Text.RegularExpressions;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Config;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Responses;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types;
@@ -101,7 +102,12 @@ internal class AxSvcDiscoveryService : IAxScvDiscoveryService
         var response = await client.SendAsync(request);
 
         string content = await response.Content.ReadAsStringAsync();
-        if (!response.IsSuccessStatusCode)
+
+        if (response.StatusCode == HttpStatusCode.TooManyRequests)
+        {
+            _logger.LogError("Too many requests! ({endpoint})", endpoint);
+        }
+        else if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("A request to {endpoint} returned HTTP status {statusInt} ({status}). Content was: {newLine}{content}", endpoint, (int)response.StatusCode, response.StatusCode, Environment.NewLine, content);
         }
