@@ -25,8 +25,30 @@ internal class CommandParseResultSink : ILogEventSink, ICommandParseResultSink
             return;
         }
 
+        int ansiCode = logEvent.Level switch
+        {
+            LogEventLevel.Verbose => 0,
+            LogEventLevel.Debug => 0,
+            LogEventLevel.Information => 34,
+            LogEventLevel.Warning => 33,
+            LogEventLevel.Error => 31,
+            LogEventLevel.Fatal => 35,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        string levelAbbr = logEvent.Level switch
+        {
+            LogEventLevel.Verbose => "TRC",
+            LogEventLevel.Debug => "DBG",
+            LogEventLevel.Information => "INF",
+            LogEventLevel.Warning => "WRN",
+            LogEventLevel.Error => "ERR",
+            LogEventLevel.Fatal => "FTL",
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
         var writer = logEvent.Level >= LogEventLevel.Warning ? _errorWriter : _outputWriter;
-        writer?.WriteLine(logEvent.RenderMessage());
+        writer?.WriteLine($"\e[{ansiCode}m[{levelAbbr}]\e[0m {logEvent.RenderMessage()}");
     }
 
     private class CommandParseResultSinkConfigurationDisposable : IDisposable
