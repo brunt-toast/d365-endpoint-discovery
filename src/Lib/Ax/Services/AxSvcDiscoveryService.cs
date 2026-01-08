@@ -51,6 +51,7 @@ internal class AxSvcDiscoveryService : IAxScvDiscoveryService
     public async Task<IEnumerable<DynSvcGroup>> GetAllGroups()
     {
         var res = JsonConvert.DeserializeObject<GetSvcGroupsResponse>(await GetHttp($"{_config.Resource}/api/services")) ?? throw new ArgumentNullException();
+        _logger.LogInformation("Discovered {n} groups", res.Groups.Length);
         return res.Groups;
     }
 
@@ -67,6 +68,7 @@ internal class AxSvcDiscoveryService : IAxScvDiscoveryService
         {
             service.ServiceGroupName = group.Name;
         }
+        _logger.LogInformation("Discovered {n} services for group {group}", res.Services.Length, group.Name);
         return res.Services;
     }
 
@@ -80,12 +82,15 @@ internal class AxSvcDiscoveryService : IAxScvDiscoveryService
     {
         var res = JsonConvert.DeserializeObject<GetSvcResponse>(await GetHttp($"{_config.Resource}/api/services/{service.ServiceGroupName}/{service.Name}")) ?? throw new ArgumentNullException();
         await Task.WhenAll(res.Operations.Select(x => MutateOperationWithParamsAndReturnType(service, x)));
+        _logger.LogInformation("Discovered {n} operations for service {group}/{service}", res.Operations.Length, service.ServiceGroupName, service.Name);
         return res.Operations;
     }
 
     private async Task MutateOperationWithParamsAndReturnType(DynSvc service, DynSvcOp operation)
     {
         var opRes = JsonConvert.DeserializeObject<GetOperationResponse>(await GetHttp($"{_config.Resource}/api/services/{service.ServiceGroupName}/{service.Name}/{operation.Name}")) ?? throw new ArgumentNullException();
+        _logger.LogInformation("Discovered {n} parameters and return type for operation {group}/{service}/{operation}", 
+            opRes.Parameters.Length, service.ServiceGroupName, service.Name, operation.Name);
         operation.ServiceGroupName = service.ServiceGroupName;
         operation.ServiceName = service.Name;
         operation.Parameters = opRes.Parameters;
