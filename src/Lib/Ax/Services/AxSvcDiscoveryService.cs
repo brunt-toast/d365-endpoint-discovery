@@ -15,7 +15,7 @@ internal class AxSvcDiscoveryService : IAxSvcDiscoveryService
     private readonly IAxConfig _config;
     private readonly ILogger _logger;
 
-    public AxSvcDiscoveryService(AxAuthService authSvc, IAxConfig config, ILogger logger, Regex? grepGroupsRegex = null, Regex? grepServicesRegex = null, Regex? grepOperationsRegex = null)
+    public AxSvcDiscoveryService(AxAuthService authSvc, IAxConfig config, ILogger logger)
     {
         _authSvc = authSvc;
         _config = config;
