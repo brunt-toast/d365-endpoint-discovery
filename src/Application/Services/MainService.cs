@@ -10,11 +10,11 @@ namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
 internal class MainService : IMainService
 {
     private readonly IAxConfig _config;
-    private readonly IAxScvDiscoveryService _discoveryService;
+    private readonly IAxSvcDiscoveryService _discoveryService;
     private readonly CollectionBuilderFactory _collectionBuilderFactory;
     private readonly SerialiserFactory _serialiserFactory;
 
-    public MainService(IAxConfig config, IAxScvDiscoveryService discoveryService, CollectionBuilderFactory collectionBuilderFactory, SerialiserFactory serialiserFactory)
+    public MainService(IAxConfig config, IAxSvcDiscoveryService discoveryService, CollectionBuilderFactory collectionBuilderFactory, SerialiserFactory serialiserFactory)
     {
         _config = config;
         _discoveryService = discoveryService;

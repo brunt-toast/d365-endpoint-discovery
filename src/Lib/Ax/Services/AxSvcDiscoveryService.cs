@@ -9,7 +9,7 @@ using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Extensions.Serilog;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services;
 
-internal class AxSvcDiscoveryService : IAxScvDiscoveryService
+internal class AxSvcDiscoveryService : IAxSvcDiscoveryService
 {
     private readonly AxAuthService _authSvc;
     private readonly IAxConfig _config;
@@ -121,7 +121,7 @@ internal class AxSvcDiscoveryService : IAxScvDiscoveryService
     }
 }
 
-public interface IAxScvDiscoveryService
+public interface IAxSvcDiscoveryService
 {
     Task<IEnumerable<DynSvcGroup>> MapServicesAsync(string grepGroupsRegexString = ".*",
         string grepServicesRegexString = ".*",
