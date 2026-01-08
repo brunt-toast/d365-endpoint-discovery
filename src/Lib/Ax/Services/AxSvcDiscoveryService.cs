@@ -14,12 +14,14 @@ internal class AxSvcDiscoveryService : IAxSvcDiscoveryService
     private readonly AxAuthService _authSvc;
     private readonly IAxConfig _config;
     private readonly ILogger _logger;
+    private readonly IJsonConverterService _jsonConverter;
 
-    public AxSvcDiscoveryService(AxAuthService authSvc, IAxConfig config, ILogger logger)
+    public AxSvcDiscoveryService(AxAuthService authSvc, IAxConfig config, ILogger logger, IJsonConverterService jsonConverter)
     {
         _authSvc = authSvc;
         _config = config;
         _logger = logger;
+        _jsonConverter = jsonConverter;
     }
 
     public async Task<IEnumerable<DynSvcGroup>> MapServicesAsync(string grepGroupsRegexString = ".*",
@@ -44,13 +46,19 @@ internal class AxSvcDiscoveryService : IAxSvcDiscoveryService
                 service.Operations = operations.Where(x => x.ServiceGroupName == group.Name && x.ServiceName == service.Name).ToArray();
             }
         }
-        
+
         return groups;
     }
 
     public async Task<IEnumerable<DynSvcGroup>> GetAllGroups()
     {
-        var res = JsonConvert.DeserializeObject<GetSvcGroupsResponse>(await GetHttp($"{_config.Resource}/api/services")) ?? throw new ArgumentNullException();
+        if (!_jsonConverter.TryDeserialise(await GetHttp($"{_config.Resource}/api/services"),
+                out GetSvcGroupsResponse? res))
+        {
+            _logger.LogError("Deserialisation error while getting all groups.");
+            return [];
+        }
+
         _logger.LogInformation("Discovered {n} groups", res.Groups.Length);
         return res.Groups;
     }
@@ -63,13 +71,20 @@ internal class AxSvcDiscoveryService : IAxSvcDiscoveryService
 
     private async Task<IEnumerable<DynSvc>> GetServicesForGroup(DynSvcGroup group)
     {
-        var res = JsonConvert.DeserializeObject<GetSvcGroupResponse>(await GetHttp($"{_config.Resource}/api/services/{group.Name}")) ?? throw new ArgumentNullException();
+        if (!_jsonConverter.TryDeserialise(await GetHttp($"{_config.Resource}/api/services/{group.Name}"), out GetSvcGroupResponse? res))
+        {
+            _logger.LogError("Deserialisation error while getting services for group {group}", group.Name);
+            return [];
+        }
+
         foreach (var service in res.Services)
         {
             service.ServiceGroupName = group.Name;
         }
+
         _logger.LogInformation("Discovered {n} services for group {group}", res.Services.Length, group.Name);
         return res.Services;
+
     }
 
     public async Task<IEnumerable<DynSvcOp>> GetOperationsForServices(IEnumerable<DynSvc> services)
@@ -80,7 +95,14 @@ internal class AxSvcDiscoveryService : IAxSvcDiscoveryService
 
     private async Task<IEnumerable<DynSvcOp>> GetOperationsForService(DynSvc service)
     {
-        var res = JsonConvert.DeserializeObject<GetSvcResponse>(await GetHttp($"{_config.Resource}/api/services/{service.ServiceGroupName}/{service.Name}")) ?? throw new ArgumentNullException();
+        if (!_jsonConverter.TryDeserialise(
+                await GetHttp($"{_config.Resource}/api/services/{service.ServiceGroupName}/{service.Name}"),
+                out GetSvcResponse? res))
+        {
+            _logger.LogError("Deserialisation error while getting operations for service {group}/{service}", service.ServiceGroupName, service.Name);
+            return [];
+        }
+
         await Task.WhenAll(res.Operations.Select(x => MutateOperationWithParamsAndReturnType(service, x)));
         _logger.LogInformation("Discovered {n} operations for service {group}/{service}", res.Operations.Length, service.ServiceGroupName, service.Name);
         return res.Operations;
@@ -88,8 +110,16 @@ internal class AxSvcDiscoveryService : IAxSvcDiscoveryService
 
     private async Task MutateOperationWithParamsAndReturnType(DynSvc service, DynSvcOp operation)
     {
-        var opRes = JsonConvert.DeserializeObject<GetOperationResponse>(await GetHttp($"{_config.Resource}/api/services/{service.ServiceGroupName}/{service.Name}/{operation.Name}")) ?? throw new ArgumentNullException();
-        _logger.LogInformation("Discovered {n} parameters and return type for operation {group}/{service}/{operation}", 
+        if (!_jsonConverter.TryDeserialise(
+                await GetHttp($"{_config.Resource}/api/services/{service.ServiceGroupName}/{service.Name}/{operation.Name}"),
+                out GetOperationResponse? opRes))
+        {
+            _logger.LogError("Deserialisation error while getting parameter and return types for operation {group}/{service}/{operation}",
+                service.ServiceGroupName, service.Name, operation.Name);
+            return;
+        }
+
+        _logger.LogInformation("Discovered {n} parameters and return type for operation {group}/{service}/{operation}",
             opRes.Parameters.Length, service.ServiceGroupName, service.Name, operation.Name);
         operation.ServiceGroupName = service.ServiceGroupName;
         operation.ServiceName = service.Name;

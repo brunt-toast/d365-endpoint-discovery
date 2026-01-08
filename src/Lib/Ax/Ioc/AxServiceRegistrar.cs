@@ -17,5 +17,6 @@ public static class AxServiceRegistrar
         });
         sc.AddSingleton<AxAuthService>();
         sc.AddSingleton<IAxSvcDiscoveryService, AxSvcDiscoveryService>();
+        sc.AddSingleton<IJsonConverterService, JsonConverterService>();
     }
 }
