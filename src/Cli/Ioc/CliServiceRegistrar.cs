@@ -16,7 +16,8 @@ public static class CliServiceRegistrar
         ApplicationServiceRegistrar.RegisterServices(sc);
         sc.AddTransient<DynSvcDiscoveryRootCommand>();
 
-        sc.AddSingleton<ILogEventSink, CommandParseResultSink>();
-        sc.AddSingleton<ICommandParseResultSink>(x => (ICommandParseResultSink)x.GetServices<ILogEventSink>().First(y => y is ICommandParseResultSink));
+        sc.AddSingleton<CommandParseResultSink>();
+        sc.AddSingleton<ILogEventSink>(x => x.GetRequiredService<CommandParseResultSink>());
+        sc.AddSingleton<ICommandParseResultSink>(x => x.GetRequiredService<CommandParseResultSink>());
     }
 }
