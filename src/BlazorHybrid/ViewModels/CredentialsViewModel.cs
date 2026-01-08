@@ -6,6 +6,14 @@ internal class CredentialsViewModel : ICredentialsViewModel
     public string ClientSecret { get; set; } = string.Empty;
     public string TokenRequestEndpoint { get; set; } = string.Empty;
     public string ResourceUri { get; set; } = string.Empty;
+
+    public void ClearValues()
+    {
+        ClientId = string.Empty;
+        ClientSecret = string.Empty;
+        TokenRequestEndpoint = string.Empty;
+        ResourceUri = string.Empty;
+    }
 }
 
 public interface ICredentialsViewModel
@@ -14,4 +22,6 @@ public interface ICredentialsViewModel
     string ClientSecret { get; set; }
     string TokenRequestEndpoint { get; set; }
     string ResourceUri { get; set; }
+
+    void ClearValues();
 }

@@ -1,5 +1,4 @@
 @using BlazorHybrid.ViewModels
-@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Enums
 @inject ICredentialsViewModel CredentialsVm
 @inject ISelectGroupsViewModel SelectGroupsVm
 @inject ISelectServicesViewModel SelectServicesVm
@@ -7,29 +6,67 @@
 @inject IBuildCollectionViewModel BuildCollectionVm
 
 <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-    <FluentWizard Width="500px"
+    <FluentWizard @ref="_wizard"
+                  Width="500px"
                   StepperPosition="StepperPosition.Top"
                   DisplayStepNumber="@(WizardStepStatus.Current | WizardStepStatus.Next)"
                   Border="WizardBorder.Outside"
-                  OnFinish="BuildCollectionVm.SaveToFileAsync">
+                  OnFinish="OnWizardFinish">
         <Steps>
+            <FluentWizardStep Label="Intro">
+                <h2 style="text-align: center;">Service Endpoint Discovery Wizard</h2>
+                <p>
+                    To use this wizard, you'll need credentials for an Azure app registration 
+                    with full access to Dynamics 365.
+                </p>
+                <p>
+                    If you don't know how to get these credentials, talk to an administrator in your organisation. 
+                </p>
+                <p style="color: #cc9e05;">
+                    <b>Warning:</b> Excessive use of this tool can result in being temporarily blocked from 
+                    making requests. It is recommended to use a dedicated app registration that's 
+                    not used by any other apps.
+                </p>
+            </FluentWizardStep>
+
             <FluentWizardStep Label="Connect to D365" OnChange="async () => await SelectGroupsVm.InitAsync(CredentialsVm)">
-                <CredentialsComponent ViewModel="CredentialsVm" />
+                <CredentialsComponent ViewModel="CredentialsVm"/>
             </FluentWizardStep>
 
             <FluentWizardStep Label="Select groups" OnChange="async () => await SelectServicesVm.InitAsync(CredentialsVm, SelectGroupsVm)">
-                <SelectGroupsComponent ViewModel="SelectGroupsVm" />
+                <SelectGroupsComponent ViewModel="SelectGroupsVm"/>
             </FluentWizardStep>
-            
+
             <FluentWizardStep Label="Select services" OnChange="async () => await SelectOperationsVm.InitAsync(CredentialsVm, SelectGroupsVm, SelectServicesVm)">
-                <SelectServicesComponent ViewModel="SelectServicesVm" />
+                <SelectServicesComponent ViewModel="SelectServicesVm"/>
+            </FluentWizardStep>
+
+            <FluentWizardStep Label="Select operations" OnChange="() => BuildCollectionVm.Init(CredentialsVm, SelectOperationsVm)">
+                <SelectOperationsComponent ViewModel="SelectOperationsVm"/>
+            </FluentWizardStep>
+
+            <FluentWizardStep Label="Build collection" OnChange="BuildCollectionVm.SaveToFileAsync">
+                <BuildCollectionComponent ViewModel="BuildCollectionVm"/>
             </FluentWizardStep>
             
-            <FluentWizardStep Label="Select operations" OnChange="() => BuildCollectionVm.Init(CredentialsVm, SelectOperationsVm)">    
-                <SelectOperationsComponent ViewModel="SelectOperationsVm" />
-            </FluentWizardStep>
-            <FluentWizardStep Label="Build collection">
-                <BuildCollectionComponent ViewModel="BuildCollectionVm" />
+            <FluentWizardStep Label="Finish">
+                <h2 style="text-align: center;">All done!</h2>
+                @if (string.IsNullOrWhiteSpace(BuildCollectionVm.OutputPath))
+                {
+                    <p>
+                        It looks like you cancelled saving the collection. 
+                        You can always go back and save it again.
+                    </p>
+                }
+                else 
+                {
+                    <p>
+                        Your collection is ready to go! You can find it at 
+                        <a href="#" @onclick="BuildCollectionVm.ViewFileInFolder">
+                            @BuildCollectionVm.OutputPath.
+                        </a>
+                    </p>
+                }
             </FluentWizardStep>
         </Steps>
     </FluentWizard>

@@ -24,6 +24,7 @@ internal static class BlazorHybridServiceRegistrar
         sc.AddFluentUIComponents();
         sc.AddMauiBlazorWebView();
 
+        sc.AddSingleton<ILauncher>(_ => Launcher.Default);
         sc.AddSingleton<IFileSaver>(_ => FileSaver.Default);
         sc.AddSingleton<IMessenger, WeakReferenceMessenger>();
 

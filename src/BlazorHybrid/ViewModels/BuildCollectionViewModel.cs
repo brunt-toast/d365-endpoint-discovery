@@ -11,6 +11,7 @@ internal class BuildCollectionViewModel : IBuildCollectionViewModel
 {
     private readonly IMainService _mainService;
     private readonly IFileSaver _fileSaver;
+    private readonly ILauncher _launcher;
 
     private string _resource = string.Empty;
     private DynSvcGroup[] _services = [];
@@ -23,10 +24,13 @@ internal class BuildCollectionViewModel : IBuildCollectionViewModel
     public OutputFormats OutputFormat { get; set; }
     public bool Minify { get; set; } = true;
 
-    public BuildCollectionViewModel(IMainService mainService, IFileSaver fileSaver)
+    public string OutputPath { get; private set; } = string.Empty;
+
+    public BuildCollectionViewModel(IMainService mainService, IFileSaver fileSaver, ILauncher launcher)
     {
         _mainService = mainService;
         _fileSaver = fileSaver;
+        _launcher = launcher;
 
         OutputSchema = AvailableOutputSchemas.First(x => x == OutputSchemas.Postman);
         OutputFormat = AvailableOutputFormats.First(x => x == OutputFormats.Json);
@@ -70,7 +74,13 @@ internal class BuildCollectionViewModel : IBuildCollectionViewModel
             _ => "txt"
         };
 
-        await _fileSaver.SaveAsync($"{CollectionName}.{suggestedExtension}", stream);
+        var fileSaveResult = await _fileSaver.SaveAsync($"{CollectionName}.{suggestedExtension}", stream);
+        OutputPath = fileSaveResult.FilePath ?? string.Empty;
+    }
+
+    public async Task ViewFileInFolder()
+    {
+        await _launcher.OpenAsync(new Uri($"file:///{Path.GetDirectoryName(OutputPath)}"));
     }
 }
 
@@ -84,6 +94,9 @@ public interface IBuildCollectionViewModel
     OutputFormats OutputFormat { get; set; }
     bool Minify { get; set; }
 
+    string OutputPath { get; }
+
     void Init(ICredentialsViewModel credentials, ISelectOperationsViewModel operations);
     Task SaveToFileAsync();
+    Task ViewFileInFolder();
 }
