@@ -8,31 +8,31 @@
 <hr />
 
 <FluentTreeView style="max-height: 180px; overflow-y: auto;">
-
-    @foreach (var group in ViewModel.Operations
-                  .Where(x => x.Item.Name.Contains(ViewModel.Query, StringComparison.InvariantCultureIgnoreCase))
-                  .GroupBy(x => x.Item.ServiceGroupName)
-                  .OrderBy(x => x.Key))
+    @foreach (var group in ViewModel.ServiceGroups
+        .Where(x => x.Item.Name.Contains(ViewModel.Query, StringComparison.InvariantCultureIgnoreCase))
+        .OrderBy(x => x.Item.Name))
     {
         <FluentTreeItem InitiallyExpanded="true">
-            <FluentCheckbox Label="@group.Key" CheckStateChanged="(isChecked) => ViewModel.ToggleGroup(group, isChecked)" />
-            @foreach (var service in group.OrderBy(x => x.Item.ServiceName).GroupBy(x => x.Item.ServiceName))
+            <FluentCheckbox Label="@group.Item.Name" @bind-Value="group.IsSelected" />
+            @foreach (var service in group.Children
+                    .Where(x => x.Item.Name.Contains(ViewModel.Query, StringComparison.InvariantCultureIgnoreCase))
+                    .OrderBy(x => x.Item.Name))
             {
                 <FluentTreeItem InitiallyExpanded="true" Style="padding-left: 1em;">
-                    <FluentCheckbox Label="@service.Key" CheckStateChanged="(isChecked) => ViewModel.ToggleGroup(group, isChecked)" />
-                    @foreach (var operation in service)
+                    <FluentCheckbox Label="@service.Item.Name" @bind-Value="@service.IsSelected" />
+                    @foreach (var operation in service.Children)
                     {
                         <FluentTreeItem>
-                            <FluentCheckbox Label="@operation.Item.Name" @bind-Value="@operation.IsSelected" />
+                            <FluentCheckbox Label="@operation.Item.Name" @bind-Value="operation.IsSelected" />
                         </FluentTreeItem>
                     }
-                 </FluentTreeItem>
+                </FluentTreeItem>
             }
-          </FluentTreeItem>
+        </FluentTreeItem>
     }
 </FluentTreeView>
 
-@code 
+@code
 {
     [Parameter] public ISelectOperationsViewModel ViewModel { get; set; } = null!;
 }

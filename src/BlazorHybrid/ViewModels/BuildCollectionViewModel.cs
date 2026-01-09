@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using BlazorHybrid.Models;
 using CommunityToolkit.Maui.Storage;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Enums;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Requests;
@@ -39,18 +40,32 @@ internal class BuildCollectionViewModel : IBuildCollectionViewModel
     public void Init(ICredentialsViewModel credentials, ISelectOperationsViewModel operations)
     {
         _resource = credentials.ResourceUri;
-        _services = operations.Operations.Where(x => x.IsSelected)
-            .Select(x => x.Item)
-            .GroupBy(x => x.ServiceGroupName)
-            .Select(x => new DynSvcGroup()
+
+        var targetedOps = operations.ServiceGroups
+            .SelectMany(x => x.Children)
+            .SelectMany(x => x.Children)
+            .Where(x => x.IsSelected);
+
+        var serviceModels = targetedOps
+            .GroupBy(x => x.Item.ServiceName)
+            .Select(x => new SelectableDynSvcModel(new DynSvc
             {
-                Name = x.Key,
-                Services = x.GroupBy(x => x.ServiceName).Select(y => new DynSvc()
-                {
-                    Name = y.Key,
-                    Operations = y.ToArray()
-                }).ToArray()
-            }).ToArray();
+                ServiceGroupName = x.First().Item.ServiceGroupName,
+                Name = x.First().Item.ServiceName,
+                Operations = x.Select(y => y.Item).ToArray()
+            }, x.ToArray())).ToArray();
+
+        var groupModels = serviceModels
+            .GroupBy(x => x.Item.ServiceGroupName)
+            .Select(x => new SelectableDynSvcGroupModel(new DynSvcGroup
+            {
+                Name = x.First().Item.ServiceGroupName,
+                Services = x.Select(y => y.Item).ToArray()
+            }, x.ToArray()));
+
+        var groups = groupModels.Select(x => x.Item);
+
+        _services = groups.ToArray();
     }
 
     public async Task SaveToFileAsync()

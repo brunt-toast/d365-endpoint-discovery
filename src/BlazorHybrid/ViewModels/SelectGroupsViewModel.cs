@@ -1,10 +1,11 @@
-﻿using System.Collections.ObjectModel;
-using BlazorHybrid.Extensions.System.Collections.ObjectModel;
+﻿using BlazorHybrid.Extensions.System.Collections.ObjectModel;
+using BlazorHybrid.Models;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Requests;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Extensions.Serilog;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types;
 using Serilog;
+using System.Collections.ObjectModel;
 
 namespace BlazorHybrid.ViewModels;
 
@@ -13,7 +14,7 @@ internal class SelectGroupsViewModel : ISelectGroupsViewModel
     private readonly IMainService _mainService;
     private readonly ILogger _logger;
 
-    public ObservableCollection<Selectable<DynSvcGroup>> ServiceGroups { get; } = [];
+    public ObservableCollection<SelectableDynSvcGroupModel> ServiceGroups { get; } = [];
     public string Query { get; set; } = string.Empty;
 
     public bool SelectAll
@@ -48,7 +49,7 @@ internal class SelectGroupsViewModel : ISelectGroupsViewModel
                 TokenRequestEndpoint = credentials.TokenRequestEndpoint
             });
 
-            ServiceGroups.ReplaceRange(groups.Select(x => new Selectable<DynSvcGroup>(x)));
+            ServiceGroups.ReplaceRange(groups.Select(x => new SelectableDynSvcGroupModel(x)));
         }
         catch (Exception ex)
         {
@@ -60,7 +61,7 @@ internal class SelectGroupsViewModel : ISelectGroupsViewModel
 public interface ISelectGroupsViewModel
 {
     Task InitAsync(ICredentialsViewModel credentials);
-    ObservableCollection<Selectable<DynSvcGroup>> ServiceGroups { get; }
+    ObservableCollection<SelectableDynSvcGroupModel> ServiceGroups { get; }
     string Query { get; set; }
     bool SelectAll { get; set; }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 using BlazorHybrid.Extensions.System.Collections.ObjectModel;
+using BlazorHybrid.Models;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Requests;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
 
@@ -13,17 +14,16 @@ internal class SelectOperationsViewModel : ISelectOperationsViewModel
 {
     private readonly IMainService _mainService;
 
-    public ObservableCollection<Selectable<DynSvcOp>> Operations { get; } = [];
+    public ObservableCollection<SelectableDynSvcGroupModel> ServiceGroups { get; } = [];
     public string Query { get; set; } = string.Empty;
-
     public bool SelectAll
     {
-        get => Operations.All(x => x.IsSelected);
+        get => ServiceGroups.All(x => x.IsSelected);
         set
         {
-            foreach (var operation in Operations)
+            foreach (var group in ServiceGroups)
             {
-                operation.IsSelected = value;
+                group.IsSelected = value;
             }
         }
     }
@@ -37,47 +37,40 @@ internal class SelectOperationsViewModel : ISelectOperationsViewModel
     {
         var ops = await _mainService.GetOperationsForServices(new GetOperationsForServicesRequest
         {
-            Services = services.Services.Where(x => x.IsSelected).Select(x => x.Item).ToArray(),
+            Services = services.ServiceGroups.SelectMany(x => x.Children).Where(x => x.IsSelected).Select(x => x.Item).ToArray(),
             ClientId = credentials.ClientId,
             ClientSecret = credentials.ClientSecret,
             Resource = credentials.ResourceUri,
             TokenRequestEndpoint = credentials.TokenRequestEndpoint
         });
 
-        Operations.ReplaceRange(ops.Select(x => new Selectable<DynSvcOp>(x)));
-    }
+        var opModels = ops.Select(x => new SelectableDynSvcOpModel(x)).ToArray();
 
+        var serviceModels = opModels
+            .GroupBy(x => x.Item.ServiceName)
+            .Select(x => new SelectableDynSvcModel(new DynSvc
+            {
+                ServiceGroupName = x.First().Item.ServiceGroupName,
+                Name = x.First().Item.ServiceName,
+                Operations = x.Select(y => y.Item).ToArray()
+            }, x.ToArray())).ToArray();
 
-    public void ToggleGroup(IEnumerable<Selectable<DynSvc>> service, bool? isChecked)
-    {
-        if (isChecked is null)
-        {
-            return;
-        }
+        var groupModels = serviceModels
+            .GroupBy(x => x.Item.ServiceGroupName)
+            .Select(x => new SelectableDynSvcGroupModel(new DynSvcGroup
+            {
+                Name = x.First().Item.ServiceGroupName,
+                Services = x.Select(y => y.Item).ToArray()
+            }, x.ToArray()));
 
-        List<string> serviceNames = service.Select(x => x.Item.Name).ToList();
-        foreach (var op in Operations.Where(x => serviceNames.Contains(x.Item.ServiceGroupName)))
-        {
-            op.IsSelected = isChecked == true;
-        }
-    }
-
-    public void ToggleGroup(IEnumerable<Selectable<DynSvcOp>> group, bool? isChecked)
-    {
-        foreach (var op in group)
-        {
-            op.IsSelected = isChecked == true;
-        }
+        ServiceGroups.ReplaceRange(groupModels);
     }
 }
 
 public interface ISelectOperationsViewModel
 {
     Task InitAsync(ICredentialsViewModel credentials, ISelectGroupsViewModel groups, ISelectServicesViewModel services);
-    ObservableCollection<Selectable<DynSvcOp>> Operations { get; }
+    ObservableCollection<SelectableDynSvcGroupModel> ServiceGroups { get; }
     string Query { get; set; }
     bool SelectAll { get; set; }
-
-    void ToggleGroup(IEnumerable<Selectable<DynSvc>> service, bool? isChecked);
-    void ToggleGroup(IEnumerable<Selectable<DynSvcOp>> group, bool? isChecked);
 }
