@@ -8,7 +8,7 @@
 
 <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
     <FluentWizard @ref="_wizard"
-                  Style="width: min(500px, 95svw)"
+                  Style="width: min(500px, 95svw); height: auto;"
                   StepperPosition="StepperPosition.Top"
                   DisplayStepNumber="@(WizardStepStatus.Current | WizardStepStatus.Next)"
                   Border="WizardBorder.Outside"
@@ -18,7 +18,8 @@
                               DisplayStepNumber="false"
                               IconPrevious="FluentIconRepository.IntroStepPrevIcon"
                               IconCurrent="FluentIconRepository.IntroStepCurIcon"
-                              IconNext="FluentIconRepository.IntroStepNextIcon">
+                              IconNext="FluentIconRepository.IntroStepNextIcon"
+                              OnChange="async () => await CredentialsVm.InitAsync()">
                 <h2 style="text-align: center;">Service Endpoint Discovery Wizard</h2>
                 <p>
                     To use this wizard, you'll need credentials for an Azure app registration 

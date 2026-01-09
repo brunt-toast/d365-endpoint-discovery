@@ -36,6 +36,8 @@ internal class SelectGroupsViewModel : ISelectGroupsViewModel
 
     public async Task InitAsync(ICredentialsViewModel credentials)
     {
+        await credentials.SaveAsync();
+
         try
         {
             var groups = await _mainService.GetAllGroups(new GetAllGroupsRequest
