@@ -7,6 +7,13 @@
 
 <hr />
 
+@if (!ViewModel.ServiceGroups.Any())
+{
+    <p style="text-align: center;">
+        No results
+    </p>
+}
+
 <FluentTreeView style="max-height: 180px; overflow-y: auto;">
     @foreach (var group in ViewModel.ServiceGroups
         .Where(x => x.Item.Name.Contains(ViewModel.Query, StringComparison.InvariantCultureIgnoreCase))
