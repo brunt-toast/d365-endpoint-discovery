@@ -20,10 +20,10 @@
     <Nullable>enable</Nullable>
 
     <!-- Display name -->
-    <ApplicationTitle>BlazorHybrid</ApplicationTitle>
+    <ApplicationTitle>Dynamics Service Endpoint Discovery</ApplicationTitle>
 
     <!-- App Identifier -->
-    <ApplicationId>com.companyname.blazorhybrid</ApplicationId>
+    <ApplicationId>dev.joshbrunton.dynamicsendpointdiscovery</ApplicationId>
 
     <!-- Versions -->
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
