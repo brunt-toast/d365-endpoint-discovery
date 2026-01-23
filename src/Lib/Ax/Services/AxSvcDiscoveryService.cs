@@ -130,7 +130,12 @@ internal class AxSvcDiscoveryService : IAxSvcDiscoveryService
     private async Task<string> GetHttp(string endpoint)
     {
         string bearer = await _authSvc.GetBearerToken();
-        using HttpClient client = new();
+        using var client = new HttpClient(new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback =
+                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+        });
+
         HttpRequestMessage request = new(HttpMethod.Get, endpoint);
         request.Headers.Clear();
         request.Headers.Add("Authorization", $"Bearer {bearer}");
