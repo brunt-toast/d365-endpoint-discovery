@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.Ioc;
+using Microsoft.Extensions.Logging;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid;
 
