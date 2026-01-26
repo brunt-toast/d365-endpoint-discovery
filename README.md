@@ -27,6 +27,7 @@ You'll need an Azure application which can communicate with your Dynamics 365 in
 3. Staying under **Overview**, copy the Directory (tenant) ID. Save this for later. 
 4. Under **Manage > Certificates &amp; secrets**, add a new client secret. Save this for later. 
 5. Under **Manage > API Permissions**, add the permission Ax.FullAccess (you can search for it using its service principal ID, f92c3f85-4759-4901-810d-5da8943dea39). Grant admin consent for your organisation. 
+6. In Dynamics, navigate to **System Administration > Setup > Entra ID Applications**, and add a new record with the Application (client) ID, assigned to an appropriate user. Remember to click "Save"!
 
 ## ⌨️ Usage 
 
