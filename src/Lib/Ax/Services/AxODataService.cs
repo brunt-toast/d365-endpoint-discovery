@@ -23,9 +23,15 @@ internal class AxODataService : IAxODataService
         _config = config;
     }
 
+    public async Task<string> GetRawMetadata()
+    {
+        var ret = await GetHttp($"{_config.Resource}/data/$metadata");
+        return ret;
+    }
+
     public async Task<IEnumerable<AxSchema>> GetSchemasFromMetadata()
     {
-        var metadataXml = await GetHttp($"{_config.Resource}/data/$metadata");
+        var metadataXml = await GetRawMetadata();
         var doc = await XDocument.LoadAsync(metadataXml.ToStream(), LoadOptions.None, CancellationToken.None);
         return AxSchema.FromODataMetadata(doc);
     }
@@ -61,5 +67,6 @@ internal class AxODataService : IAxODataService
 
 public interface IAxODataService
 {
+    Task<string> GetRawMetadata();
     Task<IEnumerable<AxSchema>> GetSchemasFromMetadata();
 }

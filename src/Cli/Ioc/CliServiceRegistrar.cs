@@ -1,9 +1,6 @@
 ﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Ioc;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Commands;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Logging.Sinks;
 using Serilog.Core;
 
@@ -14,6 +11,8 @@ public static class CliServiceRegistrar
     public static void RegisterServices(IServiceCollection sc)
     {
         ApplicationServiceRegistrar.RegisterServices(sc);
+        sc.AddTransient<ODataCommand>();
+        sc.AddTransient<ServiceDiscoveryCommand>();
         sc.AddTransient<DynSvcDiscoveryRootCommand>();
 
         sc.AddSingleton<CommandParseResultSink>();
