@@ -23,16 +23,23 @@ internal sealed class AppdataFileSink : ILogEventSink
 
     public AppdataFileSink Init()
     {
-        _filePath = Path.Join(_fileSystem.AppDataDirectory, "logs", $"{DateTime.Now:yyyyMMdd}.log");
-        string? dirName = Path.GetDirectoryName(_filePath);
-        ArgumentException.ThrowIfNullOrWhiteSpace(dirName);
-        Directory.CreateDirectory(dirName);
-
-        _stream = new FileStream(_filePath, FileMode.Append, FileAccess.Write, FileShare.Read);
-        _writer = new StreamWriter(_stream, Encoding.UTF8)
+        try
         {
-            AutoFlush = false
-        };
+            _filePath = Path.Join(_fileSystem.AppDataDirectory, "logs", $"{DateTime.Now:yyyyMMdd}.log");
+            string? dirName = Path.GetDirectoryName(_filePath);
+            ArgumentException.ThrowIfNullOrWhiteSpace(dirName);
+            Directory.CreateDirectory(dirName);
+
+            _stream = new FileStream(_filePath, FileMode.Append, FileAccess.Write, FileShare.Read);
+            _writer = new StreamWriter(_stream, Encoding.UTF8)
+            {
+                AutoFlush = false
+            };
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to initialize file sink: {ex.Message}");
+        }
 
         return this;
     }
