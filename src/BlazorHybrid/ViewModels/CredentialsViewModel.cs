@@ -1,8 +1,11 @@
-﻿namespace BlazorHybrid.ViewModels;
+﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Config;
+
+namespace BlazorHybrid.ViewModels;
 
 internal class CredentialsViewModel : ICredentialsViewModel
 {
     private readonly ISecureStorage _secureStorage;
+    private readonly IAxConfig _axConfig;
 
     private const string ClientIdKey = "AxClientId";
     private const string ClientSecretKey = "AxClientSecret";
@@ -15,9 +18,10 @@ internal class CredentialsViewModel : ICredentialsViewModel
     public string ResourceUri { get; set; } = string.Empty;
     public bool CacheCredentials { get; set; }
 
-    public CredentialsViewModel(ISecureStorage secureStorage)
+    public CredentialsViewModel(ISecureStorage secureStorage, IAxConfig axConfig)
     {
         _secureStorage = secureStorage;
+        _axConfig = axConfig;
     }
 
     public async Task InitAsync()
@@ -56,6 +60,12 @@ internal class CredentialsViewModel : ICredentialsViewModel
         await _secureStorage.SetAsync(ClientSecretKey, ClientSecret);
         await _secureStorage.SetAsync(TokenRequestEndpointKey, TokenRequestEndpoint);
         await _secureStorage.SetAsync(ResourceUriKey, ResourceUri);
+
+        _axConfig.ClientId = ClientId;
+        _axConfig.ClientSecret = ClientSecret;
+        _axConfig.TokenRequestEndpoint = TokenRequestEndpoint;
+        _axConfig.Resource = ResourceUri;
+
     }
 
     private void ClearCache()

@@ -2,13 +2,8 @@
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Requests;
 
-public class GetServiceCollectionRequest : IHasAxCredentials
+public class GetServiceCollectionRequest
 {
-    public required string ClientId { get; init; }
-    public required string ClientSecret { get; init; }
-    public required string Resource { get; init; }
-    public required string TokenRequestEndpoint { get; init; }
-
     public required string GrepGroupsRegex { get; init; } 
     public required string GrepServicesRegex { get; init; } 
     public required string GrepOperationsRegex { get; init; } 

@@ -43,7 +43,7 @@
                 <CredentialsComponent ViewModel="CredentialsVm"/>
             </FluentWizardStep>
 
-            <FluentWizardStep Label="Select groups" OnChange="async () => await SelectServicesVm.InitAsync(CredentialsVm, SelectGroupsVm)"
+            <FluentWizardStep Label="Select groups" OnChange="async () => await SelectServicesVm.InitAsync(SelectGroupsVm)"
                               DisplayStepNumber="false"
                               IconPrevious="FluentIconRepository.GroupsStepPrevIcon"
                               IconCurrent="FluentIconRepository.GroupsStepCurIcon"
@@ -51,7 +51,7 @@
                 <SelectGroupsComponent ViewModel="SelectGroupsVm"/>
             </FluentWizardStep>
 
-            <FluentWizardStep Label="Select services" OnChange="async () => await SelectOperationsVm.InitAsync(CredentialsVm, SelectGroupsVm, SelectServicesVm)"
+            <FluentWizardStep Label="Select services" OnChange="async () => await SelectOperationsVm.InitAsync(SelectServicesVm)"
                               DisplayStepNumber="false"
                               IconPrevious="FluentIconRepository.ServicesStepPrevIcon"
                               IconCurrent="FluentIconRepository.ServicesStepCurIcon"

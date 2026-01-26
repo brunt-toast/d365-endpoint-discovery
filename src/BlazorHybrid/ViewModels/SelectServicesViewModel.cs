@@ -34,14 +34,10 @@ internal class SelectServicesViewModel : ISelectServicesViewModel
         _mainService = mainService;
     }
 
-    public async Task InitAsync(ICredentialsViewModel credentials, ISelectGroupsViewModel groups)
+    public async Task InitAsync(ISelectGroupsViewModel groups)
     {
         var services = await _mainService.GetServicesForGroups(new GetServicesForGroupsRequest
         {
-            ClientId = credentials.ClientId,
-            ClientSecret = credentials.ClientSecret,
-            Resource = credentials.ResourceUri,
-            TokenRequestEndpoint = credentials.TokenRequestEndpoint,
             Groups = groups.ServiceGroups.Where(x => x.IsSelected).Select(x => x.Item).ToArray()
         });
 
@@ -58,7 +54,7 @@ internal class SelectServicesViewModel : ISelectServicesViewModel
 
 public interface ISelectServicesViewModel
 {
-    Task InitAsync(ICredentialsViewModel credentials, ISelectGroupsViewModel groups);
+    Task InitAsync(ISelectGroupsViewModel groups);
     ObservableCollection<SelectableDynSvcGroupModel> ServiceGroups { get; }
     string Query { get; set; }
     bool SelectAll { get; set; }

@@ -41,14 +41,7 @@ internal class SelectGroupsViewModel : ISelectGroupsViewModel
 
         try
         {
-            var groups = await _mainService.GetAllGroups(new GetAllGroupsRequest
-            {
-                ClientId = credentials.ClientId,
-                ClientSecret = credentials.ClientSecret,
-                Resource = credentials.ResourceUri,
-                TokenRequestEndpoint = credentials.TokenRequestEndpoint
-            });
-
+            var groups = await _mainService.GetAllGroups();
             ServiceGroups.ReplaceRange(groups.Select(x => new SelectableDynSvcGroupModel(x)));
         }
         catch (Exception ex)
