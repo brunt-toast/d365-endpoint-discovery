@@ -1,7 +1,13 @@
-﻿@using BlazorHybrid.Components.Receivers
+﻿@using System.Diagnostics
+@using System.Reflection
+@using BlazorHybrid.Components.Receivers
 @inherits LayoutComponentBase
 
 @Body
+
+<div style="color: #cccccc; position: absolute; bottom: 0; right: 0;">
+    @FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion
+</div>
 
 <FluentToastProvider />
 <FluentDialogProvider />
