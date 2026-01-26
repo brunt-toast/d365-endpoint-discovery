@@ -2,6 +2,7 @@
     <PropertyGroup>
         <Version>0.6.1</Version>
         <Deterministic>true</Deterministic>
+        <IncludeSourceRevisionInInformationalVersion Condition="'$(Configuration)' == 'Release'">false</IncludeSourceRevisionInInformationalVersion>
     </PropertyGroup>
     
   <PropertyGroup>
