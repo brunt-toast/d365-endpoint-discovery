@@ -31,7 +31,8 @@ internal static class BlazorHybridServiceRegistrar
         sc.AddSingleton<IMessenger, WeakReferenceMessenger>();
 
         sc.AddSingleton<ILogEventSink, ToastSink>();
-        sc.AddSingleton<ILogEventSink>(x => new AppdataFileSink(x.GetRequiredService<IFileSystem>()).Init());
+        sc.AddSingleton<ILogEventSink>(x => new AppdataFileSink(x.GetRequiredService<IFileSystem>(), 
+            x.GetRequiredService<IMessenger>()).Init());
 
         sc.AddTransient<ICredentialsViewModel, CredentialsViewModel>();
         sc.AddTransient<ISelectGroupsViewModel, SelectGroupsViewModel>();
