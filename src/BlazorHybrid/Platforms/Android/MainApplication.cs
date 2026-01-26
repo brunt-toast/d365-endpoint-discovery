@@ -1,5 +1,6 @@
 ﻿using Android.App;
 using Android.Runtime;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid;
 
 namespace BlazorHybrid;
 

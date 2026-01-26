@@ -1,4 +1,5 @@
-﻿using Foundation;
+﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid;
+using Foundation;
 
 namespace BlazorHybrid;
 

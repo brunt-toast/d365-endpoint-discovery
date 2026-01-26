@@ -2,8 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:BlazorHybrid"
-             xmlns:components="clr-namespace:BlazorHybrid.Components"
-             x:Class="BlazorHybrid.MainPage">
+             xmlns:components="clr-namespace:Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.Components"
+             x:Class="Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.MainPage">
 
     <BlazorWebView x:Name="blazorWebView" HostPage="wwwroot/index.html">
         <BlazorWebView.RootComponents>

@@ -1,12 +1,7 @@
-﻿using BlazorHybrid.Ioc;
-using BlazorHybrid.ViewModels;
-using CommunityToolkit.Maui;
-using CommunityToolkit.Maui.Storage;
-using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Ioc;
-using Microsoft.Extensions.Logging;
-using Microsoft.FluentUI.AspNetCore.Components;
+﻿using CommunityToolkit.Maui;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.Ioc;
 
-namespace BlazorHybrid;
+namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid;
 
 public static class MauiProgram
 {

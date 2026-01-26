@@ -1,6 +1,6 @@
 ﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Config;
 
-namespace BlazorHybrid.ViewModels;
+namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.ViewModels;
 
 internal class CredentialsViewModel : ICredentialsViewModel
 {

@@ -2,7 +2,7 @@
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:BlazorHybrid"
-             x:Class="BlazorHybrid.App">
+             x:Class="Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.App">
     <Application.Resources>
         <ResourceDictionary>
 

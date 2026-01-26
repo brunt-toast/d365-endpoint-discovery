@@ -1,6 +1,6 @@
 ﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types;
 
-namespace BlazorHybrid.Models;
+namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.Models;
 
 public class SelectableDynSvcOpModel
 {

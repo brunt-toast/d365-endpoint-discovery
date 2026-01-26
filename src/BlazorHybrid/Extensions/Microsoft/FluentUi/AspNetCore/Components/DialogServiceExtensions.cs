@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using System.Reflection;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.Extensions.Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
-using System.Reflection;
-using BlazorHybrid.Extensions.Microsoft.AspNetCore.Components;
 
-namespace BlazorHybrid.Extensions.Microsoft.FluentUi.AspNetCore.Components;
+namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.Extensions.Microsoft.FluentUi.AspNetCore.Components;
 
 internal static class DialogServiceExtensions
 {

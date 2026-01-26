@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.FluentUI.AspNetCore.Components;
+﻿using Microsoft.FluentUI.AspNetCore.Components;
 
-namespace BlazorHybrid.Icons;
+namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.Icons;
 
 internal static class FluentIconRepository
 {

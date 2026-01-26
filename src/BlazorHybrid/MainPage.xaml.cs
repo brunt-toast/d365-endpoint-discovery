@@ -1,4 +1,4 @@
-﻿namespace BlazorHybrid;
+﻿namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid;
 
 public partial class MainPage : ContentPage
 {

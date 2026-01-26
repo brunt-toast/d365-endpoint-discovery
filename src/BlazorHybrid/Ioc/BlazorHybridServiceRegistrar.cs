@@ -1,19 +1,12 @@
-﻿using BlazorHybrid.ViewModels;
-using CommunityToolkit.Maui.Storage;
-using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Ioc;
-using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
-using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.CollectionBuilders;
-using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Ioc;
-using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using BlazorHybrid.Logging.Sinks;
+﻿using CommunityToolkit.Maui.Storage;
 using CommunityToolkit.Mvvm.Messaging;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Ioc;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.Logging.Sinks;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.ViewModels;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Serilog.Core;
 
-namespace BlazorHybrid.Ioc;
+namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.Ioc;
 
 internal static class BlazorHybridServiceRegistrar
 {

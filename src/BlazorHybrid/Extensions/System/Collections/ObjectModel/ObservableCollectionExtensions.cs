@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
+﻿using System.Collections.ObjectModel;
 
-namespace BlazorHybrid.Extensions.System.Collections.ObjectModel;
+namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.Extensions.System.Collections.ObjectModel;
 
 internal static class ObservableCollectionExtensions
 {

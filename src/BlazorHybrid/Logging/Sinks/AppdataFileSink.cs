@@ -1,11 +1,11 @@
-﻿using Serilog.Core;
-using Serilog.Events;
-using System.Text;
-using BlazorHybrid.Messages;
+﻿using System.Text;
 using CommunityToolkit.Mvvm.Messaging;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.Messages;
 using Microsoft.FluentUI.AspNetCore.Components;
+using Serilog.Core;
+using Serilog.Events;
 
-namespace BlazorHybrid.Logging.Sinks;
+namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.Logging.Sinks;
 
 internal sealed class AppdataFileSink : ILogEventSink
 {

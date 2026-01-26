@@ -1,13 +1,11 @@
-﻿using BlazorHybrid.Extensions.System.Collections.ObjectModel;
-using BlazorHybrid.Models;
-using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Requests;
+﻿using System.Collections.ObjectModel;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.Extensions.System.Collections.ObjectModel;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.Models;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Extensions.Serilog;
-using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types;
 using Serilog;
-using System.Collections.ObjectModel;
 
-namespace BlazorHybrid.ViewModels;
+namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.ViewModels;
 
 internal class SelectGroupsViewModel : ISelectGroupsViewModel
 {
