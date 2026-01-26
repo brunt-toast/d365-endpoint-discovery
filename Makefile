@@ -24,3 +24,11 @@ install: restore
 	rm -r ./src/Cli/bin/nupkg/ || true
 	dotnet pack ./src/Cli/Cli.csproj -c Release
 	dotnet tool install -g --add-source ./src/Cli/bin/nupkg dynsvcdiscovery --allow-downgrade
+
+pack-gui: 
+	rm -r ./src/BlazorHybrid/bin
+	pwsh.exe ./Build-SignedMsix.ps1
+
+	zip -r ./src/BlazorHybrid/bin/BlazorHybridMsix.zip "./src/BlazorHybrid/bin/Release/net10.0-windows10.0.19041.0/win-x64/AppPackages"
+
+	@echo "Archive file produced at ./src/BlazorHybrid/bin/BlazorHybridMsix.zip"

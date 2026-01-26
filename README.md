@@ -1,12 +1,25 @@
 # Dynamics 365 Service Endpoint Discovery Tool
 
-A CLI tool to automate discovery of Dynamics 365 service endpoints. 
+[![Git](https://img.shields.io/badge/Git-F05032?logo=git&logoColor=fff)](#)
+[![GitHub](https://img.shields.io/badge/GitHub-%23121011.svg?logo=github&logoColor=white)](#)
+[![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?logo=github-actions&logoColor=white)](#)
+[![.NET](https://img.shields.io/badge/.NET-512BD4?logo=dotnet&logoColor=fff)](#)
+[![Blazor](https://img.shields.io/badge/Blazor-512BD4?logo=blazor&logoColor=fff)](#)
+[![Windows](https://custom-icon-badges.demolab.com/badge/Windows-0078D6?logo=windows11&logoColor=white)](#)
+[![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=F0F0F0)](#)
+[![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)](#)
+[![NuGet](https://img.shields.io/badge/NuGet-004880?logo=nuget&logoColor=fff)](#)
+[![C#](https://custom-icon-badges.demolab.com/badge/C%23-%23239120.svg?logo=cshrp&logoColor=white)](#)
+[![JSON](https://img.shields.io/badge/JSON-000?logo=json&logoColor=fff)](#)
+[![YAML](https://img.shields.io/badge/YAML-CB171E?logo=yaml&logoColor=fff)](#)
+
+A CLI+GUI tool to automate discovery of Dynamics 365 service endpoints.
 
 ## ⚠️ Warning ⚠️
 
 **Excessive use of this tool can result in HTTP 429 responses.** Consider using the filtering options to reduce redundant requests. 
 
-## ⬇️ Installation 
+## ⬇️⌨️ Installation (CLI)
 
 Install as a .NET tool: 
 ```bash
@@ -17,6 +30,12 @@ Compile from source:
 ```bash
 make install
 ```
+
+## ⬇️🖼️ Installation (GUI)
+
+Download the [latest release](https://github.com/brunt-toast/d365-endpoint-discovery/releases/latest) (MSIX bundled).
+
+Run Install.ps1, or trust the certificate and run the MSIX file manually.
 
 ## 📐 Setup
 
