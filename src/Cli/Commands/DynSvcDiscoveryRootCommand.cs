@@ -5,6 +5,7 @@ using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Flags;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Logging.Sinks;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Options;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Config;
 using Serilog.Events;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Commands;
@@ -13,6 +14,7 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
 {
     private readonly IMainService _mainService;
     private readonly ICommandParseResultSink _sink;
+    private readonly IAxConfig _config;
 
     private readonly ClientIdOption _clientIdOption = new();
     private readonly ClientSecretOption _clientSecretOption = new();
@@ -28,10 +30,13 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
 
     private readonly MinifyFlag _minifyFlag = new();
 
-    public DynSvcDiscoveryRootCommand(IMainService mainService, ICommandParseResultSink sink) : base("Discover Dynamics 365 service endpoints automatically.")
+    public DynSvcDiscoveryRootCommand(IMainService mainService,
+        ICommandParseResultSink sink,
+        IAxConfig config) : base("Discover Dynamics 365 service endpoints automatically.")
     {
         _mainService = mainService;
         _sink = sink;
+        _config = config;
         Options.Add(_clientIdOption);
         Options.Add(_clientSecretOption);
         Options.Add(_resourceOption);
@@ -66,12 +71,13 @@ internal class DynSvcDiscoveryRootCommand : RootCommand
 
         using var _ = _sink.Configure(parseResult, logLevel);
 
+        _config.ClientId = clientId;
+        _config.ClientSecret = clientSecret;
+        _config.Resource = resource;
+        _config.TokenRequestEndpoint = tokenRequestEndpoint;
+
         string output = await _mainService.GetServiceCollectionAsync(new GetServiceCollectionRequest
         {
-            ClientId = clientId,
-            ClientSecret = clientSecret,
-            Resource = resource,
-            TokenRequestEndpoint = tokenRequestEndpoint,
             CollectionName = collectionName,
             GrepGroupsRegex = grepGroupsRegex,
             GrepOperationsRegex = grepOperationsRegex,
