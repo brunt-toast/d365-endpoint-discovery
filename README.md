@@ -13,13 +13,13 @@
 [![JSON](https://img.shields.io/badge/JSON-000?logo=json&logoColor=fff)](#)
 [![YAML](https://img.shields.io/badge/YAML-CB171E?logo=yaml&logoColor=fff)](#)
 
-A CLI tool to automate discovery of Dynamics 365 service endpoints. Coming ~~soon~~ when it gets here: .NET MAUI Blazor Hybrid GUI!
+A CLI+GUI tool to automate discovery of Dynamics 365 service endpoints.
 
 ## ⚠️ Warning ⚠️
 
 **Excessive use of this tool can result in HTTP 429 responses.** Consider using the filtering options to reduce redundant requests. 
 
-## ⬇️ Installation 
+## ⬇️⌨️ Installation (CLI)
 
 Install as a .NET tool: 
 ```bash
@@ -30,6 +30,12 @@ Compile from source:
 ```bash
 make install
 ```
+
+## ⬇️🖼️ Installation (GUI)
+
+Download the [latest release](https://github.com/brunt-toast/d365-endpoint-discovery/releases/latest) (MSIX bundled).
+
+Run Install.ps1, or trust the certificate and run the MSIX file manually.
 
 ## 📐 Setup
 
