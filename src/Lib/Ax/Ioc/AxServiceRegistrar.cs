@@ -16,6 +16,8 @@ public static class AxServiceRegistrar
             TokenRequestEndpoint = string.Empty
         });
         sc.AddSingleton<AxAuthService>();
-        sc.AddSingleton<IAxScvDiscoveryService, AxSvcDiscoveryService>();
+        sc.AddSingleton<IAxSvcDiscoveryService, AxSvcDiscoveryService>();
+        sc.AddSingleton<IJsonConverterService, JsonConverterService>();
+        sc.AddSingleton<IAxODataService, AxODataService>();
     }
 }

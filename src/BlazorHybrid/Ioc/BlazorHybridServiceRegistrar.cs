@@ -24,10 +24,14 @@ internal static class BlazorHybridServiceRegistrar
         sc.AddFluentUIComponents();
         sc.AddMauiBlazorWebView();
 
+        sc.AddSingleton<ILauncher>(_ => Launcher.Default);
         sc.AddSingleton<IFileSaver>(_ => FileSaver.Default);
+        sc.AddSingleton<IFileSystem>(_ => FileSystem.Current);
+        sc.AddSingleton<ISecureStorage>(_ => SecureStorage.Default);
         sc.AddSingleton<IMessenger, WeakReferenceMessenger>();
 
         sc.AddSingleton<ILogEventSink, ToastSink>();
+        sc.AddSingleton<ILogEventSink>(x => new AppdataFileSink(x.GetRequiredService<IFileSystem>()).Init());
 
         sc.AddTransient<ICredentialsViewModel, CredentialsViewModel>();
         sc.AddTransient<ISelectGroupsViewModel, SelectGroupsViewModel>();

@@ -17,6 +17,9 @@ restore:
 
 	find . -type f -name *.*proj | xargs -I{} sh -c 'dotnet workload restore --project "{}"' 
 
+test: restore 
+	find ./test/ -type f -name *.Tests.*proj | xargs -I{} sh -c 'dotnet test "{}"'
+
 install: restore
 	rm -r ./src/Cli/bin/nupkg/ || true
 	dotnet pack ./src/Cli/Cli.csproj -c Release

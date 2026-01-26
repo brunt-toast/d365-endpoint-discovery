@@ -12,6 +12,6 @@ internal class DebuggerSink : ILogEventSink
             return;
         }
 
-        System.Diagnostics.Debugger.Log((int)logEvent.Level, nameof(DebuggerSink), logEvent.RenderMessage());
+        System.Diagnostics.Debugger.Log((int)logEvent.Level, nameof(DebuggerSink), logEvent.RenderMessage() + "\n");
     }
 }

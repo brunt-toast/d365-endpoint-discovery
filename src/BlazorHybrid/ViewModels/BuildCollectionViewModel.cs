@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using BlazorHybrid.Models;
 using CommunityToolkit.Maui.Storage;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Enums;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Requests;
@@ -11,6 +12,7 @@ internal class BuildCollectionViewModel : IBuildCollectionViewModel
 {
     private readonly IMainService _mainService;
     private readonly IFileSaver _fileSaver;
+    private readonly ILauncher _launcher;
 
     private string _resource = string.Empty;
     private DynSvcGroup[] _services = [];
@@ -23,10 +25,13 @@ internal class BuildCollectionViewModel : IBuildCollectionViewModel
     public OutputFormats OutputFormat { get; set; }
     public bool Minify { get; set; } = true;
 
-    public BuildCollectionViewModel(IMainService mainService, IFileSaver fileSaver)
+    public string OutputPath { get; private set; } = string.Empty;
+
+    public BuildCollectionViewModel(IMainService mainService, IFileSaver fileSaver, ILauncher launcher)
     {
         _mainService = mainService;
         _fileSaver = fileSaver;
+        _launcher = launcher;
 
         OutputSchema = AvailableOutputSchemas.First(x => x == OutputSchemas.Postman);
         OutputFormat = AvailableOutputFormats.First(x => x == OutputFormats.Json);
@@ -35,18 +40,32 @@ internal class BuildCollectionViewModel : IBuildCollectionViewModel
     public void Init(ICredentialsViewModel credentials, ISelectOperationsViewModel operations)
     {
         _resource = credentials.ResourceUri;
-        _services = operations.Operations.Where(x => x.IsSelected)
-            .Select(x => x.Item)
-            .GroupBy(x => x.ServiceGroupName)
-            .Select(x => new DynSvcGroup()
+
+        var targetedOps = operations.ServiceGroups
+            .SelectMany(x => x.Children)
+            .SelectMany(x => x.Children)
+            .Where(x => x.IsSelected);
+
+        var serviceModels = targetedOps
+            .GroupBy(x => x.Item.ServiceName)
+            .Select(x => new SelectableDynSvcModel(new DynSvc
             {
-                Name = x.Key,
-                Services = x.GroupBy(x => x.ServiceName).Select(y => new DynSvc()
-                {
-                    Name = y.Key,
-                    Operations = y.ToArray()
-                }).ToArray()
-            }).ToArray();
+                ServiceGroupName = x.First().Item.ServiceGroupName,
+                Name = x.First().Item.ServiceName,
+                Operations = x.Select(y => y.Item).ToArray()
+            }, x.ToArray())).ToArray();
+
+        var groupModels = serviceModels
+            .GroupBy(x => x.Item.ServiceGroupName)
+            .Select(x => new SelectableDynSvcGroupModel(new DynSvcGroup
+            {
+                Name = x.First().Item.ServiceGroupName,
+                Services = x.Select(y => y.Item).ToArray()
+            }, x.ToArray()));
+
+        var groups = groupModels.Select(x => x.Item);
+
+        _services = groups.ToArray();
     }
 
     public async Task SaveToFileAsync()
@@ -70,7 +89,13 @@ internal class BuildCollectionViewModel : IBuildCollectionViewModel
             _ => "txt"
         };
 
-        await _fileSaver.SaveAsync($"{CollectionName}.{suggestedExtension}", stream);
+        var fileSaveResult = await _fileSaver.SaveAsync($"{CollectionName}.{suggestedExtension}", stream);
+        OutputPath = fileSaveResult.FilePath ?? string.Empty;
+    }
+
+    public async Task ViewFileInFolder()
+    {
+        await _launcher.OpenAsync(new Uri($"file:///{Path.GetDirectoryName(OutputPath)}"));
     }
 }
 
@@ -84,6 +109,9 @@ public interface IBuildCollectionViewModel
     OutputFormats OutputFormat { get; set; }
     bool Minify { get; set; }
 
+    string OutputPath { get; }
+
     void Init(ICredentialsViewModel credentials, ISelectOperationsViewModel operations);
     Task SaveToFileAsync();
+    Task ViewFileInFolder();
 }

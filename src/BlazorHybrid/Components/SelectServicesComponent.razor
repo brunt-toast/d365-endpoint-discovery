@@ -7,16 +7,23 @@
 
 <hr />
 
-<FluentTreeView style="max-height: 180px; overflow-y: auto;">
+@if (!ViewModel.ServiceGroups.Any())
+{
+    <p style="text-align: center;">
+        No results
+    </p>
+}
 
-    @foreach (var group in ViewModel.Services
+<FluentTreeView style="max-height: 180px; overflow-y: auto;">
+    @foreach (var group in ViewModel.ServiceGroups
         .Where(x => x.Item.Name.Contains(ViewModel.Query, StringComparison.InvariantCultureIgnoreCase))
-        .GroupBy(x => x.Item.ServiceGroupName)
-        .OrderBy(x => x.Key))
+        .OrderBy(x => x.Item.Name))
     {
-        <FluentTreeItem>
-            <FluentCheckbox Label="@group.Key" CheckStateChanged="(isChecked) => ViewModel.ToggleGroup(group, isChecked)" />
-            @foreach (var service in group)
+        <FluentTreeItem InitiallyExpanded="true">
+            <FluentCheckbox Label="@group.Item.Name" @bind-Value="group.IsSelected" />
+            @foreach (var service in group.Children
+                          .Where(x => x.Item.Name.Contains(ViewModel.Query, StringComparison.InvariantCultureIgnoreCase))
+                          .OrderBy(x => x.Item.Name))
             {
                 <FluentTreeItem Style="padding-left: 1em;">
                     <FluentCheckbox Label="@service.Item.Name" @bind-Value="@service.IsSelected" />
