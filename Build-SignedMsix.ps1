@@ -35,7 +35,6 @@ dotnet publish "${project}" `
     /p:EnableMsixTooling="true" `
     /p:GenerateAppxPackageOnBuild="true" `
     /p:AppxPackageSigningEnabled="true" `
-    /p:AppxBundle="never" `
 	/p:PackageCertificateKeyFile="C:\Cert\${cn}.pfx" `
 	/p:PackageCertificatePassword="${password}" `
 	/p:PackageCertificateThumbprint="$tp"
