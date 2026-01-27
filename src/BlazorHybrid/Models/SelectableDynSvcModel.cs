@@ -6,6 +6,7 @@ public class SelectableDynSvcModel
 {
     public DynSvc Item { get; }
     public SelectableDynSvcOpModel[] Children { get; }
+    public string FullName => $"{Item.ServiceGroupName}/{Item.Name}";
 
     public bool IsSelected
     {

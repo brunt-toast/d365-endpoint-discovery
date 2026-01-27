@@ -41,7 +41,7 @@ internal class BuildCollectionViewModel : IBuildCollectionViewModel
     {
         _resource = credentials.ResourceUri;
 
-        var targetedOps = operations.ServiceGroups
+        var targetedOps = operations.VisibleServiceGroups
             .SelectMany(x => x.Children)
             .SelectMany(x => x.Children)
             .Where(x => x.IsSelected);
