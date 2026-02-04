@@ -99,7 +99,9 @@ public class PostmanCollectionBuilder : CollectionBuilderBase<PostmanCollection>
         PostmanRequest request = new()
         {
             Method = "POST",
-            Headers = [new PostmanHeader
+            Headers =
+            [
+                new PostmanHeader
                 {
                     Key = "Authorization",
                     Value = "Bearer {{bearerToken}}",
@@ -107,7 +109,8 @@ public class PostmanCollectionBuilder : CollectionBuilderBase<PostmanCollection>
                 }
             ],
             Body = body,
-            Url = uri
+            Url = uri,
+            Description = BuildDescription(operation, typeDefs)
         };
 
         return new PostmanItem
@@ -117,6 +120,74 @@ public class PostmanCollectionBuilder : CollectionBuilderBase<PostmanCollection>
             Response = [],
             Items = null
         };
+    }
+
+    private static string BuildDescription(DynSvcOp operation, Dictionary<string, string> typeDefs)
+    {
+        StringBuilder dsb = new();
+        dsb.AppendLine($"# {operation.Name}");
+        dsb.AppendLine($"Service operation in {operation.ServiceGroupName}/{operation.ServiceName}");
+        dsb.AppendLine("<hr />");
+
+        dsb.AppendLine();
+        dsb.AppendLine("## Known Request Types");
+        var paramTypeNames = operation.Parameters.Select(x => x.Type);
+        var knownTypes = typeDefs.Where(x => paramTypeNames.Contains(x.Key)).ToList();
+        if (knownTypes.Count > 0)
+        {
+            foreach (var t in knownTypes)
+            {
+                dsb.AppendLine($"<b>{t.Key}</b>");
+                dsb.AppendLine("```json");
+                dsb.AppendLine(t.Value);
+                dsb.AppendLine("```");
+            }
+        }
+        else
+        {
+            dsb.AppendLine("There are no known types for this request.");
+        }
+
+        dsb.AppendLine();
+        dsb.AppendLine("## Unknown Request Types");
+        var unknownTypes = paramTypeNames.Where(x => !typeDefs.Keys.Contains(x)).ToList();
+        if (unknownTypes.Count > 0)
+        {
+            dsb.AppendLine("<ul>");
+            foreach (var t in unknownTypes)
+            {
+                dsb.AppendLine($"<li>{t}</li>");
+            }
+            dsb.AppendLine("</ul>");
+        }
+        else
+        {
+            dsb.AppendLine("There are no unknown types for this request.");
+        }
+
+        dsb.AppendLine();
+        dsb.AppendLine("## Return Type");
+        if (operation.Return is not null)
+        {
+            var returnTypeDefn = typeDefs.GetValueOrDefault(operation.Return.Type);
+            if (returnTypeDefn is not null)
+            {
+                dsb.AppendLine($"<b>{operation.Return.Type}</b>");
+                dsb.AppendLine("```json");
+                dsb.AppendLine(returnTypeDefn);
+                dsb.AppendLine("```");
+            }
+            else
+            {
+                dsb.AppendLine($"{operation.Return.Type} (unknown definition)");
+            }
+        }
+        else
+        {
+            dsb.AppendLine("This operation doesn't return anything.");
+        }
+
+        return dsb.ToString();
     }
 
     private static bool ResolvePrimitive(string key, [NotNullWhen(true)] out object? defaultValue)

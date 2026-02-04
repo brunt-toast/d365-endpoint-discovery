@@ -8,5 +8,5 @@ public class DynSvcOp
     [JsonIgnore] public string ServiceName { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public DynSvcMethodSymbol[] Parameters { get; set; } = [];
-    public required DynSvcMethodSymbol Return { get; set; } 
+    public required DynSvcMethodSymbol? Return { get; set; } 
 }
