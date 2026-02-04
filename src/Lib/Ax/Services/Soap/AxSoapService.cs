@@ -14,19 +14,12 @@ internal class AxSoapService : IAxSoapService
     private readonly AxCallingService _axCalling;
     private readonly IAxConfig _config;
     private readonly ILogger _logger;
-    private readonly IAxSvcDiscoveryService _svcDiscoveryService;
 
-    public AxSoapService(AxCallingService axCalling, IAxConfig config, ILogger logger, IAxSvcDiscoveryService svcDiscoveryService)
+    public AxSoapService(AxCallingService axCalling, IAxConfig config, ILogger logger)
     {
         _axCalling = axCalling;
         _config = config;
         _logger = logger;
-        _svcDiscoveryService = svcDiscoveryService;
-    }
-
-    public async Task<Dictionary<string, string>> GetDataContractsForServices()
-    {
-        return await GetDataContractsForServices((await _svcDiscoveryService.GetAllGroups()).Select(x => x.Name));
     }
 
     public async Task<Dictionary<string,string>> GetDataContractsForServices(IEnumerable<string> serviceNames)
@@ -103,6 +96,5 @@ internal class AxSoapService : IAxSoapService
 
 public interface IAxSoapService
 {
-    Task<Dictionary<string,string>> GetDataContractsForServices();
     Task<Dictionary<string, string>> GetDataContractsForServices(IEnumerable<string> serviceNames);
 }
