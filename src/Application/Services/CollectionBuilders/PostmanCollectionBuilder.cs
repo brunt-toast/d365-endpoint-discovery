@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Mapping;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Types.Postman;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Extensions.Serilog;
@@ -19,8 +20,8 @@ public class PostmanCollectionBuilder : CollectionBuilderBase<PostmanCollection>
     }
 
     protected override PostmanCollection BuildTypedCollection(IEnumerable<DynSvcGroup> groups,
-        Dictionary<string, string> typeDefs, 
-        string resource, 
+        Dictionary<string, string> typeDefs,
+        string resource,
         string collectionName = "Collection")
     {
         var collectionInfo = new PostmanCollectionInfo
@@ -69,6 +70,10 @@ public class PostmanCollectionBuilder : CollectionBuilderBase<PostmanCollection>
             {
                 p[param.Name] = JObject.Parse(typeDef);
             }
+            else if (ResolvePrimitive(param.Type, out object? typeDef2))
+            {
+                p[param.Name] = typeDef2;
+            }
             else
             {
                 _logger.LogWarning("We don't have a definition for type {paramType} for parameter {paramName} " +
@@ -112,5 +117,32 @@ public class PostmanCollectionBuilder : CollectionBuilderBase<PostmanCollection>
             Response = [],
             Items = null
         };
+    }
+
+    private static bool ResolvePrimitive(string key, [NotNullWhen(true)] out object? defaultValue)
+    {
+        if (key.EndsWith("[]"))
+        {
+            defaultValue = new[] { $"[{key}]" };
+        }
+        else
+        {
+            defaultValue = key switch
+            {
+                "String" => string.Empty,
+                "List`1" => Array.Empty<object>(),
+                "Boolean" => false,
+                "Int32" => int.MaxValue,
+                "Int64" => long.MaxValue,
+                "DateTime" => DateTime.MaxValue,
+                "Guid" => Guid.AllBitsSet,
+                "Double" => double.MaxValue,
+                "Decimal" => decimal.MaxValue,
+                "Float" => float.MaxValue,
+                _ => null
+            };
+        }
+
+        return defaultValue is not null;
     }
 }
