@@ -7,7 +7,7 @@
 
 <hr />
 
-@if (!ViewModel.ServiceGroups.Any())
+@if (!ViewModel.VisibleServiceGroups.Any())
 {
     <p style="text-align: center;">
         No results
@@ -15,19 +15,18 @@
 }
 
 <FluentTreeView style="max-height: 180px; overflow-y: auto;">
-    @foreach (var group in ViewModel.ServiceGroups
-        .Where(x => x.Item.Name.Contains(ViewModel.Query, StringComparison.InvariantCultureIgnoreCase))
+    @foreach (var group in ViewModel.VisibleServiceGroups
         .OrderBy(x => x.Item.Name))
     {
         <FluentTreeItem InitiallyExpanded="true">
             <FluentCheckbox Label="@group.Item.Name" @bind-Value="group.IsSelected" />
             @foreach (var service in group.Children
-                    .Where(x => x.Item.Name.Contains(ViewModel.Query, StringComparison.InvariantCultureIgnoreCase))
-                    .OrderBy(x => x.Item.Name))
+                          .OrderBy(x => x.Item.Name))
             {
                 <FluentTreeItem InitiallyExpanded="true" Style="padding-left: 1em;">
                     <FluentCheckbox Label="@service.Item.Name" @bind-Value="@service.IsSelected" />
-                    @foreach (var operation in service.Children)
+                    @foreach (var operation in service.Children
+                                  .OrderBy(x => x.Item.Name))
                     {
                         <FluentTreeItem>
                             <FluentCheckbox Label="@operation.Item.Name" @bind-Value="operation.IsSelected" />

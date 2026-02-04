@@ -3,6 +3,7 @@ using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.CollectionB
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.Serialisers;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Config;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Soap;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
@@ -13,13 +14,19 @@ internal class MainService : IMainService
     private readonly IAxSvcDiscoveryService _discoveryService;
     private readonly CollectionBuilderFactory _collectionBuilderFactory;
     private readonly SerialiserFactory _serialiserFactory;
+    private readonly IAxSoapService _soapService;
 
-    public MainService(IAxConfig config, IAxSvcDiscoveryService discoveryService, CollectionBuilderFactory collectionBuilderFactory, SerialiserFactory serialiserFactory)
+    public MainService(IAxConfig config, 
+        IAxSvcDiscoveryService discoveryService, 
+        CollectionBuilderFactory collectionBuilderFactory, 
+        SerialiserFactory serialiserFactory,
+        IAxSoapService soapService)
     {
         _config = config;
         _discoveryService = discoveryService;
         _collectionBuilderFactory = collectionBuilderFactory;
         _serialiserFactory = serialiserFactory;
+        _soapService = soapService;
     }
 
     public async Task<string> GetServiceCollectionAsync(GetServiceCollectionRequest request)
@@ -27,8 +34,10 @@ internal class MainService : IMainService
         var collectionBuilder = _collectionBuilderFactory.GetCollectionBuilder(request.OutputSchema);
         var serialiser = _serialiserFactory.GetSerialiser(request.OutputFormat);
 
-        var services = await _discoveryService.MapServicesAsync(request.GrepGroupsRegex, request.GrepServicesRegex, request.GrepOperationsRegex);
-        var collection = collectionBuilder.BuildCollection(services, _config.Resource, request.CollectionName);
+        var services = (await _discoveryService.MapServicesAsync(request.GrepGroupsRegex, request.GrepServicesRegex, request.GrepOperationsRegex))
+            .ToList();
+        var types = await _soapService.GetDataContractsForServices(services.Select(x => x.Name));
+        var collection = collectionBuilder.BuildCollection(services, types, _config.Resource, request.CollectionName);
         var serialisation = serialiser.Serialise(collection, request.Minify);
 
         return serialisation;
@@ -52,11 +61,12 @@ internal class MainService : IMainService
         return ret;
     }
 
-    public string BuildCustomCollection(BuildCustomCollectionRequest request)
+    public async Task<string> BuildCustomCollection(BuildCustomCollectionRequest request)
     {
         var collectionBuilder = _collectionBuilderFactory.GetCollectionBuilder(request.OutputSchema);
         var serialiser = _serialiserFactory.GetSerialiser(request.OutputFormat);
-        var collection = collectionBuilder.BuildCollection(request.Services, request.Resource, request.CollectionName);
+        var types = await _soapService.GetDataContractsForServices(request.Services.Select(x => x.Name));
+        var collection = collectionBuilder.BuildCollection(request.Services, types, request.Resource, request.CollectionName);
         var serialisation = serialiser.Serialise(collection, request.Minify);
         return serialisation;
     }
@@ -68,5 +78,5 @@ public interface IMainService
     Task<IEnumerable<DynSvcGroup>> GetAllGroups();
     Task<IEnumerable<DynSvc>> GetServicesForGroups(GetServicesForGroupsRequest request);
     Task<IEnumerable<DynSvcOp>> GetOperationsForServices(GetOperationsForServicesRequest request);
-    string BuildCustomCollection(BuildCustomCollectionRequest request);
+    Task<string> BuildCustomCollection(BuildCustomCollectionRequest request);
 }

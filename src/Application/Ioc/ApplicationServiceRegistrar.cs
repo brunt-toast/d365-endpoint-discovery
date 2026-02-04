@@ -3,6 +3,7 @@ using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Logging.Sinks;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.CollectionBuilders;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.Serialisers;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Ioc;
 using Microsoft.Extensions.DependencyInjection;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Ioc;
 using Serilog;
@@ -22,18 +23,7 @@ public static class ApplicationServiceRegistrar
         sc.AddSingleton<CollectionBuilderFactory>();
 
         sc.AddSingleton<ILogEventSink, DebuggerSink>();
-        sc.AddSingleton<LoggerConfiguration>(sp =>
-        {
-            var ret = new LoggerConfiguration();
-            foreach (var sink in sp.GetServices<ILogEventSink>())
-            {
-                ret.WriteTo.Sink(sink);
-            }
 
-            return ret;
-        });
-
-        sc.AddSingleton<ILogger>(x => x.GetRequiredService<LoggerConfiguration>().CreateLogger());
         AppDomain.CurrentDomain.ProcessExit += (_, _) => Log.CloseAndFlush();
     }
 }

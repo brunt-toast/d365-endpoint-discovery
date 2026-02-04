@@ -10,10 +10,12 @@ internal class CommandParseResultSink : ILogEventSink, ICommandParseResultSink
     private TextWriter? _errorWriter;
     private LogEventLevel _logLevel;
 
-    public IDisposable Configure(ParseResult parseResult, LogEventLevel logLevel = LogEventLevel.Warning)
+    public IDisposable Configure(ParseResult parseResult, LogEventLevel logLevel = LogEventLevel.Warning, bool sendAllToError = false)
     {
         _logLevel = logLevel;
-        _outputWriter = parseResult.InvocationConfiguration.Output;
+        _outputWriter = sendAllToError 
+            ? parseResult.InvocationConfiguration.Error
+            : parseResult.InvocationConfiguration.Output;
         _errorWriter = parseResult.InvocationConfiguration.Error;
         return new CommandParseResultSinkConfigurationDisposable(this);
     }
@@ -71,5 +73,5 @@ internal class CommandParseResultSink : ILogEventSink, ICommandParseResultSink
 
 public interface ICommandParseResultSink
 {
-    IDisposable Configure(ParseResult parseResult, LogEventLevel logLevel = LogEventLevel.Warning);
+    IDisposable Configure(ParseResult parseResult, LogEventLevel logLevel = LogEventLevel.Warning, bool sendAllToError = false);
 }

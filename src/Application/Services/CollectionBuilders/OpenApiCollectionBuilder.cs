@@ -6,7 +6,10 @@ namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.Collect
 
 public class OpenApiCollectionBuilder  : CollectionBuilderBase<OpenApiCollection>
 {
-    protected override OpenApiCollection BuildTypedCollection(IEnumerable<DynSvcGroup> groups, string resource, string collectionName = "Collection")
+    protected override OpenApiCollection BuildTypedCollection(IEnumerable<DynSvcGroup> groups, 
+        Dictionary<string, string> typeDefs, 
+        string resource, 
+        string collectionName = "Collection")
     {
         var groupsList = groups.ToList();
 

@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace BlazorHybrid.Extensions.Microsoft.AspNetCore.Components;
+namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.Extensions.Microsoft.AspNetCore.Components;
 
 internal static class RenderFragmentExtensions
 {

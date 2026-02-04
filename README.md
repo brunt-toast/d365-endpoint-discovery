@@ -13,7 +13,7 @@
 [![JSON](https://img.shields.io/badge/JSON-000?logo=json&logoColor=fff)](#)
 [![YAML](https://img.shields.io/badge/YAML-CB171E?logo=yaml&logoColor=fff)](#)
 
-A CLI+GUI tool to automate discovery of Dynamics 365 service endpoints.
+A CLI+GUI tool to explore Dynamics 365 Finance &amp; Operations APIs. We use the service discovery endpoints to build a map of available services, then query the relevant SOAP endpoints to build best-guess type definitions for the data contracts used in the requests. 
 
 ## ⚠️ Warning ⚠️
 
@@ -76,7 +76,7 @@ dynsvcdiscovery \
     2>dynsvcdiscovery.log
 ```
 
-For more verbose results, set the log level to Trace. Note that there will be no way to separate the final output from logging messages below the Warning level. 
+For more verbose results, set the log level to Trace. You may also want to use `--log-to-stderr|-2` to divert all logging to the error stream, so as not to interfere with the collection you're exporting.
 
 ## ✏️ Contributors' Notice
 The use of AI-generated code is strictly prohibited in this repository. See [CONTRIBUTING.md](./CONTRIBUTING.md).

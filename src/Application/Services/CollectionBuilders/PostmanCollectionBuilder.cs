@@ -2,12 +2,17 @@
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Mapping;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Types.Postman;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.CollectionBuilders;
 
 public class PostmanCollectionBuilder : CollectionBuilderBase<PostmanCollection>
 {
-    protected override PostmanCollection BuildTypedCollection(IEnumerable<DynSvcGroup> groups, string resource, string collectionName = "Collection")
+    protected override PostmanCollection BuildTypedCollection(IEnumerable<DynSvcGroup> groups,
+        Dictionary<string, string> typeDefs, 
+        string resource, 
+        string collectionName = "Collection")
     {
         var collectionInfo = new PostmanCollectionInfo
         {
@@ -20,49 +25,51 @@ public class PostmanCollectionBuilder : CollectionBuilderBase<PostmanCollection>
         return new PostmanCollection
         {
             Info = collectionInfo,
-            Items = groups.Select(GetPostmanItem).ToArray()
+            Items = groups.Select(x => GetPostmanItem(x, typeDefs)).ToArray()
         };
     }
 
-    private static PostmanItem GetPostmanItem(DynSvcGroup group)
+    private static PostmanItem GetPostmanItem(DynSvcGroup group, Dictionary<string, string> typeDefs)
     {
         return new PostmanItem
         {
             Name = group.Name,
-            Items = group.Services.Select(GetPostmanItem).ToArray(),
+            Items = group.Services.Select(x => GetPostmanItem(x, typeDefs)).ToArray(),
             Request = null,
             Response = null
         };
     }
 
-    private static PostmanItem GetPostmanItem(DynSvc service)
+    private static PostmanItem GetPostmanItem(DynSvc service, Dictionary<string, string> typeDefs)
     {
         return new PostmanItem
         {
             Name = service.Name,
-            Items = service.Operations.Select(GetPostmanItem).ToArray(),
+            Items = service.Operations.Select(x => GetPostmanItem(x, typeDefs)).ToArray(),
             Request = null,
             Response = null
         };
     }
 
-    private static PostmanItem GetPostmanItem(DynSvcOp operation)
+    private static PostmanItem GetPostmanItem(DynSvcOp operation, Dictionary<string, string> typeDefs)
     {
-        StringBuilder sb = new();
-        sb.AppendLine("{");
-        for (int i = 0; i < operation.Parameters.Length; i++)
+        Dictionary<string, object> p = [];
+        foreach (var param in operation.Parameters)
         {
-            var parameter = operation.Parameters[i];
-
-            var value = DynamicsToJsonTypeMapper.GetDefaultValue(parameter.Type);
-            sb.AppendLine($"\t\"{parameter.Name}\": {value}{(i == operation.Parameters.Length - 1 ? "" : ',')}");
+            if (typeDefs.TryGetValue(param.Type, out string? typeDef))
+            {
+                p[param.Name] = JObject.Parse(typeDef);
+            }
+            else
+            {
+                p[param.Name] = $"[Unknown type {param.Type}]";
+            }
         }
-        sb.AppendLine("}");
 
         PostmanBody body = new()
         {
             Mode = "raw",
-            Raw = sb.ToString()
+            Raw = JsonConvert.SerializeObject(p, Formatting.Indented)
         };
 
         PostmanUrl uri = new PostmanUrl

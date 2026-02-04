@@ -1,11 +1,12 @@
 ﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types;
 
-namespace BlazorHybrid.Models;
+namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.Models;
 
 public class SelectableDynSvcModel
 {
     public DynSvc Item { get; }
     public SelectableDynSvcOpModel[] Children { get; }
+    public string FullName => $"{Item.ServiceGroupName}/{Item.Name}";
 
     public bool IsSelected
     {

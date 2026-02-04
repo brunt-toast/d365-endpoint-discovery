@@ -1,12 +1,12 @@
 ﻿using System.Text;
-using BlazorHybrid.Models;
 using CommunityToolkit.Maui.Storage;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Enums;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Requests;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.Models;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types;
 
-namespace BlazorHybrid.ViewModels;
+namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.ViewModels;
 
 internal class BuildCollectionViewModel : IBuildCollectionViewModel
 {
@@ -41,7 +41,7 @@ internal class BuildCollectionViewModel : IBuildCollectionViewModel
     {
         _resource = credentials.ResourceUri;
 
-        var targetedOps = operations.ServiceGroups
+        var targetedOps = operations.VisibleServiceGroups
             .SelectMany(x => x.Children)
             .SelectMany(x => x.Children)
             .Where(x => x.IsSelected);
@@ -70,7 +70,7 @@ internal class BuildCollectionViewModel : IBuildCollectionViewModel
 
     public async Task SaveToFileAsync()
     {
-        string content = _mainService.BuildCustomCollection(new BuildCustomCollectionRequest
+        string content = await _mainService.BuildCustomCollection(new BuildCustomCollectionRequest
         {
             OutputSchema = OutputSchema,
             OutputFormat = OutputFormat,

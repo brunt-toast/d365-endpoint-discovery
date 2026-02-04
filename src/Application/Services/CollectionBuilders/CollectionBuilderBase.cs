@@ -4,8 +4,8 @@ namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.Collect
 
 public abstract class CollectionBuilderBase<T> : ICollectionBuilder
 {
-    public object BuildCollection(IEnumerable<DynSvcGroup> groups, string resource, string collectionName = "Collection") => 
-        BuildTypedCollection(groups, resource, collectionName)!;
+    public object BuildCollection(IEnumerable<DynSvcGroup> groups, Dictionary<string,string> typeDefs, string resource, string collectionName = "Collection") => 
+        BuildTypedCollection(groups, typeDefs, resource, collectionName)!;
 
-    protected abstract T BuildTypedCollection(IEnumerable<DynSvcGroup> groups, string resource, string collectionName = "Collection");
+    protected abstract T BuildTypedCollection(IEnumerable<DynSvcGroup> groups, Dictionary<string,string> typeDefs, string resource, string collectionName = "Collection");
 }

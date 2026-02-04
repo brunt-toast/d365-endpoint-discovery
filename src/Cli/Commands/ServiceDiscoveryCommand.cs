@@ -27,13 +27,13 @@ internal class ServiceDiscoveryCommand : Command
     private readonly SchemaOption _schemaOption = new();
     private readonly FormatOption _formatOption = new();
     private readonly LogLevelOption _logLevelOption = new();
+    private readonly LogToStdErrOption _logToStdErrOption = new();
 
     private readonly MinifyFlag _minifyFlag = new();
 
     public ServiceDiscoveryCommand(IMainService mainService,
         ICommandParseResultSink sink,
-        IAxConfig config,
-        ODataCommand oDataCommand) : base("service-discovery", "Discover Dynamics 365 service endpoints automatically.")
+        IAxConfig config) : base("service-discovery", "Discover Dynamics 365 service endpoints automatically.")
     {
         _mainService = mainService;
         _sink = sink;
@@ -49,10 +49,9 @@ internal class ServiceDiscoveryCommand : Command
         Options.Add(_schemaOption);
         Options.Add(_formatOption);
         Options.Add(_logLevelOption);
+        Options.Add(_logToStdErrOption);
 
         Options.Add(_minifyFlag);
-
-        Add(oDataCommand);
 
         SetAction(ExecuteAction);
     }
@@ -71,8 +70,9 @@ internal class ServiceDiscoveryCommand : Command
         string collectionName = parseResult.GetValue(_collectionNameOption) ?? string.Empty;
         bool minify = parseResult.GetValue(_minifyFlag);
         LogEventLevel logLevel = parseResult.GetValue(_logLevelOption);
+        bool logToStdErr = parseResult.GetValue(_logToStdErrOption);
 
-        using var _ = _sink.Configure(parseResult, logLevel);
+        using var _ = _sink.Configure(parseResult, logLevel, logToStdErr);
 
         _config.ClientId = clientId;
         _config.ClientSecret = clientSecret;

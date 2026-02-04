@@ -1,6 +1,6 @@
 ﻿using Microsoft.FluentUI.AspNetCore.Components;
 
-namespace BlazorHybrid.Components;
+namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.Components;
 
 public partial class ServiceDiscoveryComponent
 {

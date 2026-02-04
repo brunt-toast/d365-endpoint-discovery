@@ -1,10 +1,13 @@
-﻿using System.Xml.Linq;
+﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Interfaces;
+using System.Xml.Linq;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types.OData;
 
-public class AxEntityTypePropertyDefn
+public class AxEntityTypePropertyDefn : IPropertyDefn
 {
     public required string Name { get; init; }
+    public string Type => AxType ?? string.Empty;
+
     public required string TypeName { get; init; }
     public required bool IsNullable { get; init; }
     public required string? AxType { get; init; }
