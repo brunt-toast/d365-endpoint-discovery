@@ -11,14 +11,14 @@ namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Soap;
 
 internal class AxSoapService : IAxSoapService
 {
-    private readonly AxAuthService _authSvc;
+    private readonly AxCallingService _axCalling;
     private readonly IAxConfig _config;
     private readonly ILogger _logger;
     private readonly IAxSvcDiscoveryService _svcDiscoveryService;
 
-    public AxSoapService(AxAuthService authSvc, IAxConfig config, ILogger logger, IAxSvcDiscoveryService svcDiscoveryService)
+    public AxSoapService(AxCallingService axCalling, IAxConfig config, ILogger logger, IAxSvcDiscoveryService svcDiscoveryService)
     {
-        _authSvc = authSvc;
+        _axCalling = axCalling;
         _config = config;
         _logger = logger;
         _svcDiscoveryService = svcDiscoveryService;
@@ -66,7 +66,7 @@ internal class AxSoapService : IAxSoapService
     {
         try
         {
-            string httpResponse = await GetHttp($"{_config.Resource}/soap/services/{serviceName}?wsdl");
+            string httpResponse = await _axCalling.GetHttp($"{_config.Resource}/soap/services/{serviceName}?wsdl");
             var doc = XDocument.Parse(httpResponse);
             XNamespace wsdl = "http://schemas.xmlsoap.org/wsdl/";
 
@@ -84,7 +84,7 @@ internal class AxSoapService : IAxSoapService
 
     private async Task<IEnumerable<string>> GetXsdSchemaLocationsForWsdlUri(string wsdlUri)
     {
-        string httpResponse = await GetHttp(wsdlUri);
+        string httpResponse = await _axCalling.GetHttp(wsdlUri);
         var doc = XDocument.Parse(httpResponse);
         XNamespace xsd = "http://www.w3.org/2001/XMLSchema";
 
@@ -96,36 +96,8 @@ internal class AxSoapService : IAxSoapService
 
     private async Task<string> GetXsd(string xsdUri)
     {
-        string httpResponse = await GetHttp(xsdUri);
+        string httpResponse = await _axCalling.GetHttp(xsdUri);
         return httpResponse;
-    }
-
-    private async Task<string> GetHttp(string endpoint)
-    {
-        string bearer = await _authSvc.GetBearerToken();
-        using var client = new HttpClient(new HttpClientHandler
-        {
-            ServerCertificateCustomValidationCallback =
-                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-        });
-
-        HttpRequestMessage request = new(HttpMethod.Get, endpoint);
-        request.Headers.Clear();
-        request.Headers.Add("Authorization", $"Bearer {bearer}");
-        var response = await client.SendAsync(request);
-
-        string content = await response.Content.ReadAsStringAsync();
-
-        if (response.StatusCode == HttpStatusCode.TooManyRequests)
-        {
-            _logger.LogError("Too many requests! ({endpoint})", endpoint);
-        }
-        else if (!response.IsSuccessStatusCode)
-        {
-            _logger.LogError("A request to {endpoint} returned HTTP status {statusInt} ({status}). Content was: {newLine}{content}", endpoint, (int)response.StatusCode, response.StatusCode, Environment.NewLine, content);
-        }
-
-        return content;
     }
 }
 

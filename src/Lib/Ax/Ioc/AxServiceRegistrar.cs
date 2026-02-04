@@ -16,10 +16,11 @@ public static class AxServiceRegistrar
             Resource = string.Empty,
             TokenRequestEndpoint = string.Empty
         });
+        sc.AddSingleton<AxCallingService>();
         sc.AddSingleton<AxAuthService>();
+        sc.AddSingleton<AxODataService>();
         sc.AddSingleton<IAxSvcDiscoveryService, AxSvcDiscoveryService>();
         sc.AddSingleton<IJsonConverterService, JsonConverterService>();
-        sc.AddSingleton<IAxODataService, AxODataService>();
         sc.AddSingleton<IAxSoapService, AxSoapService>();
     }
 }
