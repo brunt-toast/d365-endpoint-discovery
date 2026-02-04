@@ -1,5 +1,6 @@
 ﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Config;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Soap;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Ioc;
@@ -19,5 +20,6 @@ public static class AxServiceRegistrar
         sc.AddSingleton<IAxSvcDiscoveryService, AxSvcDiscoveryService>();
         sc.AddSingleton<IJsonConverterService, JsonConverterService>();
         sc.AddSingleton<IAxODataService, AxODataService>();
+        sc.AddSingleton<IAxSoapService, AxSoapService>();
     }
 }

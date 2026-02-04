@@ -15,6 +15,12 @@ public static class LoggerExtensions
     }
 
     [MessageTemplateFormatMethod(nameof(messageTemplate))]
+    public static void LogWarning(this ILogger logger, string messageTemplate, params object?[]? propertyValues)
+    {
+        logger.Warning(messageTemplate, propertyValues);
+    }
+
+    [MessageTemplateFormatMethod(nameof(messageTemplate))]
     public static void LogError(this ILogger logger, string messageTemplate, params object?[]? propertyValues)
     {
         logger.Error(messageTemplate, propertyValues);
