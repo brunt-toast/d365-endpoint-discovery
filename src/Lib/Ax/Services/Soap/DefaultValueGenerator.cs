@@ -1,4 +1,6 @@
-﻿namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Soap;
+﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types.Soap;
+
+namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Soap;
 
 internal static class DefaultValueGenerator
 {
