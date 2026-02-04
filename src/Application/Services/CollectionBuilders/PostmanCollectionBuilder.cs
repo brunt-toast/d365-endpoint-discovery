@@ -86,7 +86,14 @@ public class PostmanCollectionBuilder : CollectionBuilderBase<PostmanCollection>
         PostmanBody body = new()
         {
             Mode = "raw",
-            Raw = JsonConvert.SerializeObject(p, Formatting.Indented)
+            Raw = JsonConvert.SerializeObject(p, Formatting.Indented),
+            Options = new PostmanBodyOptions
+            {
+                Raw = new RawPostmanBodyOptions
+                {
+                    Language = "json"
+                }
+            }
         };
 
         PostmanUrl uri = new PostmanUrl
