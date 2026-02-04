@@ -1,14 +1,23 @@
 ﻿using System.Text;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Mapping;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Types.Postman;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Extensions.Serilog;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Serilog;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.CollectionBuilders;
 
 public class PostmanCollectionBuilder : CollectionBuilderBase<PostmanCollection>
 {
+    private readonly ILogger _logger;
+
+    public PostmanCollectionBuilder(ILogger logger)
+    {
+        _logger = logger;
+    }
+
     protected override PostmanCollection BuildTypedCollection(IEnumerable<DynSvcGroup> groups,
         Dictionary<string, string> typeDefs, 
         string resource, 
@@ -29,7 +38,7 @@ public class PostmanCollectionBuilder : CollectionBuilderBase<PostmanCollection>
         };
     }
 
-    private static PostmanItem GetPostmanItem(DynSvcGroup group, Dictionary<string, string> typeDefs)
+    private PostmanItem GetPostmanItem(DynSvcGroup group, Dictionary<string, string> typeDefs)
     {
         return new PostmanItem
         {
@@ -40,7 +49,7 @@ public class PostmanCollectionBuilder : CollectionBuilderBase<PostmanCollection>
         };
     }
 
-    private static PostmanItem GetPostmanItem(DynSvc service, Dictionary<string, string> typeDefs)
+    private PostmanItem GetPostmanItem(DynSvc service, Dictionary<string, string> typeDefs)
     {
         return new PostmanItem
         {
@@ -51,7 +60,7 @@ public class PostmanCollectionBuilder : CollectionBuilderBase<PostmanCollection>
         };
     }
 
-    private static PostmanItem GetPostmanItem(DynSvcOp operation, Dictionary<string, string> typeDefs)
+    private PostmanItem GetPostmanItem(DynSvcOp operation, Dictionary<string, string> typeDefs)
     {
         Dictionary<string, object> p = [];
         foreach (var param in operation.Parameters)
@@ -62,6 +71,9 @@ public class PostmanCollectionBuilder : CollectionBuilderBase<PostmanCollection>
             }
             else
             {
+                _logger.LogWarning("We don't have a definition for type {paramType} for parameter {paramName} " +
+                                   "of {operationServiceGroupName}/{operationServiceName}/{operationName}",
+                    param.Type, param.Name, operation.ServiceGroupName, operation.ServiceName, operation.Name);
                 p[param.Name] = $"[Unknown type {param.Type}]";
             }
         }

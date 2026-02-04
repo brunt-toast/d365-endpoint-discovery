@@ -1,16 +1,24 @@
 ﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Enums;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.CollectionBuilders;
 
 public class CollectionBuilderFactory
 {
+    private readonly IServiceProvider _services;
+
+    public CollectionBuilderFactory(IServiceProvider services)
+    {
+        _services = services;
+    }
+
     public ICollectionBuilder GetCollectionBuilder(OutputSchemas schema)
     {
         return schema switch
         {
-            OutputSchemas.Default => new DefaultCollectionBuilder(),
-            OutputSchemas.Postman => new PostmanCollectionBuilder(),
-            OutputSchemas.OpenApi => new OpenApiCollectionBuilder(),
+            OutputSchemas.Default => _services.GetRequiredService<DefaultCollectionBuilder>(),
+            OutputSchemas.Postman => _services.GetRequiredService<PostmanCollectionBuilder>(),
+            OutputSchemas.OpenApi => _services.GetRequiredService<OpenApiCollectionBuilder>(),
             _ => throw new ArgumentOutOfRangeException(nameof(schema), schema, null)
         };
     }

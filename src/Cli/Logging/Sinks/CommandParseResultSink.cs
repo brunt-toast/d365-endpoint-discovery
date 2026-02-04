@@ -61,7 +61,7 @@ internal class CommandParseResultSink : ILogEventSink, ICommandParseResultSink
         {
             _instance = instance;
         }
-
+        
         public void Dispose()
         {
             _instance._logLevel = default;
