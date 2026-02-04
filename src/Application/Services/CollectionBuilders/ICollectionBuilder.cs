@@ -4,5 +4,5 @@ namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.Collect
 
 public interface ICollectionBuilder
 {
-    object BuildCollection(IEnumerable<DynSvcGroup> groups, string resource, string collectionName = "Collection");
+    object BuildCollection(IEnumerable<DynSvcGroup> groups, Dictionary<string,string> typeDefs, string resource, string collectionName = "Collection");
 }

@@ -70,7 +70,7 @@ internal class BuildCollectionViewModel : IBuildCollectionViewModel
 
     public async Task SaveToFileAsync()
     {
-        string content = _mainService.BuildCustomCollection(new BuildCustomCollectionRequest
+        string content = await _mainService.BuildCustomCollection(new BuildCustomCollectionRequest
         {
             OutputSchema = OutputSchema,
             OutputFormat = OutputFormat,
