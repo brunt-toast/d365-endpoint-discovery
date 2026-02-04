@@ -1,6 +1,4 @@
-﻿@using System.Diagnostics
-@using System.Reflection
-@using Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.Components.Receivers
+﻿@using Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.Components.Receivers
 @inherits LayoutComponentBase
 @inject IFileSystem FileSystem
 
@@ -8,7 +6,7 @@
 
 <div style="color: #cccccc; position: absolute; bottom: 0; right: 0;">
     <a @onclick="() => Launcher.Default.OpenAsync(FileSystem.AppDataDirectory)">
-        @FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion
+        @Version
     </a>
 </div>
 
