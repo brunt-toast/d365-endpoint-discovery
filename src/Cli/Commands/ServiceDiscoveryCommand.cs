@@ -27,6 +27,7 @@ internal class ServiceDiscoveryCommand : Command
     private readonly SchemaOption _schemaOption = new();
     private readonly FormatOption _formatOption = new();
     private readonly LogLevelOption _logLevelOption = new();
+    private readonly LogToStdOutOption _logToStdOutOption = new();
     private readonly LogToStdErrOption _logToStdErrOption = new();
 
     private readonly MinifyFlag _minifyFlag = new();
@@ -49,6 +50,7 @@ internal class ServiceDiscoveryCommand : Command
         Options.Add(_schemaOption);
         Options.Add(_formatOption);
         Options.Add(_logLevelOption);
+        Options.Add(_logToStdOutOption);
         Options.Add(_logToStdErrOption);
 
         Options.Add(_minifyFlag);
@@ -70,9 +72,10 @@ internal class ServiceDiscoveryCommand : Command
         string collectionName = parseResult.GetValue(_collectionNameOption) ?? string.Empty;
         bool minify = parseResult.GetValue(_minifyFlag);
         LogEventLevel logLevel = parseResult.GetValue(_logLevelOption);
+        bool logToStdOut = parseResult.GetValue(_logToStdOutOption);
         bool logToStdErr = parseResult.GetValue(_logToStdErrOption);
 
-        using var _ = _sink.Configure(parseResult, logLevel, logToStdErr);
+        using var _ = _sink.Configure(parseResult, logLevel, logToStdOut, logToStdErr);
 
         _config.ClientId = clientId;
         _config.ClientSecret = clientSecret;

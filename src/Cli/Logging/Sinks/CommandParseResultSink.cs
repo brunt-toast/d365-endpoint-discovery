@@ -10,13 +10,24 @@ internal class CommandParseResultSink : ILogEventSink, ICommandParseResultSink
     private TextWriter? _errorWriter;
     private LogEventLevel _logLevel;
 
-    public IDisposable Configure(ParseResult parseResult, LogEventLevel logLevel = LogEventLevel.Warning, bool sendAllToError = false)
+    public IDisposable Configure(ParseResult parseResult, 
+        LogEventLevel logLevel = LogEventLevel.Warning, 
+        bool sendAllToOut = false, 
+        bool sendAllToError = false)
     {
+        if (sendAllToOut && sendAllToError)
+        {
+            throw new ArgumentException($"{nameof(sendAllToOut)} and {nameof(sendAllToError)} cannot both be true", 
+                nameof(sendAllToError));
+        }
+
         _logLevel = logLevel;
         _outputWriter = sendAllToError 
             ? parseResult.InvocationConfiguration.Error
             : parseResult.InvocationConfiguration.Output;
-        _errorWriter = parseResult.InvocationConfiguration.Error;
+        _errorWriter = sendAllToOut
+            ? parseResult.InvocationConfiguration.Output
+            : parseResult.InvocationConfiguration.Error;
         return new CommandParseResultSinkConfigurationDisposable(this);
     }
 
@@ -73,5 +84,8 @@ internal class CommandParseResultSink : ILogEventSink, ICommandParseResultSink
 
 public interface ICommandParseResultSink
 {
-    IDisposable Configure(ParseResult parseResult, LogEventLevel logLevel = LogEventLevel.Warning, bool sendAllToError = false);
+    IDisposable Configure(ParseResult parseResult, 
+        LogEventLevel logLevel = LogEventLevel.Warning,
+        bool sendAllToOut = false, 
+        bool sendAllToError = false);
 }
