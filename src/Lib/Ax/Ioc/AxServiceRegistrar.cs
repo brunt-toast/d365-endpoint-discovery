@@ -1,4 +1,5 @@
-﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Config;
+﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Ioc;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Config;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Soap;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +10,8 @@ public static class AxServiceRegistrar
 {
     public static void RegisterServices(IServiceCollection sc)
     {
+        CoreServiceRegistrar.RegisterServices(sc);
+
         sc.AddSingleton<IAxConfig, AxConfig>(_ => new AxConfig
         {
             ClientId = string.Empty,
