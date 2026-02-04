@@ -32,8 +32,7 @@ internal class ServiceDiscoveryCommand : Command
 
     public ServiceDiscoveryCommand(IMainService mainService,
         ICommandParseResultSink sink,
-        IAxConfig config,
-        ODataCommand oDataCommand) : base("service-discovery", "Discover Dynamics 365 service endpoints automatically.")
+        IAxConfig config) : base("service-discovery", "Discover Dynamics 365 service endpoints automatically.")
     {
         _mainService = mainService;
         _sink = sink;
@@ -51,8 +50,6 @@ internal class ServiceDiscoveryCommand : Command
         Options.Add(_logLevelOption);
 
         Options.Add(_minifyFlag);
-
-        Add(oDataCommand);
 
         SetAction(ExecuteAction);
     }

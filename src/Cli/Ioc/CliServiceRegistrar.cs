@@ -11,7 +11,6 @@ public static class CliServiceRegistrar
     public static void RegisterServices(IServiceCollection sc)
     {
         ApplicationServiceRegistrar.RegisterServices(sc);
-        sc.AddTransient<ODataCommand>();
         sc.AddTransient<ServiceDiscoveryCommand>();
         sc.AddTransient<DynSvcDiscoveryRootCommand>();
 
