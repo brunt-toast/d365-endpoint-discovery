@@ -50,7 +50,10 @@ internal sealed class TypeTreeBuilder
 
         foreach (var p in resolved.Properties)
         {
-            props[p.Name] = Build(types, p.Type, stack);
+            props[p.Name] = Build(types, p.Type, stack) with
+            {
+                IsCollection = p.IsCollection
+            };
             //props[p.Name].IsNullable = p.IsNullable;
         }
 

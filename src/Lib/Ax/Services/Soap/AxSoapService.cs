@@ -22,7 +22,7 @@ internal class AxSoapService : IAxSoapService
         _logger = logger;
     }
 
-    public async Task<Dictionary<string,string>> GetDataContractsForServices(IEnumerable<string> serviceNames)
+    public async Task<Dictionary<string, string>> GetDataContractsForServices(IEnumerable<string> serviceNames)
     {
         var getWsdlLocationsTasks = serviceNames.Select(GetWsdlLocationsForService);
         var getWsdlLocationsResults = await Task.WhenAll(getWsdlLocationsTasks);
@@ -45,16 +45,60 @@ internal class AxSoapService : IAxSoapService
 
         var inheritance = new SoapDataContractInheritanceResolver(_logger);
         var treeBuilder = new TypeTreeBuilder(inheritance);
-        
+
+        NormalizeArrayUsages(parsed, DetectArrayWrappers(parsed));
+
         return parsed.Select(x =>
         {
             var tree = treeBuilder.Build(parsed, x.Name);
             var defaultObject = DefaultValueGenerator.Generate(tree);
             var json = JsonConvert.SerializeObject(defaultObject, Formatting.Indented);
             return new KeyValuePair<string, string>(x.Name, json);
-        }).ToDictionary(); 
+        }).ToDictionary();
     }
 
+    private static Dictionary<string, string> DetectArrayWrappers(IEnumerable<AxDataContractDefn> types)
+    {
+        var map = new Dictionary<string, string>();
+
+        foreach (var t in types)
+        {
+            if (t.Properties.Length != 1)
+            {
+                continue;
+            }
+
+            var p = t.Properties[0];
+
+            if (!p.IsCollection)
+            {
+                continue;
+            }
+
+            map[t.Name] = p.Type;
+        }
+
+        return map;
+    }
+
+    private static void NormalizeArrayUsages(IEnumerable<AxDataContractDefn> types, Dictionary<string, string> wrappers)
+    {
+        foreach (var t in types)
+        {
+            for (int i = 0; i < t.Properties.Length; i++)
+            {
+                if (wrappers.TryGetValue(t.Properties[i].Type, out var itemType))
+                {
+                    t.Properties[i] = t.Properties[i] with
+                    {
+                        Type = itemType,
+                        MaximumOccurances = null
+                    };
+                }
+            }
+        }
+    }
+    
     private async Task<IEnumerable<string>> GetWsdlLocationsForService(string serviceName)
     {
         try

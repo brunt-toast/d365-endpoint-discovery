@@ -13,6 +13,13 @@ internal static class DefaultValueGenerator
         //    return null;
         //}
 
+        return node.IsCollection 
+            ? new[] { GenerateSingle(node) } 
+            : GenerateSingle(node);
+    }
+
+    private static object? GenerateSingle(TypeNode node)
+    {
         if (node.IsPrimitive)
         {
             return PrimitiveDefault(node.TypeName);
