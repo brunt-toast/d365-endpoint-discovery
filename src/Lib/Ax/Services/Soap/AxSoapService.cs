@@ -14,22 +14,15 @@ internal class AxSoapService : IAxSoapService
     private readonly AxCallingService _axCalling;
     private readonly IAxConfig _config;
     private readonly ILogger _logger;
-    private readonly IAxSvcDiscoveryService _svcDiscoveryService;
 
-    public AxSoapService(AxCallingService axCalling, IAxConfig config, ILogger logger, IAxSvcDiscoveryService svcDiscoveryService)
+    public AxSoapService(AxCallingService axCalling, IAxConfig config, ILogger logger)
     {
         _axCalling = axCalling;
         _config = config;
         _logger = logger;
-        _svcDiscoveryService = svcDiscoveryService;
     }
 
-    public async Task<Dictionary<string, string>> GetDataContractsForServices()
-    {
-        return await GetDataContractsForServices((await _svcDiscoveryService.GetAllGroups()).Select(x => x.Name));
-    }
-
-    public async Task<Dictionary<string,string>> GetDataContractsForServices(IEnumerable<string> serviceNames)
+    public async Task<Dictionary<string, string>> GetDataContractsForServices(IEnumerable<string> serviceNames)
     {
         var getWsdlLocationsTasks = serviceNames.Select(GetWsdlLocationsForService);
         var getWsdlLocationsResults = await Task.WhenAll(getWsdlLocationsTasks);
@@ -52,16 +45,60 @@ internal class AxSoapService : IAxSoapService
 
         var inheritance = new SoapDataContractInheritanceResolver(_logger);
         var treeBuilder = new TypeTreeBuilder(inheritance);
-        
+
+        NormalizeArrayUsages(parsed, DetectArrayWrappers(parsed));
+
         return parsed.Select(x =>
         {
             var tree = treeBuilder.Build(parsed, x.Name);
             var defaultObject = DefaultValueGenerator.Generate(tree);
             var json = JsonConvert.SerializeObject(defaultObject, Formatting.Indented);
             return new KeyValuePair<string, string>(x.Name, json);
-        }).ToDictionary(); 
+        }).ToDictionary();
     }
 
+    private static Dictionary<string, string> DetectArrayWrappers(IEnumerable<AxDataContractDefn> types)
+    {
+        var map = new Dictionary<string, string>();
+
+        foreach (var t in types)
+        {
+            if (t.Properties.Length != 1)
+            {
+                continue;
+            }
+
+            var p = t.Properties[0];
+
+            if (!p.IsCollection)
+            {
+                continue;
+            }
+
+            map[t.Name] = p.Type;
+        }
+
+        return map;
+    }
+
+    private static void NormalizeArrayUsages(IEnumerable<AxDataContractDefn> types, Dictionary<string, string> wrappers)
+    {
+        foreach (var t in types)
+        {
+            for (int i = 0; i < t.Properties.Length; i++)
+            {
+                if (wrappers.TryGetValue(t.Properties[i].Type, out var itemType))
+                {
+                    t.Properties[i] = t.Properties[i] with
+                    {
+                        Type = itemType,
+                        MaximumOccurances = null
+                    };
+                }
+            }
+        }
+    }
+    
     private async Task<IEnumerable<string>> GetWsdlLocationsForService(string serviceName)
     {
         try
@@ -103,6 +140,5 @@ internal class AxSoapService : IAxSoapService
 
 public interface IAxSoapService
 {
-    Task<Dictionary<string,string>> GetDataContractsForServices();
     Task<Dictionary<string, string>> GetDataContractsForServices(IEnumerable<string> serviceNames);
 }

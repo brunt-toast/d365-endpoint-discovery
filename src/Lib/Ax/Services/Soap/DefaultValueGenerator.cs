@@ -1,14 +1,20 @@
-﻿namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Soap;
+﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types.Soap;
+using System;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types.Xpp;
+
+namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Soap;
 
 internal static class DefaultValueGenerator
 {
     public static object? Generate(TypeNode node)
     {
-        //if (node.IsNullable)
-        //{
-        //    return null;
-        //}
+        return node.IsCollection 
+            ? new[] { GenerateSingle(node) } 
+            : GenerateSingle(node);
+    }
 
+    private static object? GenerateSingle(TypeNode node)
+    {
         if (node.IsPrimitive)
         {
             return PrimitiveDefault(node.TypeName);
@@ -35,10 +41,10 @@ internal static class DefaultValueGenerator
             "anyURI" => "https://example.com",
             "boolean" => false,
             "byte" => sbyte.MaxValue,
-            "datetime" => "2000-01-01T00:00Z",
-            "decimal" => 0.1m,
-            "double" => 0.1d,
-            "float" => 0.1f,
+            "datetime" => (DateTime)XppDateTime.MaxValue,
+            "decimal" => decimal.MaxValue,
+            "double" => double.MaxValue,
+            "float" => float.MaxValue,
             "int" => int.MaxValue,
             "long" => long.MaxValue,
             "string" => string.Empty,

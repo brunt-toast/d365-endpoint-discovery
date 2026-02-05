@@ -1,6 +1,4 @@
-﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types.Soap;
-
-namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Soap;
+﻿namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types.Soap;
 
 internal sealed class InheritanceResolvedDataContract
 {

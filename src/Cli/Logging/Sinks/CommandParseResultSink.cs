@@ -1,4 +1,5 @@
 ﻿using System.CommandLine;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Enums;
 using Serilog.Core;
 using Serilog.Events;
 
@@ -10,13 +11,17 @@ internal class CommandParseResultSink : ILogEventSink, ICommandParseResultSink
     private TextWriter? _errorWriter;
     private LogEventLevel _logLevel;
 
-    public IDisposable Configure(ParseResult parseResult, LogEventLevel logLevel = LogEventLevel.Warning, bool sendAllToError = false)
+    public IDisposable Configure(ParseResult parseResult,
+        LogEventLevel logLevel = LogEventLevel.Warning,
+        LogDestination destination = LogDestination.Default)
     {
         _logLevel = logLevel;
-        _outputWriter = sendAllToError 
+        _outputWriter = destination == LogDestination.StdErr 
             ? parseResult.InvocationConfiguration.Error
             : parseResult.InvocationConfiguration.Output;
-        _errorWriter = parseResult.InvocationConfiguration.Error;
+        _errorWriter = destination == LogDestination.StdOut
+            ? parseResult.InvocationConfiguration.Output
+            : parseResult.InvocationConfiguration.Error;
         return new CommandParseResultSinkConfigurationDisposable(this);
     }
 
@@ -35,7 +40,7 @@ internal class CommandParseResultSink : ILogEventSink, ICommandParseResultSink
             LogEventLevel.Warning => 33,
             LogEventLevel.Error => 31,
             LogEventLevel.Fatal => 35,
-            _ => throw new ArgumentOutOfRangeException()
+            _ => throw new ArgumentOutOfRangeException(nameof(logEvent))
         };
 
         string levelAbbr = logEvent.Level switch
@@ -46,7 +51,7 @@ internal class CommandParseResultSink : ILogEventSink, ICommandParseResultSink
             LogEventLevel.Warning => "WRN",
             LogEventLevel.Error => "ERR",
             LogEventLevel.Fatal => "FTL",
-            _ => throw new ArgumentOutOfRangeException()
+            _ => throw new ArgumentOutOfRangeException(nameof(logEvent))
         };
 
         var writer = logEvent.Level >= LogEventLevel.Warning ? _errorWriter : _outputWriter;
@@ -61,7 +66,7 @@ internal class CommandParseResultSink : ILogEventSink, ICommandParseResultSink
         {
             _instance = instance;
         }
-
+        
         public void Dispose()
         {
             _instance._logLevel = default;
@@ -73,5 +78,7 @@ internal class CommandParseResultSink : ILogEventSink, ICommandParseResultSink
 
 public interface ICommandParseResultSink
 {
-    IDisposable Configure(ParseResult parseResult, LogEventLevel logLevel = LogEventLevel.Warning, bool sendAllToError = false);
+    IDisposable Configure(ParseResult parseResult,
+        LogEventLevel logLevel = LogEventLevel.Warning,
+        LogDestination destination = LogDestination.Default);
 }

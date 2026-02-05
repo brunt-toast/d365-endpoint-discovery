@@ -18,6 +18,10 @@ public static class ApplicationServiceRegistrar
     {
         AxServiceRegistrar.RegisterServices(sc);
 
+        sc.AddTransient<DefaultCollectionBuilder>();
+        sc.AddTransient<PostmanCollectionBuilder>();
+        sc.AddTransient<OpenApiCollectionBuilder>();
+
         sc.AddSingleton<IMainService, MainService>();
         sc.AddSingleton<SerialiserFactory>();
         sc.AddSingleton<CollectionBuilderFactory>();

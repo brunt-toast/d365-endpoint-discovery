@@ -8,4 +8,5 @@ public class PostmanRequest
     [JsonProperty("header")] public required PostmanHeader[] Headers { get; init; }
     [JsonProperty("body")] public required PostmanBody Body { get; init; }
     [JsonProperty("url")] public required PostmanUrl Url { get; init; }
+    [JsonProperty("description")] public required string Description { get; init; }
 }

@@ -76,7 +76,7 @@ dynsvcdiscovery \
     2>dynsvcdiscovery.log
 ```
 
-For more verbose results, set the log level to Trace. You may also want to use `--log-to-stderr|-2` to divert all logging to the error stream, so as not to interfere with the collection you're exporting.
+For more verbose results, set the log level to Trace. You may also want to use `--log-stream 2|StdErr` to divert all logging to the error stream, so as not to interfere with the collection you're exporting.
 
 ## ✏️ Contributors' Notice
 The use of AI-generated code is strictly prohibited in this repository. See [CONTRIBUTING.md](./CONTRIBUTING.md).
