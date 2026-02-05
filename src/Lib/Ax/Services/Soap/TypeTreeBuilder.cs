@@ -52,9 +52,9 @@ internal sealed class TypeTreeBuilder
         {
             props[p.Name] = Build(types, p.Type, stack) with
             {
-                IsCollection = p.IsCollection
+                IsCollection = p.IsCollection,
+                IsNullable = p.IsNullable
             };
-            //props[p.Name].IsNullable = p.IsNullable;
         }
 
         stack.Remove(typeName);

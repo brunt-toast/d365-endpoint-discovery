@@ -8,11 +8,6 @@ internal static class DefaultValueGenerator
 {
     public static object? Generate(TypeNode node)
     {
-        //if (node.IsNullable)
-        //{
-        //    return null;
-        //}
-
         return node.IsCollection 
             ? new[] { GenerateSingle(node) } 
             : GenerateSingle(node);
