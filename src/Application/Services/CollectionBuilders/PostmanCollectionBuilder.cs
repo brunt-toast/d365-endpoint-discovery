@@ -4,6 +4,7 @@ using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Mapping;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Types.Postman;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Extensions.Serilog;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types.Xpp;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Serilog;
@@ -212,7 +213,7 @@ public class PostmanCollectionBuilder : CollectionBuilderBase<PostmanCollection>
                 "Boolean" => false,
                 "Int32" => int.MaxValue,
                 "Int64" => long.MaxValue,
-                "DateTime" => DateTime.MaxValue,
+                "DateTime" => (DateTime)XppDateTime.MaxValue,
                 "Guid" => Guid.AllBitsSet,
                 "Double" => double.MaxValue,
                 "Decimal" => decimal.MaxValue,

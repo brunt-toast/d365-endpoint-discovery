@@ -1,4 +1,6 @@
 ﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types.Soap;
+using System;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types.Xpp;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Soap;
 
@@ -37,7 +39,7 @@ internal static class DefaultValueGenerator
             "anyURI" => "https://example.com",
             "boolean" => false,
             "byte" => sbyte.MaxValue,
-            "datetime" => DateTime.MaxValue,
+            "datetime" => (DateTime)XppDateTime.MaxValue,
             "decimal" => decimal.MaxValue,
             "double" => double.MaxValue,
             "float" => float.MaxValue,
