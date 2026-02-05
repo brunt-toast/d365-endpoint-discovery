@@ -6,8 +6,8 @@ namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types.Xpp;
 
 public readonly struct XppDateTime
 {
-    private static readonly DateTime _dtMinValue = new DateTime(1901, 1, 1);
-    private static readonly DateTime _dtMaxValue = new DateTime(2154, 12, 31);
+    private static readonly DateTime DtMinValue = new(1901, 1, 1);
+    private static readonly DateTime DtMaxValue = new(2154, 12, 31);
 
     public static readonly XppDateTime MinValue = (XppDateTime)new DateTime(1901, 1, 1);
     public static readonly XppDateTime MaxValue = (XppDateTime)new DateTime(2154, 12, 31);
@@ -25,7 +25,7 @@ public readonly struct XppDateTime
 
     public static explicit operator XppDateTime(DateTime d)
     {
-        if (d < _dtMinValue || d > _dtMaxValue)
+        if (d < DtMinValue || d > DtMaxValue)
         {
             throw new ArgumentOutOfRangeException(nameof(d), 
                 $"The value {d:O} does not fall within the acceptable range {MinValue._value:O}-{MaxValue._value:O}");

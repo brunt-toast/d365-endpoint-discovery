@@ -158,7 +158,7 @@ public class PostmanCollectionBuilder : CollectionBuilderBase<PostmanCollection>
 
         dsb.AppendLine();
         dsb.AppendLine("## Unknown Request Types");
-        var unknownTypes = paramTypeNames.Where(x => !typeDefs.Keys.Contains(x)).ToList();
+        var unknownTypes = paramTypeNames.Where(x => !typeDefs.ContainsKey(x)).ToList();
         if (unknownTypes.Count > 0)
         {
             dsb.AppendLine("<ul>");

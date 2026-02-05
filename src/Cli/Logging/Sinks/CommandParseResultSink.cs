@@ -40,7 +40,7 @@ internal class CommandParseResultSink : ILogEventSink, ICommandParseResultSink
             LogEventLevel.Warning => 33,
             LogEventLevel.Error => 31,
             LogEventLevel.Fatal => 35,
-            _ => throw new ArgumentOutOfRangeException()
+            _ => throw new ArgumentOutOfRangeException(nameof(logEvent))
         };
 
         string levelAbbr = logEvent.Level switch
@@ -51,7 +51,7 @@ internal class CommandParseResultSink : ILogEventSink, ICommandParseResultSink
             LogEventLevel.Warning => "WRN",
             LogEventLevel.Error => "ERR",
             LogEventLevel.Fatal => "FTL",
-            _ => throw new ArgumentOutOfRangeException()
+            _ => throw new ArgumentOutOfRangeException(nameof(logEvent))
         };
 
         var writer = logEvent.Level >= LogEventLevel.Warning ? _errorWriter : _outputWriter;
