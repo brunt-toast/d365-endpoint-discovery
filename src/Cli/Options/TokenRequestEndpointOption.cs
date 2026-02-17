@@ -1,16 +1,19 @@
 ﻿using System.CommandLine;
 using System.CommandLine.Parsing;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Extensions.System.CommandLine;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Options;
 
 internal class TokenRequestEndpointOption : Option<string>
 {
-    public TokenRequestEndpointOption() : base("--token-request-endpoint", "-t")
+    public TokenRequestEndpointOption(ClientIdOption clientIdOpt) : base("--token-request-endpoint", "-t")
     {
         DefaultValueFactory = _ => Environment.GetEnvironmentVariable("DYNAMICS_TOKEN_REQUEST_ENDPOINT") ?? string.Empty;
         Validators.Add(NotNullOrWhitespaceValidator);
         Validators.Add(ValidUriValidator);
-        Description = "An endpoint from which we can request a Dynamics 365 bearer token. Must be a valid URI. Usually looks like 'https://login.microsoftonline.com/GUID/oauth2/token', where GUID is usually the Direcory (tenant) ID of the tenant containing the application described by --client-id.";
+        Description = "An endpoint from which we can request a Dynamics 365 bearer token. Must be a valid URI. " +
+                      "Usually looks like 'https://login.microsoftonline.com/GUID/oauth2/token', where GUID is usually " +
+                      $"the Direcory (tenant) ID of the tenant containing the application described by {clientIdOpt.NameAndAliases()}.";
     }
 
     private void NotNullOrWhitespaceValidator(OptionResult opt)
