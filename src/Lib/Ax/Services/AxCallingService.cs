@@ -26,7 +26,7 @@ internal class AxCallingService
         request.Headers.Clear();
         request.Headers.Add("Authorization", $"Bearer {bearer}");
 
-        var client = _httpClientFactory.CreateClient(HttpClientIdConsts.AcceptAnySsl);
+        var client = _httpClientFactory.CreateClient(HttpClientIdConsts.UserConfigurable);
         var response = await client.SendAsync(request);
 
         string content = await response.Content.ReadAsStringAsync();

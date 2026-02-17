@@ -1,4 +1,5 @@
-﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Logging.Sinks;
+﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Config;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Logging.Sinks;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.CollectionBuilders;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.Serialisers;
@@ -16,7 +17,23 @@ public static class ApplicationServiceRegistrar
     {
         AxServiceRegistrar.RegisterServices(sc);
 
-        sc.AddTransient<IHttpClientFactory, LegacyHttpClientFactory>();
+        sc.AddSingleton<HttpClientOptions>();
+
+        sc.AddHttpClient();
+        sc.AddHttpClient(HttpClientIdConsts.UserConfigurable)
+            .ConfigurePrimaryHttpMessageHandler(sp =>
+            {
+                var opts = sp.GetRequiredService<HttpClientOptions>();
+                var handler = new SocketsHttpHandler();
+
+                if (opts.AcceptAnySsl)
+                {
+                    handler.SslOptions.RemoteCertificateValidationCallback = (_, _, _, _) => true;
+                }
+
+                return handler;
+            });
+
 
         sc.AddTransient<DefaultCollectionBuilder>();
         sc.AddTransient<PostmanCollectionBuilder>();
