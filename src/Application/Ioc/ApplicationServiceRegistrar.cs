@@ -18,27 +18,7 @@ public static class ApplicationServiceRegistrar
         AxServiceRegistrar.RegisterServices(sc);
 
         sc.AddSingleton<HttpClientOptions>();
-
-        sc.AddHttpClient();
-        sc.AddHttpClient(HttpClientIdConsts.UserConfigurable)
-            .ConfigurePrimaryHttpMessageHandler(sp =>
-            {
-                var opts = sp.GetRequiredService<HttpClientOptions>();
-                var handler = new SocketsHttpHandler();
-
-                if (opts.MaxConnectionsPerServer > 0)
-                {
-                    handler.MaxConnectionsPerServer = opts.MaxConnectionsPerServer;
-                }
-
-                if (opts.AcceptAnySsl)
-                {
-                    handler.SslOptions.RemoteCertificateValidationCallback = (_, _, _, _) => true;
-                }
-
-                return handler;
-            });
-
+        sc.AddSingleton<IHttpClientFactory, ConfigurableHttpClientFactory>();
 
         sc.AddTransient<DefaultCollectionBuilder>();
         sc.AddTransient<PostmanCollectionBuilder>();
