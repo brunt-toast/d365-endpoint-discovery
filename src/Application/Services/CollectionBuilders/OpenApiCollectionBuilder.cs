@@ -1,14 +1,15 @@
-﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Mapping;
-using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Types.OpenApi;
+﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Types.OpenApi;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.CollectionBuilders;
 
-public class OpenApiCollectionBuilder  : CollectionBuilderBase<OpenApiCollection>
+public class OpenApiCollectionBuilder : CollectionBuilderBase<OpenApiCollection>
 {
-    protected override OpenApiCollection BuildTypedCollection(IEnumerable<DynSvcGroup> groups, 
-        Dictionary<string, string> typeDefs, 
-        string resource, 
+    protected override OpenApiCollection BuildTypedCollection(IEnumerable<DynSvcGroup> groups,
+        Dictionary<string, string> typeDefs,
+        string resource,
         string collectionName = "Collection")
     {
         var groupsList = groups.ToList();
@@ -39,43 +40,33 @@ public class OpenApiCollectionBuilder  : CollectionBuilderBase<OpenApiCollection
             [
                 new OpenApiServerDefn {Uri = resource}
             ],
-            Paths = GetPathDefns(groupsList).ToDictionary(),
-            Components = new OpenApiComponentDefn
-            {
-                Schemas = GetSchemaDefns(groupsList).ToDictionary()
-            }
+            Paths = GetPathDefns(groupsList, typeDefs).ToDictionary()
         };
     }
 
-    private static IEnumerable<KeyValuePair<string, OpenApiSchemaDefn>> GetSchemaDefns(IEnumerable<DynSvcGroup> groups)
+    private static IEnumerable<KeyValuePair<string, OpenApiPathDefn>> GetPathDefns(IEnumerable<DynSvcGroup> groups,
+        Dictionary<string, string> typeDefs)
     {
         var operations = groups.SelectMany(x => x.Services).SelectMany(x => x.Operations);
         foreach (var operation in operations)
         {
-            OpenApiSchemaDefn sd = new OpenApiSchemaDefn
-            {
-                Parameters = [new OpenApiParameterDefn
-                    {
-                        Type = "object",
-                        Required = [],
-                        Properties = operation.Parameters.Select(parameter => new KeyValuePair<string, OpenApiTypeDefn>(parameter.Name, new OpenApiTypeDefn
-                        {
-                            Type = DynamicsToJsonTypeMapper.MapType(parameter.Type)
-                        })).ToDictionary()
-                    }
-                ]
-            };
+            var resolvedBody = operation.Parameters
+                .Select(x => new KeyValuePair<string, JObject>(x.Name, 
+                    JObject.Parse(typeDefs.FirstOrDefault(y => y.Key == x.Type).Value ?? $"{{\"Unknown Type\": \"{x.Type}\"}}")))
+                .ToDictionary();
 
-            yield return new KeyValuePair<string, OpenApiSchemaDefn>(
-                $"{operation.ServiceGroupName}_{operation.ServiceName}_{operation.Name}", sd);
-        }
-    }
+            JObject requestBodyContent = JObject.Parse("""
+                                                          {
+                                                           "application/json": {
+                                                             "schema": {
+                                                               "type": "object"
+                                                             },
+                                                             "example": {}
+                                                           }
+                                                         }
+                                                       """);
+            requestBodyContent["application/json"]!["example"] = JObject.Parse(JsonConvert.SerializeObject(resolvedBody));
 
-    private static IEnumerable<KeyValuePair<string, OpenApiPathDefn>> GetPathDefns(IEnumerable<DynSvcGroup> groups)
-    {
-        var operations = groups.SelectMany(x => x.Services).SelectMany(x => x.Operations);
-        foreach (var operation in operations)
-        {
             OpenApiPathDefn pd = new OpenApiPathDefn
             {
                 Post = new OpenApiPostRequestDefn
@@ -86,23 +77,13 @@ public class OpenApiCollectionBuilder  : CollectionBuilderBase<OpenApiCollection
                     {
                         Description = $"/api/services/{operation.ServiceGroupName}/{operation.ServiceName}/{operation.Name}",
                         IsRequired = false,
-                        ContentTypesToSchemaRefs = new Dictionary<string, OpenApiSchema>
-                        {
-                            {"application/json", new OpenApiSchema
-                                {
-                                    Schema = new OpenApiSchemaRef
-                                    {
-                                        Ref = $"#/components/schemas/{operation.ServiceGroupName}_{operation.ServiceName}_{operation.Name}"
-                                    }
-                                }
-                            }
-                        }
+                        Content = requestBodyContent
                     }
                 }
             };
 
             yield return new KeyValuePair<string, OpenApiPathDefn>(
-                $"/api/services/{operation.ServiceGroupName}/{operation.ServiceName}/{operation.Name}", pd);
+                        $"/api/services/{operation.ServiceGroupName}/{operation.ServiceName}/{operation.Name}", pd);
         }
     }
 }
