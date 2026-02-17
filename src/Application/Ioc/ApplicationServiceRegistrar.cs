@@ -26,6 +26,11 @@ public static class ApplicationServiceRegistrar
                 var opts = sp.GetRequiredService<HttpClientOptions>();
                 var handler = new SocketsHttpHandler();
 
+                if (opts.MaxConnectionsPerServer > 0)
+                {
+                    handler.MaxConnectionsPerServer = opts.MaxConnectionsPerServer;
+                }
+
                 if (opts.AcceptAnySsl)
                 {
                     handler.SslOptions.RemoteCertificateValidationCallback = (_, _, _, _) => true;

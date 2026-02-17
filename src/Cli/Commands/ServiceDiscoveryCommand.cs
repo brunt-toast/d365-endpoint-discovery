@@ -31,6 +31,7 @@ internal class ServiceDiscoveryCommand : Command
     private readonly FormatOption _formatOption = new();
     private readonly LogLevelOption _logLevelOption = new();
     private readonly LogStreamOption _logStreamOption = new();
+    private readonly MaxConnectionsOption _maxConnectionsOption = new();
     private readonly IgnoreSslOption _ignoreSslOption = new();
 
     private readonly MinifyFlag _minifyFlag = new();
@@ -56,6 +57,7 @@ internal class ServiceDiscoveryCommand : Command
         Options.Add(_formatOption);
         Options.Add(_logLevelOption);
         Options.Add(_logStreamOption);
+        Options.Add(_maxConnectionsOption);
         Options.Add(_ignoreSslOption);
 
         Options.Add(_minifyFlag);
@@ -78,11 +80,14 @@ internal class ServiceDiscoveryCommand : Command
         bool minify = parseResult.GetValue(_minifyFlag);
         LogEventLevel logLevel = parseResult.GetValue(_logLevelOption);
         LogDestination logStream = parseResult.GetValue(_logStreamOption);
+        int maxConnections = parseResult.GetValue(_maxConnectionsOption);
         bool ignoreSsl = parseResult.GetValue(_ignoreSslOption);
 
         using var _ = _sink.Configure(parseResult, logLevel, logStream);
 
+        _httpClientOptions.MaxConnectionsPerServer = maxConnections;
         _httpClientOptions.AcceptAnySsl = ignoreSsl;
+
         _config.ClientId = clientId;
         _config.ClientSecret = clientSecret;
         _config.Resource = resource;
