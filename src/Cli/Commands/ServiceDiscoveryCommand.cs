@@ -18,31 +18,64 @@ internal class ServiceDiscoveryCommand : Command
     private readonly IAxConfig _config;
     private readonly HttpClientOptions _httpClientOptions;
 
-    private readonly ClientIdOption _clientIdOption = new();
-    private readonly ClientSecretOption _clientSecretOption = new();
-    private readonly ResourceOption _resourceOption = new();
-    private readonly TokenRequestEndpointOption _tokenRequestEndpointOption = new();
-    private readonly GrepGroupsOption _grepGroupsOption = new();
-    private readonly GrepServicesOption _grepServicesOption = new();
-    private readonly GrepOperationsOption _grepOperationsOption = new();
-    private readonly CollectionNameOption _collectionNameOption = new();
-    private readonly SchemaOption _schemaOption = new();
-    private readonly FormatOption _formatOption = new();
-    private readonly LogLevelOption _logLevelOption = new();
-    private readonly LogStreamOption _logStreamOption = new();
-    private readonly MaxConnectionsOption _maxConnectionsOption = new();
-    private readonly IgnoreSslOption _ignoreSslOption = new();
-    private readonly MinifyOption _minifyOption = new();
+    private readonly ClientIdOption _clientIdOption;
+    private readonly ClientSecretOption _clientSecretOption;
+    private readonly ResourceOption _resourceOption;
+    private readonly TokenRequestEndpointOption _tokenRequestEndpointOption;
+    private readonly GrepGroupsOption _grepGroupsOption;
+    private readonly GrepServicesOption _grepServicesOption;
+    private readonly GrepOperationsOption _grepOperationsOption;
+    private readonly CollectionNameOption _collectionNameOption;
+    private readonly SchemaOption _schemaOption;
+    private readonly FormatOption _formatOption;
+    private readonly LogLevelOption _logLevelOption;
+    private readonly LogStreamOption _logStreamOption;
+    private readonly MaxConnectionsOption _maxConnectionsOption;
+    private readonly IgnoreSslOption _ignoreSslOption;
+    private readonly MinifyOption _minifyOption;
 
     public ServiceDiscoveryCommand(IMainService mainService,
         ICommandParseResultSink sink,
         IAxConfig config,
-        HttpClientOptions httpClientOptions) : base("service-discovery", "Discover Dynamics 365 service endpoints automatically.")
+        HttpClientOptions httpClientOptions,
+        ClientIdOption clientIdOption,
+        ClientSecretOption clientSecretOption,
+        ResourceOption resourceOption,
+        TokenRequestEndpointOption tokenRequestEndpointOption,
+        GrepGroupsOption grepGroupsOption,
+        GrepServicesOption grepServicesOption,
+        GrepOperationsOption grepOperationsOption,
+        CollectionNameOption collectionNameOption,
+        SchemaOption schemaOption,
+        FormatOption formatOption,
+        LogLevelOption logLevelOption,
+        LogStreamOption logStreamOption,
+        MaxConnectionsOption maxConnectionsOption,
+        IgnoreSslOption ignoreSslOption,
+        MinifyOption minifyOption) 
+        : base("service-discovery", "Discover Dynamics 365 service endpoints automatically.")
     {
         _mainService = mainService;
         _sink = sink;
         _config = config;
         _httpClientOptions = httpClientOptions;
+
+        _clientIdOption = clientIdOption;
+        _clientSecretOption = clientSecretOption;
+        _resourceOption = resourceOption;
+        _tokenRequestEndpointOption = tokenRequestEndpointOption;
+        _grepGroupsOption = grepGroupsOption;
+        _grepServicesOption = grepServicesOption;
+        _grepOperationsOption = grepOperationsOption;
+        _collectionNameOption = collectionNameOption;
+        _schemaOption = schemaOption;
+        _formatOption = formatOption;
+        _logLevelOption = logLevelOption;
+        _logStreamOption = logStreamOption;
+        _maxConnectionsOption = maxConnectionsOption;
+        _ignoreSslOption = ignoreSslOption;
+        _minifyOption = minifyOption;
+
         Options.Add(_clientIdOption);
         Options.Add(_clientSecretOption);
         Options.Add(_resourceOption);
