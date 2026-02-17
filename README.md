@@ -12,6 +12,8 @@
 [![C#](https://custom-icon-badges.demolab.com/badge/C%23-%23239120.svg?logo=cshrp&logoColor=white)](#)
 [![JSON](https://img.shields.io/badge/JSON-000?logo=json&logoColor=fff)](#)
 [![YAML](https://img.shields.io/badge/YAML-CB171E?logo=yaml&logoColor=fff)](#)
+[![NuGet](https://img.shields.io/nuget/v/dynsvcdiscovery.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/dynsvcdiscovery/)
+[![NuGet](https://img.shields.io/nuget/dt/dynsvcdiscovery.svg)](https://www.nuget.org/packages/dynsvcdiscovery)
 
 A CLI+GUI tool to explore Dynamics 365 Finance &amp; Operations APIs. We use the service discovery endpoints to build a map of available services, then query the relevant SOAP endpoints to build best-guess type definitions for the data contracts used in the requests. 
 

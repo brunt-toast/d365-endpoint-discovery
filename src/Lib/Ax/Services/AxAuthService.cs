@@ -1,8 +1,8 @@
-﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Config;
+﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Extensions.Serilog;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Config;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Responses;
 using Newtonsoft.Json;
 using Serilog;
-using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Extensions.Serilog;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services;
 
@@ -10,13 +10,15 @@ internal class AxAuthService
 {
     private readonly IAxConfig _config;
     private readonly ILogger _logger;
+    private readonly IHttpClientFactory _httpClientFactory;
 
     private TokenResponse? _cachedResponse;
 
-    public AxAuthService(IAxConfig config, ILogger logger)
+    public AxAuthService(IAxConfig config, ILogger logger, IHttpClientFactory httpClientFactory)
     {
         _config = config;
         _logger = logger;
+        _httpClientFactory = httpClientFactory;
     }
 
     public async Task<string> GetBearerToken()
@@ -25,8 +27,6 @@ internal class AxAuthService
         {
             return _cachedResponse.AccessToken;
         }
-
-        using HttpClient client = new();
 
         HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, _config.TokenRequestEndpoint)
         {
@@ -38,6 +38,8 @@ internal class AxAuthService
                 ["resource"] = _config.Resource
             })
         };
+
+        var client = _httpClientFactory.CreateClient();
         HttpResponseMessage response = await client.SendAsync(request);
 
         string content = await response.Content.ReadAsStringAsync();

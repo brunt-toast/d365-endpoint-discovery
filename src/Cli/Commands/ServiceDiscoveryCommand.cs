@@ -7,6 +7,7 @@ using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Options;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Config;
 using Serilog.Events;
 using System.CommandLine;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Config;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Enums;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Commands;
@@ -16,6 +17,7 @@ internal class ServiceDiscoveryCommand : Command
     private readonly IMainService _mainService;
     private readonly ICommandParseResultSink _sink;
     private readonly IAxConfig _config;
+    private readonly HttpClientOptions _httpClientOptions;
 
     private readonly ClientIdOption _clientIdOption = new();
     private readonly ClientSecretOption _clientSecretOption = new();
@@ -29,16 +31,20 @@ internal class ServiceDiscoveryCommand : Command
     private readonly FormatOption _formatOption = new();
     private readonly LogLevelOption _logLevelOption = new();
     private readonly LogStreamOption _logStreamOption = new();
+    private readonly MaxConnectionsOption _maxConnectionsOption = new();
+    private readonly IgnoreSslOption _ignoreSslOption = new();
 
     private readonly MinifyFlag _minifyFlag = new();
 
     public ServiceDiscoveryCommand(IMainService mainService,
         ICommandParseResultSink sink,
-        IAxConfig config) : base("service-discovery", "Discover Dynamics 365 service endpoints automatically.")
+        IAxConfig config,
+        HttpClientOptions httpClientOptions) : base("service-discovery", "Discover Dynamics 365 service endpoints automatically.")
     {
         _mainService = mainService;
         _sink = sink;
         _config = config;
+        _httpClientOptions = httpClientOptions;
         Options.Add(_clientIdOption);
         Options.Add(_clientSecretOption);
         Options.Add(_resourceOption);
@@ -51,6 +57,8 @@ internal class ServiceDiscoveryCommand : Command
         Options.Add(_formatOption);
         Options.Add(_logLevelOption);
         Options.Add(_logStreamOption);
+        Options.Add(_maxConnectionsOption);
+        Options.Add(_ignoreSslOption);
 
         Options.Add(_minifyFlag);
 
@@ -72,8 +80,13 @@ internal class ServiceDiscoveryCommand : Command
         bool minify = parseResult.GetValue(_minifyFlag);
         LogEventLevel logLevel = parseResult.GetValue(_logLevelOption);
         LogDestination logStream = parseResult.GetValue(_logStreamOption);
+        int maxConnections = parseResult.GetValue(_maxConnectionsOption);
+        bool ignoreSsl = parseResult.GetValue(_ignoreSslOption);
 
         using var _ = _sink.Configure(parseResult, logLevel, logStream);
+
+        _httpClientOptions.MaxConnectionsPerServer = maxConnections;
+        _httpClientOptions.AcceptAnySsl = ignoreSsl;
 
         _config.ClientId = clientId;
         _config.ClientSecret = clientSecret;
