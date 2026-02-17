@@ -1,7 +1,6 @@
 ﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Enums;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Requests;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
-using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Flags;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Logging.Sinks;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Options;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Config;
@@ -33,8 +32,7 @@ internal class ServiceDiscoveryCommand : Command
     private readonly LogStreamOption _logStreamOption = new();
     private readonly MaxConnectionsOption _maxConnectionsOption = new();
     private readonly IgnoreSslOption _ignoreSslOption = new();
-
-    private readonly MinifyFlag _minifyFlag = new();
+    private readonly MinifyOption _minifyOption = new();
 
     public ServiceDiscoveryCommand(IMainService mainService,
         ICommandParseResultSink sink,
@@ -59,8 +57,7 @@ internal class ServiceDiscoveryCommand : Command
         Options.Add(_logStreamOption);
         Options.Add(_maxConnectionsOption);
         Options.Add(_ignoreSslOption);
-
-        Options.Add(_minifyFlag);
+        Options.Add(_minifyOption);
 
         SetAction(ExecuteAction);
     }
@@ -77,7 +74,7 @@ internal class ServiceDiscoveryCommand : Command
         OutputSchemas outputSchema = parseResult.GetValue(_schemaOption);
         OutputFormats outputFormat = parseResult.GetValue(_formatOption);
         string collectionName = parseResult.GetValue(_collectionNameOption) ?? string.Empty;
-        bool minify = parseResult.GetValue(_minifyFlag);
+        bool minify = parseResult.GetValue(_minifyOption);
         LogEventLevel logLevel = parseResult.GetValue(_logLevelOption);
         LogDestination logStream = parseResult.GetValue(_logStreamOption);
         int maxConnections = parseResult.GetValue(_maxConnectionsOption);
