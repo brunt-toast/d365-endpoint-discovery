@@ -131,3 +131,15 @@ _Pvt_Extensions
 
 # Fody artifacts 
 FodyWeavers.xsd
+
+# Likely accidental commits 
+swagger.{json,yml,yaml}
+*.swagger.{json,yml,yaml}
+openapi.{json,yml,yaml}
+*.openapi.{json,yml,yaml}
+postman.{json,yml,yaml}
+*.postman.{json,yml,yaml}
+collection.{json,yml,yaml}
+*.collection.{json,yml,yaml}
+postmancollection.{json,yml,yaml}
+*.postmancollection.{json,yml,yaml}
