@@ -51,7 +51,7 @@ public class OpenApiCollectionBuilder : CollectionBuilderBase<OpenApiCollection>
         foreach (var operation in operations)
         {
             var resolvedBody = operation.Parameters
-                .Select(x => new KeyValuePair<string, JObject>(x.Name, 
+                .Select(x => new KeyValuePair<string, JObject>(x.Name,
                     JObject.Parse(typeDefs.FirstOrDefault(y => y.Key == x.Type).Value ?? $"{{\"Unknown Type\": \"{x.Type}\"}}")))
                 .ToDictionary();
 
@@ -67,6 +67,20 @@ public class OpenApiCollectionBuilder : CollectionBuilderBase<OpenApiCollection>
                                                        """);
             requestBodyContent["application/json"]!["example"] = JObject.Parse(JsonConvert.SerializeObject(resolvedBody));
 
+            JObject responseBodyContent = JObject.Parse("""
+                                                          {
+                                                           "application/json": {
+                                                             "schema": {
+                                                               "type": "object"
+                                                             },
+                                                             "example": {}
+                                                           }
+                                                         }
+                                                       """);
+            responseBodyContent["application/json"]!["example"] = 
+                JObject.Parse(typeDefs.FirstOrDefault(x => x.Key == operation.Return?.Type).Value ?? 
+                              $"{{\"Unknown type\": \"{operation.Return?.Type}\"}}");
+
             OpenApiPathDefn pd = new OpenApiPathDefn
             {
                 Post = new OpenApiPostRequestDefn
@@ -78,6 +92,16 @@ public class OpenApiCollectionBuilder : CollectionBuilderBase<OpenApiCollection>
                         Description = $"/api/services/{operation.ServiceGroupName}/{operation.ServiceName}/{operation.Name}",
                         IsRequired = false,
                         Content = requestBodyContent
+                    },
+                    Responses = new Dictionary<int, OpenApiResponseDefn>
+                    {
+                        {
+                            200, new OpenApiResponseDefn
+                            {
+                                Description = operation.Return?.Name ?? string.Empty,
+                                Content = responseBodyContent
+                            }
+                        }
                     }
                 }
             };
