@@ -8,5 +8,4 @@ public class OpenApiCollection
     [JsonProperty("info")] public required OpenApiInfo Info { get; set; }
     [JsonProperty("servers")] public OpenApiServerDefn[] Servers { get; set; } = [];
     [JsonProperty("paths")] public Dictionary<string, OpenApiPathDefn> Paths { get; set; } = [];
-    [JsonProperty("components")] public required OpenApiComponentDefn Components { get; set; } 
 }

@@ -19,7 +19,7 @@ A CLI+GUI tool to explore Dynamics 365 Finance &amp; Operations APIs. We use the
 
 ## ⚠️ Warning ⚠️
 
-**Excessive use of this tool can result in HTTP 429 responses.** Consider using the filtering options to reduce redundant requests. 
+**Excessive use of this tool can result in bad things!** These include, but are not limited to, HTTP 429 (too many requests) responses, and system socket exhaustion. These problems go away on their own, but are annoying to deal with. Consider using the filtering options to reduce redundant requests. 
 
 ## ⬇️⌨️ Installation (CLI)
 

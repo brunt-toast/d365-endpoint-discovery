@@ -9,16 +9,23 @@ namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Tests.Application.Tests.Test
 [TestClass]
 public class ApplicationServiceRegistrarTests
 {
-    [TestMethod]
-    public void CanResolveAllServices()
+    public static IEnumerable<object[]> GetServices()
     {
         var sc = new ServiceCollection();
         ApplicationServiceRegistrar.RegisterServices(sc);
-        var provider = sc.BuildServiceProvider();
-
         foreach (var defn in sc)
         {
-            provider.GetRequiredService(defn.ServiceType);
+            yield return [defn];
         }
+    }
+
+    [TestMethod]
+    [DynamicData(nameof(GetServices))]
+    public void CanResolveAllServices(ServiceDescriptor sd)
+    {
+        var sc = new ServiceCollection();
+        ApplicationServiceRegistrar.RegisterServices(sc);
+        var sp = sc.BuildServiceProvider();
+        sp.GetRequiredService(sd.ServiceType);
     }
 }

@@ -10,7 +10,8 @@ internal class ResourceOption : Option<string>
         DefaultValueFactory = _ => Environment.GetEnvironmentVariable("DYNAMICS_RESOURCE") ?? string.Empty;
         Validators.Add(NotNullOrWhitespaceValidator);
         Validators.Add(ValidUriValidator);
-        Description = "A Dynamics 365 instance. Must be a valid URI. Usually looks like 'https://*.operations.dynamics.com'.";
+        Description = "A Dynamics 365 instance. Must be a valid URI. Usually looks like 'https://*.operations.dynamics.com'" +
+                      "or 'https://usnconeboxax1aos.cloud.onebox.dynamics.com/'.";
     }
 
     private void NotNullOrWhitespaceValidator(OptionResult opt)

@@ -1,4 +1,5 @@
-﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Ioc;
+﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Ioc;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Ioc;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Tests.Cli.Tests.Tests.Ioc;
@@ -6,16 +7,23 @@ namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Tests.Cli.Tests.Tests.Ioc;
 [TestClass]
 public class CliServiceRegistrarTests
 {
-    [TestMethod]
-    public void CanResolveAllServices()
+    public static IEnumerable<object[]> GetServices()
     {
         var sc = new ServiceCollection();
         CliServiceRegistrar.RegisterServices(sc);
-        var provider = sc.BuildServiceProvider();
-
         foreach (var defn in sc)
         {
-            provider.GetRequiredService(defn.ServiceType);
+            yield return [defn];
         }
+    }
+
+    [TestMethod]
+    [DynamicData(nameof(GetServices))]
+    public void CanResolveAllServices(ServiceDescriptor sd)
+    {
+        var sc = new ServiceCollection();
+        CliServiceRegistrar.RegisterServices(sc);
+        var sp = sc.BuildServiceProvider();
+        sp.GetRequiredService(sd.ServiceType);
     }
 }
