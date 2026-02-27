@@ -14,6 +14,8 @@
 [![YAML](https://img.shields.io/badge/YAML-CB171E?logo=yaml&logoColor=fff)](#)
 [![NuGet](https://img.shields.io/nuget/v/dynsvcdiscovery.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/dynsvcdiscovery/)
 [![NuGet](https://img.shields.io/nuget/dt/dynsvcdiscovery.svg)](https://www.nuget.org/packages/dynsvcdiscovery)
+![Downloads](https://img.shields.io/github/downloads/brunt-toast/d365-endpoint-discovery/total
+)
 
 A CLI+GUI tool to explore Dynamics 365 Finance &amp; Operations APIs. We use the service discovery endpoints to build a map of available services, then query the relevant SOAP endpoints to build best-guess type definitions for the data contracts used in the requests. 
 
@@ -28,7 +30,7 @@ Install as a .NET tool:
 dotnet tool install -g dynsvcdiscovery
 ```
 
-Compile from source: 
+Compile from source (requires .NET 6.0 SDK or later): 
 ```bash
 dotnet tool restore
 dotnet cake --target InstallCli
@@ -44,7 +46,7 @@ export PATH="$HOME/.dotnet/tools:$PATH"
 
 Direct download: Download the [latest release](https://github.com/brunt-toast/d365-endpoint-discovery/releases/latest) (MSIX bundled). Run Install.ps1, or trust the certificate and run the MSIX file manually.
 
-Compile from source:
+Compile from source (requires .NET 6.0 SDK or later):
 ```bash
 dotnet tool restore
 dotnet cake --target InstallGui
