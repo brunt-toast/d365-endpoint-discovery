@@ -118,7 +118,12 @@ Task("Test")
     .IsDependentOn("RestoreWorkloads")
     .Does(() =>
     {
-        DotNetTest("test/**/*.csproj");
+        var projects = GetFiles("test/**/*.csproj");
+
+        foreach (var proj in projects)
+        {
+            DotNetTest(proj.FullPath);
+        }
     });
 
 RunTarget(target);
