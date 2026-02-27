@@ -30,14 +30,25 @@ dotnet tool install -g dynsvcdiscovery
 
 Compile from source: 
 ```bash
-make install
+dotnet tool restore
+dotnet cake --target InstallCli
+```
+
+Either way, make sure .NET tools are available in your PATH: 
+```bash
+# ~/.bashrc, .zhhrc, etc.
+export PATH="$HOME/.dotnet/tools:$PATH"
 ```
 
 ## ⬇️🖼️ Installation (GUI)
 
-Download the [latest release](https://github.com/brunt-toast/d365-endpoint-discovery/releases/latest) (MSIX bundled).
+Direct download: Download the [latest release](https://github.com/brunt-toast/d365-endpoint-discovery/releases/latest) (MSIX bundled). Run Install.ps1, or trust the certificate and run the MSIX file manually.
 
-Run Install.ps1, or trust the certificate and run the MSIX file manually.
+Compile from source:
+```bash
+dotnet tool restore
+dotnet cake --target InstallGui
+```
 
 ## 📐 Setup
 
@@ -50,7 +61,7 @@ You'll need an Azure application which can communicate with your Dynamics 365 in
 5. Under **Manage > API Permissions**, add the permission Ax.FullAccess (you can search for it using its service principal ID, f92c3f85-4759-4901-810d-5da8943dea39). Grant admin consent for your organisation. 
 6. In Dynamics, navigate to **System Administration > Setup > Entra ID Applications**, and add a new record with the Application (client) ID, assigned to an appropriate user. Remember to click "Save"!
 
-## ⌨️ Usage 
+## ⌨️ Usage (CLI) 
 
 Using only required parameters will map all discoverable service endpoints.
 
@@ -68,6 +79,8 @@ dynsvcdiscovery \
 
 Failed HTTP requests are not treated as errors. Instead, their relevent group/service/operation is left unpopulated. 
 
+### ⌨️ Command Line
+
 To diagnose errors, set the log level to Warning and redirect standard error to a different destination. 
 
 ```bash
@@ -79,6 +92,12 @@ dynsvcdiscovery \
 ```
 
 For more verbose results, set the log level to Trace. You may also want to use `--log-stream 2|StdErr` to divert all logging to the error stream, so as not to interfere with the collection you're exporting.
+
+### 🖼️ Graphical Interface
+
+Errors are presented as in-app notifications as they happen. 
+
+To review, click the version number at the bottom right of the window to open the logs folder. 
 
 ## ✏️ Contributors' Notice
 The use of AI-generated code is strictly prohibited in this repository. See [CONTRIBUTING.md](./CONTRIBUTING.md).
