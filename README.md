@@ -30,14 +30,19 @@ dotnet tool install -g dynsvcdiscovery
 
 Compile from source: 
 ```bash
-make install
+dotnet tool restore
+dotnet cake --target InstallCli
 ```
 
 ## ⬇️🖼️ Installation (GUI)
 
-Download the [latest release](https://github.com/brunt-toast/d365-endpoint-discovery/releases/latest) (MSIX bundled).
+Direct download: Download the [latest release](https://github.com/brunt-toast/d365-endpoint-discovery/releases/latest) (MSIX bundled). Run Install.ps1, or trust the certificate and run the MSIX file manually.
 
-Run Install.ps1, or trust the certificate and run the MSIX file manually.
+Compile from source:
+```bash
+dotnet tool restore
+dotnet cake --target InstallGui
+```
 
 ## 📐 Setup
 
