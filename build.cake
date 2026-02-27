@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Versioning;
 
 var target = Argument("target", "RunGui");
 var configuration = Argument("configuration", "Release");
@@ -109,6 +110,7 @@ Task("RunGui")
         DotNetRun("./src/BlazorHybrid/BlazorHybrid.csproj", new DotNetRunSettings
         {
             Configuration = configuration,
+            Framework = "net10.0-windows10.0.19041.0"
         });
     });
 
