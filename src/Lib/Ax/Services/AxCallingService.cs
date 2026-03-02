@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Security.Authentication;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Consts;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Extensions.Serilog;
 using Serilog;
@@ -27,7 +28,25 @@ internal class AxCallingService
         request.Headers.Add("Authorization", $"Bearer {bearer}");
 
         var client = _httpClientFactory.CreateClient(HttpClientIdConsts.UserConfigurable);
-        var response = await client.SendAsync(request);
+
+        HttpResponseMessage response;
+        try
+        {
+            response = await client.SendAsync(request);
+        }
+        catch (HttpRequestException ex) when (ex.InnerException is AuthenticationException
+                                              {
+                                                  Message: "The remote certificate is invalid " +
+                                                           "because of errors in the certificate chain: " +
+                                                           "UntrustedRoot"
+                                              })
+
+        {
+            _logger.Error("Couldn't connect to {resource} because the SSL certificate came from an untrusted root. " +
+                          "Try skipping SSL validation or importing a certificate. " +
+                          "Expect cascading errors from this failure.", endpoint);
+            return string.Empty;
+        }
 
         string content = await response.Content.ReadAsStringAsync();
 
