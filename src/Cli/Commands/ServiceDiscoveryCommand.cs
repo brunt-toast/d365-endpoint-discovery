@@ -33,6 +33,7 @@ internal class ServiceDiscoveryCommand : Command
     private readonly MaxConnectionsOption _maxConnectionsOption;
     private readonly IgnoreSslOption _ignoreSslOption;
     private readonly MinifyOption _minifyOption;
+    private readonly TenantIdOption _tenantIdOption;
 
     public ServiceDiscoveryCommand(IMainService mainService,
         ICommandParseResultSink sink,
@@ -52,7 +53,8 @@ internal class ServiceDiscoveryCommand : Command
         LogStreamOption logStreamOption,
         MaxConnectionsOption maxConnectionsOption,
         IgnoreSslOption ignoreSslOption,
-        MinifyOption minifyOption) 
+        MinifyOption minifyOption,
+        TenantIdOption tenantIdOption) 
         : base("service-discovery", "Discover Dynamics 365 service endpoints automatically.")
     {
         _mainService = mainService;
@@ -75,6 +77,7 @@ internal class ServiceDiscoveryCommand : Command
         _maxConnectionsOption = maxConnectionsOption;
         _ignoreSslOption = ignoreSslOption;
         _minifyOption = minifyOption;
+        _tenantIdOption = tenantIdOption;
 
         Options.Add(_clientIdOption);
         Options.Add(_clientSecretOption);
@@ -91,6 +94,7 @@ internal class ServiceDiscoveryCommand : Command
         Options.Add(_maxConnectionsOption);
         Options.Add(_ignoreSslOption);
         Options.Add(_minifyOption);
+        Options.Add(_tenantIdOption);
 
         SetAction(ExecuteAction);
     }
@@ -104,6 +108,7 @@ internal class ServiceDiscoveryCommand : Command
         string grepGroupsRegex = parseResult.GetValue(_grepGroupsOption) ?? string.Empty;
         string grepServicesRegex = parseResult.GetValue(_grepServicesOption) ?? string.Empty;
         string grepOperationsRegex = parseResult.GetValue(_grepOperationsOption) ?? string.Empty;
+        string tenantId = parseResult.GetValue(_tenantIdOption) ?? string.Empty;
         OutputSchemas outputSchema = parseResult.GetValue(_schemaOption);
         OutputFormats outputFormat = parseResult.GetValue(_formatOption);
         string collectionName = parseResult.GetValue(_collectionNameOption) ?? string.Empty;
@@ -122,6 +127,7 @@ internal class ServiceDiscoveryCommand : Command
         _config.ClientSecret = clientSecret;
         _config.Resource = resource;
         _config.TokenRequestEndpoint = tokenRequestEndpoint;
+        _config.TenantId = tenantId;
 
         string output = await _mainService.GetServiceCollectionAsync(new GetServiceCollectionRequest
         {

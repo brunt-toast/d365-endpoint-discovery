@@ -9,20 +9,21 @@ namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services;
 
 internal class AxCallingService
 {
-    private readonly IAxAuthService _authSvc;
+    private readonly AxAuthFactory _authFactory;
     private readonly ILogger _logger;
     private readonly IHttpClientFactory _httpClientFactory;
 
-    public AxCallingService(IAxAuthService authSvc, ILogger logger, IHttpClientFactory httpClientFactory)
+    public AxCallingService(AxAuthFactory authFactory, ILogger logger, IHttpClientFactory httpClientFactory)
     {
-        _authSvc = authSvc;
+        _authFactory = authFactory;
         _logger = logger;
         _httpClientFactory = httpClientFactory;
     }
 
     public async Task<string> GetHttp(string endpoint)
     {
-        string bearer = await _authSvc.GetBearerToken();
+        var auth = _authFactory.GetAuth();
+        string bearer = await auth.GetBearerToken();
 
         HttpRequestMessage request = new(HttpMethod.Get, endpoint);
         request.Headers.Clear();

@@ -28,6 +28,7 @@ public static class CliServiceRegistrar
         sc.AddTransient<MaxConnectionsOption>();
         sc.AddTransient<IgnoreSslOption>();
         sc.AddTransient<MinifyOption>();
+        sc.AddTransient<TenantIdOption>();
 
         sc.AddTransient<ServiceDiscoveryCommand>();
         sc.AddTransient<DynSvcDiscoveryRootCommand>();

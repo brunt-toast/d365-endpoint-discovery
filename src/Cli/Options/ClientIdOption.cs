@@ -10,7 +10,7 @@ internal class ClientIdOption : Option<string>
         DefaultValueFactory = _ => Environment.GetEnvironmentVariable("DYNAMICS_CLIENT_ID") ?? string.Empty;
         Validators.Add(NotNullOrWhitespaceValidator);
         Validators.Add(ValidGuidValidator);
-        Description = "An Azure application (client) ID. Must be a valid GUID.";
+        Description = "An Azure application (client) ID. Must be a valid GUID. Required for all authentication flows.";
     }
 
     private void NotNullOrWhitespaceValidator(OptionResult opt)

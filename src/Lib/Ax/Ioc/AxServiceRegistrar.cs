@@ -18,10 +18,15 @@ public static class AxServiceRegistrar
             ClientId = string.Empty,
             ClientSecret = string.Empty,
             Resource = string.Empty,
-            TokenRequestEndpoint = string.Empty
+            TokenRequestEndpoint = string.Empty,
+            TenantId = string.Empty
         });
         sc.AddSingleton<AxCallingService>();
-        sc.AddSingleton<IAxAuthService, ApplicationAxAuthService>();
+        
+        sc.AddSingleton<ApplicationAxAuthService>();
+        sc.AddSingleton<UserAxAuthService>();
+        sc.AddSingleton<AxAuthFactory>();
+        
         sc.AddSingleton<AxODataService>();
         sc.AddSingleton<IAxSvcDiscoveryService, AxSvcDiscoveryService>();
         sc.AddSingleton<IJsonConverterService, JsonConverterService>();
