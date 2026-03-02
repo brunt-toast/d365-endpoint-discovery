@@ -13,15 +13,15 @@
 [![JSON](https://img.shields.io/badge/JSON-000?logo=json&logoColor=fff)](#)
 [![YAML](https://img.shields.io/badge/YAML-CB171E?logo=yaml&logoColor=fff)](#)
 [![NuGet](https://img.shields.io/nuget/v/dynsvcdiscovery.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/dynsvcdiscovery/)
-[![NuGet](https://img.shields.io/nuget/dt/dynsvcdiscovery.svg)](https://www.nuget.org/packages/dynsvcdiscovery)
-![Downloads](https://img.shields.io/github/downloads/brunt-toast/d365-endpoint-discovery/total
+[![NuGet](https://img.shields.io/nuget/dt/dynsvcdiscovery?label=nuget%20downloads)](https://www.nuget.org/packages/dynsvcdiscovery/)
+![Downloads](https://img.shields.io/github/downloads/brunt-toast/d365-endpoint-discovery/total?label=GitHub%20downloads
 )
 
 A CLI+GUI tool to explore Dynamics 365 Finance &amp; Operations APIs. We use the service discovery endpoints to build a map of available services, then query the relevant SOAP endpoints to build best-guess type definitions for the data contracts used in the requests. 
 
 ## ⚠️ Warning ⚠️
 
-**Excessive use of this tool can result in bad things!** These include, but are not limited to, HTTP 429 (too many requests) responses, and system socket exhaustion. These problems go away on their own, but are annoying to deal with. Consider using the filtering options to reduce redundant requests. 
+**Excessive use of this tool can result in bad things!** These include, but are not limited to, HTTP 429 (too many requests) responses and system socket exhaustion. These problems go away on their own, but are annoying to deal with. Consider using the filtering options to reduce redundant requests. 
 
 ## ⬇️⌨️ Installation (CLI)
 
@@ -93,7 +93,7 @@ dynsvcdiscovery \
     2>dynsvcdiscovery.log
 ```
 
-For more verbose results, set the log level to Trace. You may also want to use `--log-stream 2|StdErr` to divert all logging to the error stream, so as not to interfere with the collection you're exporting.
+For more verbose results, set the log level to Trace (`--log-level|-l Trace`). You may also want to use `--log-stream 2|StdErr` to divert all logging to the error stream, so as not to interfere with the collection you're exporting.
 
 ### 🖼️ Graphical Interface
 
