@@ -1,6 +1,7 @@
 ﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Ioc;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Config;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Auth;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Soap;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,7 +21,7 @@ public static class AxServiceRegistrar
             TokenRequestEndpoint = string.Empty
         });
         sc.AddSingleton<AxCallingService>();
-        sc.AddSingleton<AxAuthService>();
+        sc.AddSingleton<IAxAuthService, ApplicationAxAuthService>();
         sc.AddSingleton<AxODataService>();
         sc.AddSingleton<IAxSvcDiscoveryService, AxSvcDiscoveryService>();
         sc.AddSingleton<IJsonConverterService, JsonConverterService>();

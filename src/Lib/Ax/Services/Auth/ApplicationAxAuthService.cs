@@ -4,9 +4,9 @@ using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Responses;
 using Newtonsoft.Json;
 using Serilog;
 
-namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services;
+namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Auth;
 
-internal class AxAuthService
+internal class ApplicationAxAuthService : IAxAuthService
 {
     private readonly IAxConfig _config;
     private readonly ILogger _logger;
@@ -14,7 +14,7 @@ internal class AxAuthService
 
     private TokenResponse? _cachedResponse;
 
-    public AxAuthService(IAxConfig config, ILogger logger, IHttpClientFactory httpClientFactory)
+    public ApplicationAxAuthService(IAxConfig config, ILogger logger, IHttpClientFactory httpClientFactory)
     {
         _config = config;
         _logger = logger;

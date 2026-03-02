@@ -2,17 +2,18 @@
 using System.Security.Authentication;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Consts;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Extensions.Serilog;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Auth;
 using Serilog;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services;
 
 internal class AxCallingService
 {
-    private readonly AxAuthService _authSvc;
+    private readonly IAxAuthService _authSvc;
     private readonly ILogger _logger;
     private readonly IHttpClientFactory _httpClientFactory;
 
-    public AxCallingService(AxAuthService authSvc, ILogger logger, IHttpClientFactory httpClientFactory)
+    public AxCallingService(IAxAuthService authSvc, ILogger logger, IHttpClientFactory httpClientFactory)
     {
         _authSvc = authSvc;
         _logger = logger;
