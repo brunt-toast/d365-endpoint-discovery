@@ -83,23 +83,31 @@ internal class ServiceDiscoveryCommand : Command
         _tenantIdOption = tenantIdOption;
         _authKindOption = authKindOption;
 
-        Options.Add(_clientIdOption);
-        Options.Add(_clientSecretOption);
-        Options.Add(_resourceOption);
-        Options.Add(_tokenRequestEndpointOption);
-        Options.Add(_grepGroupsOption);
-        Options.Add(_grepServicesOption);
-        Options.Add(_grepOperationsOption);
-        Options.Add(_collectionNameOption);
-        Options.Add(_schemaOption);
-        Options.Add(_formatOption);
-        Options.Add(_logLevelOption);
-        Options.Add(_logStreamOption);
-        Options.Add(_maxConnectionsOption);
-        Options.Add(_ignoreSslOption);
-        Options.Add(_minifyOption);
-        Options.Add(_tenantIdOption);
-        Options.Add(_authKindOption);
+        IEnumerable<Option> opts =
+        [
+            _clientIdOption,
+            _clientSecretOption,
+            _resourceOption,
+            _tokenRequestEndpointOption,
+            _grepGroupsOption,
+            _grepServicesOption,
+            _grepOperationsOption,
+            _collectionNameOption,
+            _schemaOption,
+            _formatOption,
+            _logLevelOption,
+            _logStreamOption,
+            _maxConnectionsOption,
+            _ignoreSslOption,
+            _minifyOption,
+            _tenantIdOption,
+            _authKindOption
+        ];
+
+        foreach (var opt in opts.OrderBy(x => x.Name))
+        {
+            Add(opt);
+        }
 
         SetAction(ExecuteAction);
     }
