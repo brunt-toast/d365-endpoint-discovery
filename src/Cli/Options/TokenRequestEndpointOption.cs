@@ -13,7 +13,7 @@ internal class TokenRequestEndpointOption : Option<string>
         Description = "An endpoint from which we can request a Dynamics 365 bearer token. Must be a valid URI. " +
                       "Usually looks like 'https://login.microsoftonline.com/GUID/oauth2/token', where GUID is usually " +
                       $"the Direcory (tenant) ID of the tenant containing the application described by {clientIdOpt.NameAndAliases()}. " +
-                      $"Required for application auth flows.";
+                      $"Required for application authentication flow.";
     }
 
     private void ValidUriValidator(OptionResult opt)

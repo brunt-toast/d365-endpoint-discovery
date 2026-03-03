@@ -8,6 +8,7 @@ using Serilog.Events;
 using System.CommandLine;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Config;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Enums;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Enums;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Commands;
 
@@ -34,6 +35,7 @@ internal class ServiceDiscoveryCommand : Command
     private readonly IgnoreSslOption _ignoreSslOption;
     private readonly MinifyOption _minifyOption;
     private readonly TenantIdOption _tenantIdOption;
+    private readonly AuthKindOption _authKindOption;
 
     public ServiceDiscoveryCommand(IMainService mainService,
         ICommandParseResultSink sink,
@@ -54,7 +56,8 @@ internal class ServiceDiscoveryCommand : Command
         MaxConnectionsOption maxConnectionsOption,
         IgnoreSslOption ignoreSslOption,
         MinifyOption minifyOption,
-        TenantIdOption tenantIdOption) 
+        TenantIdOption tenantIdOption,
+        AuthKindOption authKindOption) 
         : base("service-discovery", "Discover Dynamics 365 service endpoints automatically.")
     {
         _mainService = mainService;
@@ -78,6 +81,7 @@ internal class ServiceDiscoveryCommand : Command
         _ignoreSslOption = ignoreSslOption;
         _minifyOption = minifyOption;
         _tenantIdOption = tenantIdOption;
+        _authKindOption = authKindOption;
 
         Options.Add(_clientIdOption);
         Options.Add(_clientSecretOption);
@@ -95,6 +99,7 @@ internal class ServiceDiscoveryCommand : Command
         Options.Add(_ignoreSslOption);
         Options.Add(_minifyOption);
         Options.Add(_tenantIdOption);
+        Options.Add(_authKindOption);
 
         SetAction(ExecuteAction);
     }
@@ -117,6 +122,7 @@ internal class ServiceDiscoveryCommand : Command
         LogDestination logStream = parseResult.GetValue(_logStreamOption);
         int maxConnections = parseResult.GetValue(_maxConnectionsOption);
         bool ignoreSsl = parseResult.GetValue(_ignoreSslOption);
+        AuthKind authKind = parseResult.GetValue(_authKindOption);
 
         using var _ = _sink.Configure(parseResult, logLevel, logStream);
 
@@ -128,6 +134,7 @@ internal class ServiceDiscoveryCommand : Command
         _config.Resource = resource;
         _config.TokenRequestEndpoint = tokenRequestEndpoint;
         _config.TenantId = tenantId;
+        _config.AuthKind = authKind;
 
         string output = await _mainService.GetServiceCollectionAsync(new GetServiceCollectionRequest
         {

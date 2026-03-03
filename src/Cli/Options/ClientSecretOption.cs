@@ -9,6 +9,6 @@ internal class ClientSecretOption : Option<string>
     {
         DefaultValueFactory = _ => Environment.GetEnvironmentVariable("DYNAMICS_CLIENT_SECRET") ?? string.Empty;
         Description = "An Azure application client secret for the application described by the client ID. " +
-                      "Required for application authentication flows.";
+                      "Required for application authentication flow.";
     }
 }

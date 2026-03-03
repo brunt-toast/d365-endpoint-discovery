@@ -19,7 +19,8 @@ public static class AxServiceRegistrar
             ClientSecret = string.Empty,
             Resource = string.Empty,
             TokenRequestEndpoint = string.Empty,
-            TenantId = string.Empty
+            TenantId = string.Empty,
+            AuthKind = default
         });
         sc.AddSingleton<AxCallingService>();
         
