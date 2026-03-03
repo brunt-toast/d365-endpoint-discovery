@@ -56,23 +56,42 @@ dotnet cake --target InstallGui
 
 You'll need an Azure application which can communicate with your Dynamics 365 instance. If you don't have one, here's how you can set one up: 
 
+### Common
+
 1. Create an [Azure Application](https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade) and configure it to communicate with your Dynamics environment. 
 2. Under **Overview**, copy the Application (client) ID. Save this for later.
 3. Staying under **Overview**, copy the Directory (tenant) ID. Save this for later. 
-4. Under **Manage > Certificates &amp; secrets**, add a new client secret. Save this for later. 
-5. Under **Manage > API Permissions**, add the permission Ax.FullAccess (you can search for it using its service principal ID, f92c3f85-4759-4901-810d-5da8943dea39). Grant admin consent for your organisation. 
-6. In Dynamics, navigate to **System Administration > Setup > Entra ID Applications**, and add a new record with the Application (client) ID, assigned to an appropriate user. Remember to click "Save"!
+4. Under **Manage > API Permissions**, add the permission Ax.FullAccess (you can search for it using its service principal ID, f92c3f85-4759-4901-810d-5da8943dea39). Grant admin consent for your organisation. 
+
+5. In Dynamics, navigate to **System Administration > Setup > Entra ID Applications**, and add a new record with the Application (client) ID, assigned to an appropriate user. Remember to click "Save"!
+
+### Application Flows
+
+In your [Azure Application](https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade), under **Manage > Certificates &amp; secrets**, add a new client secret. Save this for later. 
+
+### User Flows 
+
+In your [Azure Application](https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade), under **Manage > Authentication**, add a redirect URI for mobile and desktop applications: `http://localhost:59445`. In the same page, set "Allow public client flows" to "Yes". 
 
 ## ⌨️ Usage (CLI) 
 
 Using only required parameters will map all discoverable service endpoints.
 
+Application auth: 
 ```bash
 dynsvcdiscovery \
     -c '<your-client-id>' \
     -s '<your-client-secret>' \
     -r 'https://<your-org-id>.operations.dynamics.com' \
     -t 'https://login.microsoftonline.com/<your-tenant-id>/oauth2/token' 
+ ```
+
+User auth: 
+```bash
+dynsvcdiscovery \
+    -c '<your-client-id>' \
+    --tenant-id '<your-tenant-id>' \
+    -r 'https://<your-org-id>.operations.dynamics.com' 
  ```
 
  Additional options and sub-commands can be found using `dynsvcdiscovery -?`.
