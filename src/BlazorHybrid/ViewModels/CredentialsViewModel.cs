@@ -74,13 +74,13 @@ internal class CredentialsViewModel : ICredentialsViewModel
         }
 
         await _secureStorage.SetEnumAsync(AuthKindKey, AuthKind);
-        await _secureStorage.SetAsync(ClientIdKey, ClientId);
-        await _secureStorage.SetAsync(ClientSecretKey, ClientSecret);
-        await _secureStorage.SetAsync(TokenRequestEndpointKey, TokenRequestEndpoint);
-        await _secureStorage.SetAsync(ResourceUriKey, ResourceUri);
-        await _secureStorage.SetAsync(ClientIdKey, ClientId);
-        await _secureStorage.SetAsync(ClientSecretKey, ClientSecret);
-        await _secureStorage.SetAsync(TenantIdKey, TenantId);
+        await _secureStorage.SetStringAsync(ClientIdKey, ClientId);
+        await _secureStorage.SetStringAsync(ClientSecretKey, ClientSecret);
+        await _secureStorage.SetStringAsync(TokenRequestEndpointKey, TokenRequestEndpoint);
+        await _secureStorage.SetStringAsync(ResourceUriKey, ResourceUri);
+        await _secureStorage.SetStringAsync(ClientIdKey, ClientId);
+        await _secureStorage.SetStringAsync(ClientSecretKey, ClientSecret);
+        await _secureStorage.SetStringAsync(TenantIdKey, TenantId);
         await _secureStorage.SetBoolAsync(IgnoreSslKey, IgnoreSsl);
         await _secureStorage.SetIntAsync(MaxConnectionsKey, MaxConnections);
 

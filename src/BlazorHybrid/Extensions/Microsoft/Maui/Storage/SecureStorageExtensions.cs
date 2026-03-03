@@ -8,6 +8,24 @@ internal static class SecureStorageExtensions
 {
     extension(ISecureStorage source)
     {
+        public async Task<string> GetStringAsync(string key)
+        {
+            var ret = await source.GetAsync(key);
+            return ret ?? string.Empty;
+        }
+
+        public async Task SetStringAsync(string key, string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                source.Remove(key);
+            }
+            else
+            {
+                await source.SetAsync(key, value);
+            }
+        }
+
         public async Task<bool> GetBoolAsync(string key)
         {
             string? raw = await source.GetAsync(key);
