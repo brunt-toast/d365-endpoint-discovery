@@ -45,8 +45,8 @@ internal class CredentialsViewModel : ICredentialsViewModel
         ClientSecret = await _secureStorage.GetAsync(ClientSecretKey) ?? string.Empty;
         TokenRequestEndpoint = await _secureStorage.GetAsync(TokenRequestEndpointKey) ?? string.Empty;
         ResourceUri = await _secureStorage.GetAsync(ResourceUriKey) ?? string.Empty;
-        IgnoreSsl = (await _secureStorage.GetAsync(IgnoreSslKey) ?? string.Empty) == "true";
-        MaxConnections = int.Parse(await _secureStorage.GetAsync(MaxConnectionsKey) ?? "0");
+        IgnoreSsl = await _secureStorage.GetBoolAsync(IgnoreSslKey);
+        MaxConnections = await _secureStorage.GetIntAsync(MaxConnectionsKey);
 
         if (!string.IsNullOrWhiteSpace(ClientId)
             || !string.IsNullOrWhiteSpace(ClientSecret)
@@ -71,8 +71,8 @@ internal class CredentialsViewModel : ICredentialsViewModel
         await _secureStorage.SetAsync(ResourceUriKey, ResourceUri);
         await _secureStorage.SetAsync(ClientIdKey, ClientId);
         await _secureStorage.SetAsync(ClientSecretKey, ClientSecret);
-        await _secureStorage.SetAsync(IgnoreSslKey, IgnoreSsl.ToString());
-        await _secureStorage.SetAsync(MaxConnectionsKey, MaxConnections.ToString());
+        await _secureStorage.SetBoolAsync(IgnoreSslKey, IgnoreSsl);
+        await _secureStorage.SetIntAsync(MaxConnectionsKey, MaxConnections);
 
         _axConfig.ClientId = ClientId;
         _axConfig.ClientSecret = ClientSecret;
