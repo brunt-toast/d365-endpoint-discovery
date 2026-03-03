@@ -1,7 +1,15 @@
 ﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Config;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Enums;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Requests;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Config;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Enums;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Extensions.Microsoft.Maui.Storage;
+using System.Collections;
+using System.Text;
+using CommunityToolkit.Maui.Storage;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Types;
+using Newtonsoft.Json;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.ViewModels;
 
@@ -10,6 +18,8 @@ internal class CredentialsViewModel : ICredentialsViewModel
     private readonly ISecureStorage _secureStorage;
     private readonly IAxConfig _axConfig;
     private readonly HttpClientOptions _httpClientOptions;
+    private readonly IFileSaver _fileSaver;
+    private readonly IFilePicker _filePicker;
 
     private const string AuthKindKey = "AxAuthKind";
     private const string ClientIdKey = "AxClientId";
@@ -30,11 +40,17 @@ internal class CredentialsViewModel : ICredentialsViewModel
     public bool IgnoreSsl { get; set; }
     public int MaxConnections { get; set; }
 
-    public CredentialsViewModel(ISecureStorage secureStorage, IAxConfig axConfig, HttpClientOptions httpClientOptions)
+    public CredentialsViewModel(ISecureStorage secureStorage, 
+        IAxConfig axConfig, 
+        HttpClientOptions httpClientOptions,
+        IFileSaver fileSaver,
+        IFilePicker filePicker)
     {
         _secureStorage = secureStorage;
         _axConfig = axConfig;
         _httpClientOptions = httpClientOptions;
+        _fileSaver = fileSaver;
+        _filePicker = filePicker;
     }
 
     public async Task InitAsync()
@@ -119,6 +135,48 @@ internal class CredentialsViewModel : ICredentialsViewModel
         MaxConnections = 0;
 
     }
+
+    public async Task SaveProfileAsync()
+    {
+        string content = JsonConvert.SerializeObject(new UserAuthConfigurationProfile
+        {
+            Version = 1,
+            ClientId = ClientId,
+            Resource = ResourceUri,
+            TenantId = TenantId
+        });
+
+        using var stream = new MemoryStream(Encoding.Default.GetBytes(content));
+        await _fileSaver.SaveAsync("profile.json", stream);
+    }
+
+    public async Task LoadProfileAsync()
+    {
+        FileResult? file = await _filePicker.PickAsync(new PickOptions
+        {
+            FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>()
+            {
+                { DevicePlatform.WinUI, ["json"] }
+            })
+        });
+
+        if (file is null)
+        {
+            return;
+        }
+
+        string content = await File.ReadAllTextAsync(file.FullPath);
+        var config = JsonConvert.DeserializeObject<UserAuthConfigurationProfile>(content);
+
+        if (config is null)
+        {
+            return;
+        }
+
+        ClientId = config.ClientId;
+        ResourceUri = config.Resource;
+        TenantId = config.TenantId;
+    }
 }
 
 public interface ICredentialsViewModel
@@ -136,4 +194,6 @@ public interface ICredentialsViewModel
     Task InitAsync();
     void ClearValues();
     Task SaveAsync();
+    Task SaveProfileAsync();
+    Task LoadProfileAsync();
 }

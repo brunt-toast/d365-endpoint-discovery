@@ -16,6 +16,7 @@ public static class RclServiceRegistrar
 
         sc.AddSingleton<ILauncher>(_ => Launcher.Default);
         sc.AddSingleton<IFileSaver>(_ => FileSaver.Default);
+        sc.AddSingleton<IFilePicker>(_ => FilePicker.Default);
         sc.AddSingleton<IFileSystem>(_ => FileSystem.Current);
         sc.AddSingleton<ISecureStorage>(_ => SecureStorage.Default);
         sc.AddSingleton<IMessenger, WeakReferenceMessenger>();
