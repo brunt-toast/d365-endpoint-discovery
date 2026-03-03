@@ -73,6 +73,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
+    <ProjectReference Include="..\Rcl\Rcl.csproj" />
   </ItemGroup>
-
 </Project>

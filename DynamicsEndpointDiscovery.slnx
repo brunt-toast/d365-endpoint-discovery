@@ -10,4 +10,5 @@
   <Project Path="src/BlazorHybrid/BlazorHybrid.csproj" Id="ccfa5e3b-7fbe-4db9-b075-1855e2e655c8" />
   <Project Path="src/Cli/Cli.csproj" />
   <Project Path="src/Core/Core.csproj" Id="18009f68-d19e-4209-90b4-48a9efc0eaa2" />
+  <Project Path="src/Rcl/Rcl.csproj" Id="8ec3f4ea-5324-4f53-8e4a-400e8dac658f" />
 </Solution>

@@ -1,0 +1,19 @@
+﻿@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Components.Receivers
+@inherits LayoutComponentBase
+@inject IFileSystem FileSystem
+
+@Body
+
+<div style="color: #cccccc; position: absolute; bottom: 0; right: 0;">
+    <a @onclick="() => Launcher.Default.OpenAsync(FileSystem.AppDataDirectory)">
+        @Version
+    </a>
+</div>
+
+<FluentToastProvider />
+<FluentDialogProvider />
+<FluentTooltipProvider />
+<FluentMessageBarProvider />
+<FluentMenuProvider />
+
+<ToastMessageReceiver />

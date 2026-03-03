@@ -1,0 +1,12 @@
+﻿@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.ViewModels
+<FluentStack Orientation="Orientation.Vertical">
+    <FluentTextField Style="width: 100%;" Label="Collection name" @bind-Value="ViewModel.CollectionName" />
+    <FluentCombobox Label="Schema" Items="ViewModel.AvailableOutputSchemas" @bind-SelectedOption="ViewModel.OutputSchema" />
+    <FluentCombobox Label="Format" Items="ViewModel.AvailableOutputFormats" @bind-SelectedOption="ViewModel.OutputFormat" />
+    <FluentCheckbox Label="Minify" @bind-Value="ViewModel.Minify" />
+</FluentStack>
+
+@code 
+{
+    [Parameter] public IBuildCollectionViewModel ViewModel { get; set; } = null!;
+}

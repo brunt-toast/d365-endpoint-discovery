@@ -1,0 +1,43 @@
+@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.ViewModels
+<FluentStack Orientation="Orientation.Horizontal">
+    <FluentSearch @bind-Value="ViewModel.Query" Immediate="true" Style="width: 100%;" />
+    <FluentCheckbox Label="All" @bind-Value="ViewModel.SelectAll" />
+</FluentStack>
+
+<hr />
+
+@if (!ViewModel.VisibleServiceGroups.Any())
+{
+    <p style="text-align: center;">
+        No results
+    </p>
+}
+
+<FluentTreeView style="max-height: 180px; overflow-y: auto;">
+    @foreach (var group in ViewModel.VisibleServiceGroups
+        .OrderBy(x => x.Item.Name))
+    {
+        <FluentTreeItem InitiallyExpanded="true">
+            <FluentCheckbox Label="@group.Item.Name" @bind-Value="group.IsSelected" />
+            @foreach (var service in group.Children
+                          .OrderBy(x => x.Item.Name))
+            {
+                <FluentTreeItem InitiallyExpanded="true" Style="padding-left: 1em;">
+                    <FluentCheckbox Label="@service.Item.Name" @bind-Value="@service.IsSelected" />
+                    @foreach (var operation in service.Children
+                                  .OrderBy(x => x.Item.Name))
+                    {
+                        <FluentTreeItem>
+                            <FluentCheckbox Label="@operation.Item.Name" @bind-Value="operation.IsSelected" />
+                        </FluentTreeItem>
+                    }
+                </FluentTreeItem>
+            }
+        </FluentTreeItem>
+    }
+</FluentTreeView>
+
+@code
+{
+    [Parameter] public ISelectOperationsViewModel ViewModel { get; set; } = null!;
+}
