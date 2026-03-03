@@ -10,4 +10,6 @@ internal static class IconRepository
 {
     public static Icon Upload { get; } = new Size20.ArrowUpload();
     public static Icon Download { get; } = new Size20.DrawerArrowDownload();
+    public static Icon Remember { get; } = new Size20.Brain();
+    public static Icon Certificate { get; } = new Size20.Certificate();
 }
