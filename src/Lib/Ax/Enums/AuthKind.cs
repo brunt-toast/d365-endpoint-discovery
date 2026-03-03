@@ -2,7 +2,7 @@
 
 public enum AuthKind
 {
-    BestGuess,
     Application,
-    User
+    User,
+    BestGuess
 }

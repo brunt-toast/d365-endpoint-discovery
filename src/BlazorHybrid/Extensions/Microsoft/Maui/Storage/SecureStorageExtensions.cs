@@ -31,5 +31,20 @@ internal static class SecureStorageExtensions
         {
             return source.SetAsync(key, value.ToString());
         }
+
+        public async Task<T> GetEnumAsync<T>(string key) where T : struct, Enum
+        {
+            string? raw = await source.GetAsync(key);
+            return Enum.TryParse<T>(raw, out var ret) 
+                ? ret 
+                : default;
+        }
+
+        public Task SetEnumAsync<T>(string key, T value) where T : struct, Enum
+        {
+            object obj = value;
+            int i = (int)obj;
+            return source.SetIntAsync(key, i);
+        }
     }
 }
