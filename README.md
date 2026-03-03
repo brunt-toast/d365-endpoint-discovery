@@ -13,13 +13,15 @@
 [![JSON](https://img.shields.io/badge/JSON-000?logo=json&logoColor=fff)](#)
 [![YAML](https://img.shields.io/badge/YAML-CB171E?logo=yaml&logoColor=fff)](#)
 [![NuGet](https://img.shields.io/nuget/v/dynsvcdiscovery.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/dynsvcdiscovery/)
-[![NuGet](https://img.shields.io/nuget/dt/dynsvcdiscovery.svg)](https://www.nuget.org/packages/dynsvcdiscovery)
+[![NuGet](https://img.shields.io/nuget/dt/dynsvcdiscovery?label=nuget%20downloads)](https://www.nuget.org/packages/dynsvcdiscovery/)
+![Downloads](https://img.shields.io/github/downloads/brunt-toast/d365-endpoint-discovery/total?label=GitHub%20downloads
+)
 
 A CLI+GUI tool to explore Dynamics 365 Finance &amp; Operations APIs. We use the service discovery endpoints to build a map of available services, then query the relevant SOAP endpoints to build best-guess type definitions for the data contracts used in the requests. 
 
 ## ⚠️ Warning ⚠️
 
-**Excessive use of this tool can result in bad things!** These include, but are not limited to, HTTP 429 (too many requests) responses, and system socket exhaustion. These problems go away on their own, but are annoying to deal with. Consider using the filtering options to reduce redundant requests. 
+**Excessive use of this tool can result in bad things!** These include, but are not limited to, HTTP 429 (too many requests) responses and system socket exhaustion. These problems go away on their own, but are annoying to deal with. Consider using the filtering options to reduce redundant requests. 
 
 ## ⬇️⌨️ Installation (CLI)
 
@@ -28,7 +30,7 @@ Install as a .NET tool:
 dotnet tool install -g dynsvcdiscovery
 ```
 
-Compile from source: 
+Compile from source (requires .NET 6.0 SDK or later): 
 ```bash
 dotnet tool restore
 dotnet cake --target InstallCli
@@ -44,7 +46,7 @@ export PATH="$HOME/.dotnet/tools:$PATH"
 
 Direct download: Download the [latest release](https://github.com/brunt-toast/d365-endpoint-discovery/releases/latest) (MSIX bundled). Run Install.ps1, or trust the certificate and run the MSIX file manually.
 
-Compile from source:
+Compile from source (requires .NET 6.0 SDK or later):
 ```bash
 dotnet tool restore
 dotnet cake --target InstallGui
@@ -54,23 +56,42 @@ dotnet cake --target InstallGui
 
 You'll need an Azure application which can communicate with your Dynamics 365 instance. If you don't have one, here's how you can set one up: 
 
+### Common
+
 1. Create an [Azure Application](https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade) and configure it to communicate with your Dynamics environment. 
 2. Under **Overview**, copy the Application (client) ID. Save this for later.
 3. Staying under **Overview**, copy the Directory (tenant) ID. Save this for later. 
-4. Under **Manage > Certificates &amp; secrets**, add a new client secret. Save this for later. 
-5. Under **Manage > API Permissions**, add the permission Ax.FullAccess (you can search for it using its service principal ID, f92c3f85-4759-4901-810d-5da8943dea39). Grant admin consent for your organisation. 
-6. In Dynamics, navigate to **System Administration > Setup > Entra ID Applications**, and add a new record with the Application (client) ID, assigned to an appropriate user. Remember to click "Save"!
+4. Under **Manage > API Permissions**, add the permission Ax.FullAccess (you can search for it using its service principal ID, f92c3f85-4759-4901-810d-5da8943dea39). Grant admin consent for your organisation. 
+
+5. In Dynamics, navigate to **System Administration > Setup > Entra ID Applications**, and add a new record with the Application (client) ID, assigned to an appropriate user. Remember to click "Save"!
+
+### Application Flows
+
+In your [Azure Application](https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade), under **Manage > Certificates &amp; secrets**, add a new client secret. Save this for later. 
+
+### User Flows 
+
+In your [Azure Application](https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade), under **Manage > Authentication**, add a redirect URI for mobile and desktop applications: `http://localhost:59445`. In the same page, set "Allow public client flows" to "Yes". 
 
 ## ⌨️ Usage (CLI) 
 
 Using only required parameters will map all discoverable service endpoints.
 
+Application auth: 
 ```bash
 dynsvcdiscovery \
     -c '<your-client-id>' \
     -s '<your-client-secret>' \
     -r 'https://<your-org-id>.operations.dynamics.com' \
     -t 'https://login.microsoftonline.com/<your-tenant-id>/oauth2/token' 
+ ```
+
+User auth: 
+```bash
+dynsvcdiscovery \
+    -c '<your-client-id>' \
+    --tenant-id '<your-tenant-id>' \
+    -r 'https://<your-org-id>.operations.dynamics.com' 
  ```
 
  Additional options and sub-commands can be found using `dynsvcdiscovery -?`.
@@ -91,7 +112,7 @@ dynsvcdiscovery \
     2>dynsvcdiscovery.log
 ```
 
-For more verbose results, set the log level to Trace. You may also want to use `--log-stream 2|StdErr` to divert all logging to the error stream, so as not to interfere with the collection you're exporting.
+For more verbose results, set the log level to Trace (`--log-level|-l Trace`). You may also want to use `--log-stream 2|StdErr` to divert all logging to the error stream, so as not to interfere with the collection you're exporting.
 
 ### 🖼️ Graphical Interface
 

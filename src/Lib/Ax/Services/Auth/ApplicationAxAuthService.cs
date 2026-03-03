@@ -4,9 +4,9 @@ using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Responses;
 using Newtonsoft.Json;
 using Serilog;
 
-namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services;
+namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Auth;
 
-internal class AxAuthService
+internal class ApplicationAxAuthService : IAxAuthService
 {
     private readonly IAxConfig _config;
     private readonly ILogger _logger;
@@ -14,7 +14,7 @@ internal class AxAuthService
 
     private TokenResponse? _cachedResponse;
 
-    public AxAuthService(IAxConfig config, ILogger logger, IHttpClientFactory httpClientFactory)
+    public ApplicationAxAuthService(IAxConfig config, ILogger logger, IHttpClientFactory httpClientFactory)
     {
         _config = config;
         _logger = logger;
@@ -45,9 +45,10 @@ internal class AxAuthService
         string content = await response.Content.ReadAsStringAsync();
         if (!response.IsSuccessStatusCode)
         {
-            const int delay = 10_000;
-            _logger.LogError("A request for a bearer token returned HTTP status {statusInt} ({status}). Trying again in {delay}ms. Content was: {newLine}{content}", (int)response.StatusCode, response.StatusCode, delay, Environment.NewLine, content);
-            await Task.Delay(delay);
+            _logger.LogError("A request for a bearer token returned HTTP status {statusInt} ({status}). " +
+                             "Expect cascading failures." +
+                             "Content was: {newLine}{content}", (int)response.StatusCode, response.StatusCode, Environment.NewLine, content);
+            return string.Empty;
         }
 
         _cachedResponse = JsonConvert.DeserializeObject<TokenResponse>(content);

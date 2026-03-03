@@ -1,33 +1,54 @@
 ﻿using System.Net;
+using System.Security.Authentication;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Consts;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Extensions.Serilog;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Auth;
 using Serilog;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services;
 
 internal class AxCallingService
 {
-    private readonly AxAuthService _authSvc;
+    private readonly AxAuthFactory _authFactory;
     private readonly ILogger _logger;
     private readonly IHttpClientFactory _httpClientFactory;
 
-    public AxCallingService(AxAuthService authSvc, ILogger logger, IHttpClientFactory httpClientFactory)
+    public AxCallingService(AxAuthFactory authFactory, ILogger logger, IHttpClientFactory httpClientFactory)
     {
-        _authSvc = authSvc;
+        _authFactory = authFactory;
         _logger = logger;
         _httpClientFactory = httpClientFactory;
     }
 
     public async Task<string> GetHttp(string endpoint)
     {
-        string bearer = await _authSvc.GetBearerToken();
+        var auth = _authFactory.GetAuth();
+        string bearer = await auth.GetBearerToken();
 
         HttpRequestMessage request = new(HttpMethod.Get, endpoint);
         request.Headers.Clear();
         request.Headers.Add("Authorization", $"Bearer {bearer}");
 
         var client = _httpClientFactory.CreateClient(HttpClientIdConsts.UserConfigurable);
-        var response = await client.SendAsync(request);
+
+        HttpResponseMessage response;
+        try
+        {
+            response = await client.SendAsync(request);
+        }
+        catch (HttpRequestException ex) when (ex.InnerException is AuthenticationException
+                                              {
+                                                  Message: "The remote certificate is invalid " +
+                                                           "because of errors in the certificate chain: " +
+                                                           "UntrustedRoot"
+                                              })
+
+        {
+            _logger.Error("Couldn't connect to {resource} because the SSL certificate came from an untrusted root. " +
+                          "Try skipping SSL validation or importing a certificate. " +
+                          "Expect cascading errors from this failure.", endpoint);
+            return string.Empty;
+        }
 
         string content = await response.Content.ReadAsStringAsync();
 

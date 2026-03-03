@@ -8,6 +8,7 @@ using Serilog.Events;
 using System.CommandLine;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Config;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Enums;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Enums;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Commands;
 
@@ -33,6 +34,8 @@ internal class ServiceDiscoveryCommand : Command
     private readonly MaxConnectionsOption _maxConnectionsOption;
     private readonly IgnoreSslOption _ignoreSslOption;
     private readonly MinifyOption _minifyOption;
+    private readonly TenantIdOption _tenantIdOption;
+    private readonly AuthKindOption _authKindOption;
 
     public ServiceDiscoveryCommand(IMainService mainService,
         ICommandParseResultSink sink,
@@ -52,7 +55,9 @@ internal class ServiceDiscoveryCommand : Command
         LogStreamOption logStreamOption,
         MaxConnectionsOption maxConnectionsOption,
         IgnoreSslOption ignoreSslOption,
-        MinifyOption minifyOption) 
+        MinifyOption minifyOption,
+        TenantIdOption tenantIdOption,
+        AuthKindOption authKindOption) 
         : base("service-discovery", "Discover Dynamics 365 service endpoints automatically.")
     {
         _mainService = mainService;
@@ -75,22 +80,34 @@ internal class ServiceDiscoveryCommand : Command
         _maxConnectionsOption = maxConnectionsOption;
         _ignoreSslOption = ignoreSslOption;
         _minifyOption = minifyOption;
+        _tenantIdOption = tenantIdOption;
+        _authKindOption = authKindOption;
 
-        Options.Add(_clientIdOption);
-        Options.Add(_clientSecretOption);
-        Options.Add(_resourceOption);
-        Options.Add(_tokenRequestEndpointOption);
-        Options.Add(_grepGroupsOption);
-        Options.Add(_grepServicesOption);
-        Options.Add(_grepOperationsOption);
-        Options.Add(_collectionNameOption);
-        Options.Add(_schemaOption);
-        Options.Add(_formatOption);
-        Options.Add(_logLevelOption);
-        Options.Add(_logStreamOption);
-        Options.Add(_maxConnectionsOption);
-        Options.Add(_ignoreSslOption);
-        Options.Add(_minifyOption);
+        IEnumerable<Option> opts =
+        [
+            _clientIdOption,
+            _clientSecretOption,
+            _resourceOption,
+            _tokenRequestEndpointOption,
+            _grepGroupsOption,
+            _grepServicesOption,
+            _grepOperationsOption,
+            _collectionNameOption,
+            _schemaOption,
+            _formatOption,
+            _logLevelOption,
+            _logStreamOption,
+            _maxConnectionsOption,
+            _ignoreSslOption,
+            _minifyOption,
+            _tenantIdOption,
+            _authKindOption
+        ];
+
+        foreach (var opt in opts.OrderBy(x => x.Name))
+        {
+            Add(opt);
+        }
 
         SetAction(ExecuteAction);
     }
@@ -104,6 +121,7 @@ internal class ServiceDiscoveryCommand : Command
         string grepGroupsRegex = parseResult.GetValue(_grepGroupsOption) ?? string.Empty;
         string grepServicesRegex = parseResult.GetValue(_grepServicesOption) ?? string.Empty;
         string grepOperationsRegex = parseResult.GetValue(_grepOperationsOption) ?? string.Empty;
+        string tenantId = parseResult.GetValue(_tenantIdOption) ?? string.Empty;
         OutputSchemas outputSchema = parseResult.GetValue(_schemaOption);
         OutputFormats outputFormat = parseResult.GetValue(_formatOption);
         string collectionName = parseResult.GetValue(_collectionNameOption) ?? string.Empty;
@@ -112,6 +130,7 @@ internal class ServiceDiscoveryCommand : Command
         LogDestination logStream = parseResult.GetValue(_logStreamOption);
         int maxConnections = parseResult.GetValue(_maxConnectionsOption);
         bool ignoreSsl = parseResult.GetValue(_ignoreSslOption);
+        AuthKind authKind = parseResult.GetValue(_authKindOption);
 
         using var _ = _sink.Configure(parseResult, logLevel, logStream);
 
@@ -122,6 +141,8 @@ internal class ServiceDiscoveryCommand : Command
         _config.ClientSecret = clientSecret;
         _config.Resource = resource;
         _config.TokenRequestEndpoint = tokenRequestEndpoint;
+        _config.TenantId = tenantId;
+        _config.AuthKind = authKind;
 
         string output = await _mainService.GetServiceCollectionAsync(new GetServiceCollectionRequest
         {
