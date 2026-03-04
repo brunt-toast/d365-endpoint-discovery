@@ -143,3 +143,6 @@ collection.{json,yml,yaml}
 *.collection.{json,yml,yaml}
 postmancollection.{json,yml,yaml}
 *.postmancollection.{json,yml,yaml}
+
+# Generated from language resources
+*.Designer.cs

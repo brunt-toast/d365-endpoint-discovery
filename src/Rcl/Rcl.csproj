@@ -14,6 +14,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Localization" Version="10.0.3" />
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.13.2" />
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.13.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
@@ -22,6 +23,21 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources\Languages\ServiceDiscoveryComponentResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ServiceDiscoveryComponentResources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Languages\ServiceDiscoveryComponentResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ServiceDiscoveryComponentResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
