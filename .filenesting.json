@@ -28,6 +28,7 @@
           ".fr.resx": [ ".resx" ],
           ".ja.resx": [ ".resx" ],
           ".eo.resx": [ ".resx" ],
+          ".la.resx": [ ".resx" ],
           ".js": [
             ".coffee",
             ".iced",

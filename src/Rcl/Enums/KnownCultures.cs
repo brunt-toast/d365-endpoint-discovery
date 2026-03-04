@@ -15,4 +15,7 @@ public enum KnownCultures
 
     [Display(Name = "Esperanto")]
     Eo,
+
+    [Display(Name = "Linguam latinam")]
+    La,
 }
