@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui.Storage;
 using CommunityToolkit.Mvvm.Messaging;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Ioc;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Services;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.ViewModels;
 using Microsoft.FluentUI.AspNetCore.Components;
 
@@ -13,6 +14,8 @@ public static class RclServiceRegistrar
         ApplicationServiceRegistrar.RegisterServices(sc);
 
         sc.AddFluentUIComponents();
+
+        sc.AddSingleton<ICultureService, CultureService>();
 
         sc.AddSingleton<ILauncher>(_ => Launcher.Default);
         sc.AddSingleton<IFileSaver>(_ => FileSaver.Default);

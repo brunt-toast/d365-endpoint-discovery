@@ -1,11 +1,15 @@
+@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Enums
+@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Extensions.System
 @using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Icons
 @using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Resources.Languages
+@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Services
 @using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.ViewModels
 @inject ICredentialsViewModel CredentialsVm
 @inject ISelectGroupsViewModel SelectGroupsVm
 @inject ISelectServicesViewModel SelectServicesVm
 @inject ISelectOperationsViewModel SelectOperationsVm
 @inject IBuildCollectionViewModel BuildCollectionVm
+@inject ICultureService CultureService
 
 <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
     <FluentWizard @ref="_wizard"
@@ -31,6 +35,12 @@
                 <p style="color: #cc9e05;">
                     @(new MarkupString(ServiceDiscoveryComponentResources.WarningMessage))
                 </p>
+
+                <FluentSelect TOption="KnownCultures"
+                              Label="@ServiceDiscoveryComponentResources.Language"
+                              Items="Enum.GetValues<KnownCultures>()"
+                              OptionText="EnumExtensions.KnownCulturesToDisplayName"
+                              @bind-SelectedOption="Culture" />
             </FluentWizardStep>
 
             <FluentWizardStep Label="Connect to D365" OnChange="async () => await SelectGroupsVm.InitAsync(CredentialsVm)"
