@@ -38,7 +38,7 @@
 
                 <FluentSelect TOption="KnownCultures"
                               Label="@ServiceDiscoveryComponentResources.Language"
-                              Items="Enum.GetValues<KnownCultures>()"
+                              Items="Enum.GetValues<KnownCultures>().OrderBy(x => x.ToDisplayName())"
                               OptionText="EnumExtensions.KnownCulturesToDisplayName"
                               @bind-SelectedOption="Culture" />
             </FluentWizardStep>
