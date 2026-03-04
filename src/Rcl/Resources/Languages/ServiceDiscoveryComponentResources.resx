@@ -117,8 +117,38 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AllDoneMessage" xml:space="preserve">
+    <value>All done!</value>
+  </data>
+  <data name="BuildCollection" xml:space="preserve">
+    <value>Build collection</value>
+  </data>
+  <data name="CancelledMessage" xml:space="preserve">
+    <value>It looks like you cancelled saving the collection. You can always go back and save it again.</value>
+  </data>
+  <data name="CollectionReadyMessage" xml:space="preserve">
+    <value>Your collection is ready to go! You can find it here:</value>
+  </data>
+  <data name="ConnectToD365" xml:space="preserve">
+    <value>Connect to D365</value>
+  </data>
+  <data name="Finish" xml:space="preserve">
+    <value>Finish</value>
+  </data>
+  <data name="Intro" xml:space="preserve">
+    <value>Intro</value>
+  </data>
   <data name="Language" xml:space="preserve">
     <value>Language</value>
+  </data>
+  <data name="SelectGroups" xml:space="preserve">
+    <value>Select groups</value>
+  </data>
+  <data name="SelectOperations" xml:space="preserve">
+    <value>Select operations</value>
+  </data>
+  <data name="SelectServices" xml:space="preserve">
+    <value>Select services</value>
   </data>
   <data name="Title" xml:space="preserve">
     <value>Service Endpoint Discovery Wizard</value>

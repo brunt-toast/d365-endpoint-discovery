@@ -19,7 +19,7 @@
                   Border="WizardBorder.Outside"
                   OnFinish="OnWizardFinish">
         <Steps>
-            <FluentWizardStep Label="Intro"
+            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.Intro"
                               DisplayStepNumber="false"
                               IconPrevious="FluentIconRepository.IntroStepPrevIcon"
                               IconCurrent="FluentIconRepository.IntroStepCurIcon"
@@ -43,7 +43,7 @@
                               @bind-SelectedOption="Culture" />
             </FluentWizardStep>
 
-            <FluentWizardStep Label="Connect to D365" OnChange="async () => await SelectGroupsVm.InitAsync(CredentialsVm)"
+            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.ConnectToD365" OnChange="async () => await SelectGroupsVm.InitAsync(CredentialsVm)"
                               DisplayStepNumber="false"
                               IconPrevious="FluentIconRepository.ConnectStepPrevIcon"
                               IconCurrent="FluentIconRepository.ConnectStepCurIcon"
@@ -51,7 +51,7 @@
                 <CredentialsComponent ViewModel="CredentialsVm"/>
             </FluentWizardStep>
 
-            <FluentWizardStep Label="Select groups" OnChange="async () => await SelectServicesVm.InitAsync(SelectGroupsVm)"
+            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.SelectGroups" OnChange="async () => await SelectServicesVm.InitAsync(SelectGroupsVm)"
                               DisplayStepNumber="false"
                               IconPrevious="FluentIconRepository.GroupsStepPrevIcon"
                               IconCurrent="FluentIconRepository.GroupsStepCurIcon"
@@ -59,7 +59,7 @@
                 <SelectGroupsComponent ViewModel="SelectGroupsVm"/>
             </FluentWizardStep>
 
-            <FluentWizardStep Label="Select services" OnChange="async () => await SelectOperationsVm.InitAsync(SelectServicesVm)"
+            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.SelectServices" OnChange="async () => await SelectOperationsVm.InitAsync(SelectServicesVm)"
                               DisplayStepNumber="false"
                               IconPrevious="FluentIconRepository.ServicesStepPrevIcon"
                               IconCurrent="FluentIconRepository.ServicesStepCurIcon"
@@ -67,7 +67,7 @@
                 <SelectServicesComponent ViewModel="SelectServicesVm"/>
             </FluentWizardStep>
 
-            <FluentWizardStep Label="Select operations" OnChange="() => BuildCollectionVm.Init(CredentialsVm, SelectOperationsVm)"
+            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.SelectOperations" OnChange="() => BuildCollectionVm.Init(CredentialsVm, SelectOperationsVm)"
                               DisplayStepNumber="false"
                               IconPrevious="FluentIconRepository.OperationsStepPrevIcon"
                               IconCurrent="FluentIconRepository.OperationsStepCurIcon"
@@ -75,7 +75,7 @@
                 <SelectOperationsComponent ViewModel="SelectOperationsVm"/>
             </FluentWizardStep>
 
-            <FluentWizardStep Label="Build collection" OnChange="BuildCollectionVm.SaveToFileAsync"
+            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.BuildCollection" OnChange="BuildCollectionVm.SaveToFileAsync"
                               DisplayStepNumber="false"
                               IconPrevious="FluentIconRepository.CollectionStepPrevIcon"
                               IconCurrent="FluentIconRepository.CollectionStepCurIcon"
@@ -83,25 +83,24 @@
                 <BuildCollectionComponent ViewModel="BuildCollectionVm"/>
             </FluentWizardStep>
             
-            <FluentWizardStep Label="Finish"
+            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.Finish"
                               DisplayStepNumber="false"
                               IconPrevious="FluentIconRepository.FinishStepPrevIcon"
                               IconCurrent="FluentIconRepository.FinishStepCurIcon"
                               IconNext="FluentIconRepository.FinishStepNextIcon">
-                <h2 style="text-align: center;">All done!</h2>
+                <h2 style="text-align: center;">@ServiceDiscoveryComponentResources.AllDoneMessage</h2>
                 @if (string.IsNullOrWhiteSpace(BuildCollectionVm.OutputPath))
                 {
                     <p>
-                        It looks like you cancelled saving the collection. 
-                        You can always go back and save it again.
+                        @ServiceDiscoveryComponentResources.CancelledMessage
                     </p>
                 }
                 else 
                 {
                     <p>
-                        Your collection is ready to go! You can find it at 
+                        @ServiceDiscoveryComponentResources.CollectionReadyMessage
                         <a href="#" @onclick="BuildCollectionVm.ViewFileInFolder">
-                            @BuildCollectionVm.OutputPath.
+                            @BuildCollectionVm.OutputPath
                         </a>
                     </p>
                 }

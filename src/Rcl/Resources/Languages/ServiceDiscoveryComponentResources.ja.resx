@@ -117,8 +117,38 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AllDoneMessage" xml:space="preserve">
+    <value>すべて完了しました！</value>
+  </data>
+  <data name="BuildCollection" xml:space="preserve">
+    <value>コレクションを建てる</value>
+  </data>
+  <data name="CancelledMessage" xml:space="preserve">
+    <value>コレクションの保存をキャンセルしたようです。いつでも戻って再度保存できます。</value>
+  </data>
+  <data name="CollectionReadyMessage" xml:space="preserve">
+    <value>コレクションは準備完了です。こちらからご覧いただけます:</value>
+  </data>
+  <data name="ConnectToD365" xml:space="preserve">
+    <value>D365に接続する</value>
+  </data>
+  <data name="Finish" xml:space="preserve">
+    <value>終わらせる</value>
+  </data>
+  <data name="Intro" xml:space="preserve">
+    <value>紹介</value>
+  </data>
   <data name="Language" xml:space="preserve">
     <value>言語</value>
+  </data>
+  <data name="SelectGroups" xml:space="preserve">
+    <value>グループを選択する</value>
+  </data>
+  <data name="SelectOperations" xml:space="preserve">
+    <value>オペレーションを選択する</value>
+  </data>
+  <data name="SelectServices" xml:space="preserve">
+    <value>サービスを選択する</value>
   </data>
   <data name="Title" xml:space="preserve">
     <value>サービスエンドポイントを検出するためのツール</value>
