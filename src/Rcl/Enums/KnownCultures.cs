@@ -11,5 +11,8 @@ public enum KnownCultures
     Fr,
 
     [Display(Name="\u65e5\u672c\u8a9e")]
-    Ja
+    Ja,
+
+    [Display(Name = "Esperanto")]
+    Eo,
 }

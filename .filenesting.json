@@ -27,6 +27,7 @@
         "add": {
           ".fr.resx": [ ".resx" ],
           ".ja.resx": [ ".resx" ],
+          ".eo.resx": [ ".resx" ],
           ".js": [
             ".coffee",
             ".iced",
