@@ -29,6 +29,7 @@
           ".ja.resx": [ ".resx" ],
           ".eo.resx": [ ".resx" ],
           ".la.resx": [ ".resx" ],
+          ".es.resx": [ ".resx" ],
           ".js": [
             ".coffee",
             ".iced",

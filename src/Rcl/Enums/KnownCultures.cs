@@ -18,4 +18,7 @@ public enum KnownCultures
 
     [Display(Name = "Linguam latinam")]
     La,
+
+    [Display(Name = "Español")]
+    Es,
 }

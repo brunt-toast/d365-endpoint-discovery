@@ -14,6 +14,7 @@ internal class CultureService : ICultureService
             KnownCultures.Ja => "ja-JA",
             KnownCultures.Eo => "eo-EO",
             KnownCultures.La => "la-LA",
+            KnownCultures.Es => "es-ES",
             _ => throw new ArgumentOutOfRangeException(nameof(culture), culture, null)
         };
 
