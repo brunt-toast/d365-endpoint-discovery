@@ -78,18 +78,24 @@ Task("RunCli")
         });
     });
 
-Task("PackGui")
+Task("PublishGui")
     .IsDependentOn("InstallSdk")
     .IsDependentOn("Restore")
     .IsDependentOn("RestoreWorkloads")
     .Does(() =>
     {
         StartProcess("pwsh.exe", "./Build-SignedMsix.ps1");
+    });
+
+Task("PackGui")
+    .IsDependentOn("PublishGui")
+    .Does(() =>
+    {
         StartProcess("zip", "-r ./src/BlazorHybrid/bin/BlazorHybridMsix.zip ./src/BlazorHybrid/bin/Release/net10.0-windows10.0.19041.0/win-x64/AppPackages");
     });
 
 Task("InstallGui")
-    .IsDependentOn("PackGui")
+    .IsDependentOn("PublishGui")
     .Does(() =>
     {
         const string root = "./src/BlazorHybrid/bin/Release/net10.0-windows10.0.19041.0/win-x64/AppPackages";

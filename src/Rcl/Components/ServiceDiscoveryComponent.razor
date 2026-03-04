@@ -1,0 +1,110 @@
+@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Enums
+@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Extensions.System
+@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Icons
+@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Resources.Languages
+@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Services
+@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.ViewModels
+@inject ICredentialsViewModel CredentialsVm
+@inject ISelectGroupsViewModel SelectGroupsVm
+@inject ISelectServicesViewModel SelectServicesVm
+@inject ISelectOperationsViewModel SelectOperationsVm
+@inject IBuildCollectionViewModel BuildCollectionVm
+@inject ICultureService CultureService
+
+<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+    <FluentWizard @ref="_wizard"
+                  Style="width: min(600px, 95svw); height: auto;"
+                  StepperPosition="StepperPosition.Top"
+                  DisplayStepNumber="@(WizardStepStatus.Current | WizardStepStatus.Next)"
+                  Border="WizardBorder.Outside"
+                  OnFinish="OnWizardFinish">
+        <Steps>
+            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.Intro"
+                              DisplayStepNumber="false"
+                              IconPrevious="FluentIconRepository.IntroStepPrevIcon"
+                              IconCurrent="FluentIconRepository.IntroStepCurIcon"
+                              IconNext="FluentIconRepository.IntroStepNextIcon"
+                              OnChange="async () => await CredentialsVm.InitAsync()">
+                <h2 style="text-align: center;">@ServiceDiscoveryComponentResources.Title</h2>
+                <p>
+                    @ServiceDiscoveryComponentResources.UsageInstructions1
+                </p>
+                <p>
+                    @ServiceDiscoveryComponentResources.UsageInstructions2
+                </p>
+                <p style="color: #cc9e05;">
+                    @(new MarkupString(ServiceDiscoveryComponentResources.WarningMessage))
+                </p>
+
+                <FluentSelect TOption="KnownCultures"
+                              Label="@ServiceDiscoveryComponentResources.Language"
+                              Items="Enum.GetValues<KnownCultures>().OrderBy(x => x.ToDisplayName())"
+                              OptionText="EnumExtensions.KnownCulturesToDisplayName"
+                              @bind-SelectedOption="Culture" />
+            </FluentWizardStep>
+
+            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.ConnectToD365" OnChange="async () => await SelectGroupsVm.InitAsync(CredentialsVm)"
+                              DisplayStepNumber="false"
+                              IconPrevious="FluentIconRepository.ConnectStepPrevIcon"
+                              IconCurrent="FluentIconRepository.ConnectStepCurIcon"
+                              IconNext="FluentIconRepository.ConnectStepNextIcon">
+                <CredentialsComponent ViewModel="CredentialsVm"/>
+            </FluentWizardStep>
+
+            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.SelectGroups" OnChange="async () => await SelectServicesVm.InitAsync(SelectGroupsVm)"
+                              DisplayStepNumber="false"
+                              IconPrevious="FluentIconRepository.GroupsStepPrevIcon"
+                              IconCurrent="FluentIconRepository.GroupsStepCurIcon"
+                              IconNext="FluentIconRepository.GroupsStepNextIcon">
+                <SelectGroupsComponent ViewModel="SelectGroupsVm"/>
+            </FluentWizardStep>
+
+            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.SelectServices" OnChange="async () => await SelectOperationsVm.InitAsync(SelectServicesVm)"
+                              DisplayStepNumber="false"
+                              IconPrevious="FluentIconRepository.ServicesStepPrevIcon"
+                              IconCurrent="FluentIconRepository.ServicesStepCurIcon"
+                              IconNext="FluentIconRepository.ServicesStepNextIcon">
+                <SelectServicesComponent ViewModel="SelectServicesVm"/>
+            </FluentWizardStep>
+
+            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.SelectOperations" OnChange="() => BuildCollectionVm.Init(CredentialsVm, SelectOperationsVm)"
+                              DisplayStepNumber="false"
+                              IconPrevious="FluentIconRepository.OperationsStepPrevIcon"
+                              IconCurrent="FluentIconRepository.OperationsStepCurIcon"
+                              IconNext="FluentIconRepository.OperationsStepNextIcon">
+                <SelectOperationsComponent ViewModel="SelectOperationsVm"/>
+            </FluentWizardStep>
+
+            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.BuildCollection" OnChange="BuildCollectionVm.SaveToFileAsync"
+                              DisplayStepNumber="false"
+                              IconPrevious="FluentIconRepository.CollectionStepPrevIcon"
+                              IconCurrent="FluentIconRepository.CollectionStepCurIcon"
+                              IconNext="FluentIconRepository.CollectionStepNextIcon">
+                <BuildCollectionComponent ViewModel="BuildCollectionVm"/>
+            </FluentWizardStep>
+            
+            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.Finish"
+                              DisplayStepNumber="false"
+                              IconPrevious="FluentIconRepository.FinishStepPrevIcon"
+                              IconCurrent="FluentIconRepository.FinishStepCurIcon"
+                              IconNext="FluentIconRepository.FinishStepNextIcon">
+                <h2 style="text-align: center;">@ServiceDiscoveryComponentResources.AllDoneMessage</h2>
+                @if (string.IsNullOrWhiteSpace(BuildCollectionVm.OutputPath))
+                {
+                    <p>
+                        @ServiceDiscoveryComponentResources.CancelledMessage
+                    </p>
+                }
+                else 
+                {
+                    <p>
+                        @ServiceDiscoveryComponentResources.CollectionReadyMessage
+                        <a href="#" @onclick="BuildCollectionVm.ViewFileInFolder">
+                            @BuildCollectionVm.OutputPath
+                        </a>
+                    </p>
+                }
+            </FluentWizardStep>
+        </Steps>
+    </FluentWizard>
+</div>

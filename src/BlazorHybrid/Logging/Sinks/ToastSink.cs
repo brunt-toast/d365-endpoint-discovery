@@ -1,10 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
-using Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.Messages;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Messages;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Serilog.Core;
 using Serilog.Events;
 
-namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.Logging.Sinks;
+namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Logging.Sinks;
 
 internal class ToastSink : ILogEventSink
 {

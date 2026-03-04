@@ -1,0 +1,19 @@
+@implements CommunityToolkit.Mvvm.Messaging.IRecipient<Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Messages.ShowToastMessage>
+@using CommunityToolkit.Mvvm.Messaging
+@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Messages
+@inject IMessenger Messenger 
+@inject IToastService ToastService
+
+@code 
+{
+    protected override void OnInitialized()
+    {
+        Messenger.RegisterAll(this);
+        base.OnInitialized();
+    }
+
+    public void Receive(ShowToastMessage message)
+    {
+        ToastService.ShowToast(message.Intent, message.Message);
+    }
+}

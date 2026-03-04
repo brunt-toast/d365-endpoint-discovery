@@ -1,0 +1,36 @@
+﻿@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Resources.Languages
+@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.ViewModels
+<FluentStack Orientation="Orientation.Horizontal">
+    <FluentSearch @bind-Value="ViewModel.Query" Immediate="true" Style="width: 100%;" />
+    <FluentCheckbox Label="@SelectServicesComponentResources.All" @bind-Value="ViewModel.SelectAll" />
+</FluentStack>
+
+<hr />
+
+@if (!ViewModel.VisibleServiceGroups.Any())
+{
+    <p style="text-align: center;">
+        @SelectServicesComponentResources.NoResults
+    </p>
+}
+
+<FluentTreeView style="max-height: 180px; overflow-y: auto;">
+    @foreach (var group in ViewModel.VisibleServiceGroups
+        .OrderBy(x => x.Item.Name))
+    {
+        <FluentTreeItem InitiallyExpanded="true">
+            <FluentCheckbox Label="@group.Item.Name" @bind-Value="group.IsSelected" />
+            @foreach (var service in group.Children.OrderBy(x => x.Item.Name))
+            {
+                <FluentTreeItem Style="padding-left: 1em;">
+                    <FluentCheckbox Label="@service.Item.Name" @bind-Value="@service.IsSelected" />
+                </FluentTreeItem>
+            }
+        </FluentTreeItem>
+    }
+</FluentTreeView>
+
+@code
+{
+    [Parameter] public ISelectServicesViewModel ViewModel { get; set; } = null!;
+}
