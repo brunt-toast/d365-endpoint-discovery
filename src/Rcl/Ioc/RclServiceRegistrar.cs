@@ -16,6 +16,7 @@ public static class RclServiceRegistrar
         sc.AddFluentUIComponents();
 
         sc.AddSingleton<ICultureService, CultureService>();
+        sc.AddLocalization();
 
         sc.AddSingleton<ILauncher>(_ => Launcher.Default);
         sc.AddSingleton<IFileSaver>(_ => FileSaver.Default);

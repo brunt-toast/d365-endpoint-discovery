@@ -31,6 +31,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>BuildCollectionComponentResources.resx</DependentUpon>
     </Compile>
+    <Compile Update="Resources\Languages\CredentialsComponentResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CredentialsComponentResources.resx</DependentUpon>
+    </Compile>
     <Compile Update="Resources\Languages\ServiceDiscoveryComponentResources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -42,6 +47,10 @@
     <EmbeddedResource Update="Resources\Languages\BuildCollectionComponentResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>BuildCollectionComponentResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Languages\CredentialsComponentResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CredentialsComponentResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\Languages\ServiceDiscoveryComponentResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
