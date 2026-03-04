@@ -1,7 +1,8 @@
-﻿@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.ViewModels
+﻿@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Resources.Languages
+@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.ViewModels
 <FluentStack Orientation="Orientation.Horizontal">
     <FluentSearch @bind-Value="ViewModel.Query" Immediate="true" Style="width: 100%;" />
-    <FluentCheckbox Label="All" @bind-Value="ViewModel.SelectAll" />
+    <FluentCheckbox Label="@SelectServicesComponentResources.All" @bind-Value="ViewModel.SelectAll" />
 </FluentStack>
 
 <hr />
@@ -9,7 +10,7 @@
 @if (!ViewModel.VisibleServiceGroups.Any())
 {
     <p style="text-align: center;">
-        No results
+        @SelectServicesComponentResources.NoResults
     </p>
 }
 

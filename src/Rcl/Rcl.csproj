@@ -36,6 +36,21 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>CredentialsComponentResources.resx</DependentUpon>
     </Compile>
+    <Compile Update="Resources\Languages\SelectServicesComponentResources.Designer.cs">
+      <DependentUpon>SelectServicesComponentResources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Resources\Languages\SelectOperationsComponentResources.Designer.cs">
+      <DependentUpon>SelectOperationsComponentResources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Resources\Languages\SelectGroupsComponentResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SelectGroupsComponentResources.resx</DependentUpon>
+    </Compile>
     <Compile Update="Resources\Languages\ServiceDiscoveryComponentResources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -51,6 +66,18 @@
     <EmbeddedResource Update="Resources\Languages\CredentialsComponentResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CredentialsComponentResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Languages\SelectServicesComponentResources.resx">
+      <LastGenOutput>SelectServicesComponentResources.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Languages\SelectOperationsComponentResources.resx">
+      <LastGenOutput>SelectOperationsComponentResources.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Languages\SelectGroupsComponentResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SelectGroupsComponentResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\Languages\ServiceDiscoveryComponentResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
