@@ -144,3 +144,5 @@ collection.{json,yml,yaml}
 postmancollection.{json,yml,yaml}
 *.postmancollection.{json,yml,yaml}
 
+# C# Generated Designer Files 
+*.Designer.cs
