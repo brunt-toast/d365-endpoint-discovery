@@ -18,6 +18,35 @@
                   DisplayStepNumber="@(WizardStepStatus.Current | WizardStepStatus.Next)"
                   Border="WizardBorder.Outside"
                   OnFinish="OnWizardFinish">
+        <ButtonTemplate Context="currentStep">
+            @if (currentStep > IntroStepIndex)
+            {
+                <FluentButton Appearance="Appearance.Neutral"
+                              Style="width: 80px;"
+                              OnClick="GoToPreviousStepAsync">
+                    @ServiceDiscoveryComponentResources.Previous
+                </FluentButton>
+            }
+
+            <span style="margin-right: 10px"></span>
+
+            @if (currentStep < LastStepIndex)
+            {
+                <FluentButton Appearance="Appearance.Accent"
+                              Style="width: 80px;"
+                              OnClick="GoToNextStepAsync">
+                    @ServiceDiscoveryComponentResources.Next
+                </FluentButton>
+            }
+            else
+            {
+                <FluentButton Appearance="Appearance.Accent"
+                              Style="width: 80px;"
+                              OnClick="FinishWizardAsync">
+                    @ServiceDiscoveryComponentResources.Done
+                </FluentButton>
+            }
+        </ButtonTemplate>
         <Steps>
             <FluentWizardStep Label="@ServiceDiscoveryComponentResources.Intro"
                               DisplayStepNumber="false"

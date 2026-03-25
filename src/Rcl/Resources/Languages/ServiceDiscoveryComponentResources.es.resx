@@ -141,6 +141,15 @@
   <data name="Language" xml:space="preserve">
     <value>Idioma</value>
   </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Anterior</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Siguiente</value>
+  </data>
+  <data name="Done" xml:space="preserve">
+    <value>Listo</value>
+  </data>
   <data name="SelectGroups" xml:space="preserve">
     <value>Seleccionar grupos</value>
   </data>

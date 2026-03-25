@@ -5,6 +5,9 @@ namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Components;
 
 public partial class ServiceDiscoveryComponent
 {
+    private const int IntroStepIndex = 0;
+    private const int LastStepIndex = 6;
+
     private FluentWizard _wizard = null!;
 
     private KnownCultures Culture
@@ -21,5 +24,26 @@ public partial class ServiceDiscoveryComponent
     {
         CredentialsVm.ClearValues();
         await _wizard.GoToStepAsync(0);
+    }
+
+    private async Task GoToPreviousStepAsync()
+    {
+        if (_wizard.Value > IntroStepIndex)
+        {
+            await _wizard.GoToStepAsync(_wizard.Value - 1);
+        }
+    }
+
+    private async Task GoToNextStepAsync()
+    {
+        if (_wizard.Value < LastStepIndex)
+        {
+            await _wizard.GoToStepAsync(_wizard.Value + 1, validateEditContexts: true);
+        }
+    }
+
+    private async Task FinishWizardAsync()
+    {
+        await _wizard.FinishAsync(validateEditContexts: true);
     }
 }
