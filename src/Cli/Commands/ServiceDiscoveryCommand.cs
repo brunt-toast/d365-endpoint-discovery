@@ -114,17 +114,17 @@ internal class ServiceDiscoveryCommand : Command
 
     private async Task<int> ExecuteAction(ParseResult parseResult)
     {
-        string clientId = parseResult.GetValue(_clientIdOption) ?? string.Empty;
-        string clientSecret = parseResult.GetValue(_clientSecretOption) ?? string.Empty;
-        string resource = parseResult.GetValue(_resourceOption) ?? string.Empty;
-        string tokenRequestEndpoint = parseResult.GetValue(_tokenRequestEndpointOption) ?? string.Empty;
-        string grepGroupsRegex = parseResult.GetValue(_grepGroupsOption) ?? string.Empty;
-        string grepServicesRegex = parseResult.GetValue(_grepServicesOption) ?? string.Empty;
-        string grepOperationsRegex = parseResult.GetValue(_grepOperationsOption) ?? string.Empty;
-        string tenantId = parseResult.GetValue(_tenantIdOption) ?? string.Empty;
+        string clientId = parseResult.GetRequiredValue(_clientIdOption);
+        string clientSecret = parseResult.GetRequiredValue(_clientSecretOption);
+        string resource = parseResult.GetRequiredValue(_resourceOption);
+        string tokenRequestEndpoint = parseResult.GetRequiredValue(_tokenRequestEndpointOption);
+        string grepGroupsRegex = parseResult.GetRequiredValue(_grepGroupsOption);
+        string grepServicesRegex = parseResult.GetRequiredValue(_grepServicesOption);
+        string grepOperationsRegex = parseResult.GetRequiredValue(_grepOperationsOption);
+        string tenantId = parseResult.GetRequiredValue(_tenantIdOption);
         OutputSchemas outputSchema = parseResult.GetValue(_schemaOption);
         OutputFormats outputFormat = parseResult.GetValue(_formatOption);
-        string collectionName = parseResult.GetValue(_collectionNameOption) ?? string.Empty;
+        string collectionName = parseResult.GetRequiredValue(_collectionNameOption);
         bool minify = parseResult.GetValue(_minifyOption);
         LogEventLevel logLevel = parseResult.GetValue(_logLevelOption);
         LogDestination logStream = parseResult.GetValue(_logStreamOption);
