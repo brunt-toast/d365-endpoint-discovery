@@ -46,4 +46,19 @@ public partial class ServiceDiscoveryComponent
     {
         await _wizard.FinishAsync(validateEditContexts: true);
     }
+
+    private Task RunIfAdvancing(FluentWizardStepChangeEventArgs arg, Func<Task> action)
+    {
+        return arg.TargetIndex <= _wizard.Value ? Task.CompletedTask : action.Invoke();
+    }
+
+    private Task RunIfAdvancing(FluentWizardStepChangeEventArgs arg, Action action)
+    {
+        if (arg.TargetIndex > _wizard.Value)
+        {
+            action.Invoke();
+        }
+
+        return Task.CompletedTask;
+    }
 }
