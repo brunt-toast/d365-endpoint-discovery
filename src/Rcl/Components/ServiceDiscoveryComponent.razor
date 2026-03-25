@@ -18,13 +18,42 @@
                   DisplayStepNumber="@(WizardStepStatus.Current | WizardStepStatus.Next)"
                   Border="WizardBorder.Outside"
                   OnFinish="OnWizardFinish">
+        <ButtonTemplate Context="currentStep">
+            @if (currentStep > IntroStepIndex)
+            {
+                <FluentButton Appearance="Appearance.Neutral"
+                              Style="width: 80px;"
+                              OnClick="GoToPreviousStepAsync">
+                    @ServiceDiscoveryComponentResources.Previous
+                </FluentButton>
+            }
+
+            <span style="margin-right: 10px"></span>
+
+            @if (currentStep < LastStepIndex)
+            {
+                <FluentButton Appearance="Appearance.Accent"
+                              Style="width: 80px;"
+                              OnClick="GoToNextStepAsync">
+                    @ServiceDiscoveryComponentResources.Next
+                </FluentButton>
+            }
+            else
+            {
+                <FluentButton Appearance="Appearance.Accent"
+                              Style="width: 80px;"
+                              OnClick="FinishWizardAsync">
+                    @ServiceDiscoveryComponentResources.Done
+                </FluentButton>
+            }
+        </ButtonTemplate>
         <Steps>
             <FluentWizardStep Label="@ServiceDiscoveryComponentResources.Intro"
                               DisplayStepNumber="false"
                               IconPrevious="FluentIconRepository.IntroStepPrevIcon"
                               IconCurrent="FluentIconRepository.IntroStepCurIcon"
                               IconNext="FluentIconRepository.IntroStepNextIcon"
-                              OnChange="async () => await CredentialsVm.InitAsync()">
+                              OnChange="arg => RunIfAdvancing(arg, CredentialsVm.InitAsync)">
                 <h2 style="text-align: center;">@ServiceDiscoveryComponentResources.Title</h2>
                 <p>
                     @ServiceDiscoveryComponentResources.UsageInstructions1
@@ -43,7 +72,7 @@
                               @bind-SelectedOption="Culture" />
             </FluentWizardStep>
 
-            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.ConnectToD365" OnChange="async () => await SelectGroupsVm.InitAsync(CredentialsVm)"
+            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.ConnectToD365" OnChange="arg => RunIfAdvancing(arg, () => SelectGroupsVm.InitAsync(CredentialsVm))"
                               DisplayStepNumber="false"
                               IconPrevious="FluentIconRepository.ConnectStepPrevIcon"
                               IconCurrent="FluentIconRepository.ConnectStepCurIcon"
@@ -51,7 +80,7 @@
                 <CredentialsComponent ViewModel="CredentialsVm"/>
             </FluentWizardStep>
 
-            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.SelectGroups" OnChange="async () => await SelectServicesVm.InitAsync(SelectGroupsVm)"
+            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.SelectGroups" OnChange="arg => RunIfAdvancing(arg, () => SelectServicesVm.InitAsync(SelectGroupsVm))"
                               DisplayStepNumber="false"
                               IconPrevious="FluentIconRepository.GroupsStepPrevIcon"
                               IconCurrent="FluentIconRepository.GroupsStepCurIcon"
@@ -59,7 +88,7 @@
                 <SelectGroupsComponent ViewModel="SelectGroupsVm"/>
             </FluentWizardStep>
 
-            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.SelectServices" OnChange="async () => await SelectOperationsVm.InitAsync(SelectServicesVm)"
+            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.SelectServices" OnChange="arg => RunIfAdvancing(arg, () => SelectOperationsVm.InitAsync(SelectServicesVm))"
                               DisplayStepNumber="false"
                               IconPrevious="FluentIconRepository.ServicesStepPrevIcon"
                               IconCurrent="FluentIconRepository.ServicesStepCurIcon"
@@ -67,7 +96,7 @@
                 <SelectServicesComponent ViewModel="SelectServicesVm"/>
             </FluentWizardStep>
 
-            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.SelectOperations" OnChange="() => BuildCollectionVm.Init(CredentialsVm, SelectOperationsVm)"
+            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.SelectOperations" OnChange="arg => RunIfAdvancing(arg, () => BuildCollectionVm.Init(CredentialsVm, SelectOperationsVm))"
                               DisplayStepNumber="false"
                               IconPrevious="FluentIconRepository.OperationsStepPrevIcon"
                               IconCurrent="FluentIconRepository.OperationsStepCurIcon"
@@ -75,7 +104,7 @@
                 <SelectOperationsComponent ViewModel="SelectOperationsVm"/>
             </FluentWizardStep>
 
-            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.BuildCollection" OnChange="BuildCollectionVm.SaveToFileAsync"
+            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.BuildCollection" OnChange="arg => RunIfAdvancing(arg, BuildCollectionVm.SaveToFileAsync)"
                               DisplayStepNumber="false"
                               IconPrevious="FluentIconRepository.CollectionStepPrevIcon"
                               IconCurrent="FluentIconRepository.CollectionStepCurIcon"

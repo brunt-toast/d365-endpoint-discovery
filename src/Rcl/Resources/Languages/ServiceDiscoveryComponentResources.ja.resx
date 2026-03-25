@@ -141,6 +141,15 @@
   <data name="Language" xml:space="preserve">
     <value>言語</value>
   </data>
+  <data name="Previous" xml:space="preserve">
+    <value>前へ</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>次へ</value>
+  </data>
+  <data name="Done" xml:space="preserve">
+    <value>完了</value>
+  </data>
   <data name="SelectGroups" xml:space="preserve">
     <value>グループを選択する</value>
   </data>

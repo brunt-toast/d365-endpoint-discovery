@@ -141,6 +141,15 @@
   <data name="Language" xml:space="preserve">
     <value>Linguae</value>
   </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Prius</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Proximum</value>
+  </data>
+  <data name="Done" xml:space="preserve">
+    <value>Perfectum</value>
+  </data>
   <data name="SelectGroups" xml:space="preserve">
     <value>Lego coetus</value>
   </data>

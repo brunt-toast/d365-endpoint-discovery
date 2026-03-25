@@ -141,6 +141,15 @@
   <data name="Language" xml:space="preserve">
     <value>Lingvo</value>
   </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Antaŭa</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Sekva</value>
+  </data>
+  <data name="Done" xml:space="preserve">
+    <value>Finite</value>
+  </data>
   <data name="SelectGroups" xml:space="preserve">
     <value>Elektu grupojn</value>
   </data>
