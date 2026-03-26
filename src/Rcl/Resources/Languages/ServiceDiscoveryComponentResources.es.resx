@@ -171,4 +171,7 @@
   <data name="WarningMessage" xml:space="preserve">
     <value>&lt;b&gt;Advertencia&lt;/b&gt;: El uso excesivo de esta herramienta puede provocar el bloqueo temporal de solicitudes. Se recomienda usar un registro de aplicación específico que no sea utilizado por otras aplicaciones.</value>
   </data>
+    <data name="ConnectionOptions" xml:space="preserve">
+      <value>Opciones de conexión</value>
+    </data>
 </root>

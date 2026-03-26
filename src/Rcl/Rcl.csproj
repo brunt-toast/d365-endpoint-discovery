@@ -36,4 +36,18 @@
       <StronglyTypedClassName>%(Filename)</StronglyTypedClassName>
     </EmbeddedResource>
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources\Languages\ConnectionOptionsComponentResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ConnectionOptionsComponentResources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Languages\ConnectionOptionsComponentResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

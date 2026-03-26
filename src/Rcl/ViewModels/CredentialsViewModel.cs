@@ -27,6 +27,7 @@ internal class CredentialsViewModel : ICredentialsViewModel
     private const string TokenRequestEndpointKey = "AxTokenRequestEndpoint";
     private const string ResourceUriKey = "AxResourceUri";
     private const string TenantIdKey = "AxTenantId";
+    private const string AcceptableThumbprintKey = "AcceptableThumbprint";
     private const string IgnoreSslKey = "IgnoreSsl";
     private const string MaxConnectionsKey = "MaxConnections";
 
@@ -36,6 +37,7 @@ internal class CredentialsViewModel : ICredentialsViewModel
     public string TokenRequestEndpoint { get; set; } = string.Empty;
     public string ResourceUri { get; set; } = string.Empty;
     public string TenantId { get; set; } = string.Empty;
+    public string AcceptableThumbprint { get; set; } = string.Empty;
     public bool CacheCredentials { get; set; }
     public bool IgnoreSsl { get; set; }
     public int MaxConnections { get; set; }
@@ -69,6 +71,7 @@ internal class CredentialsViewModel : ICredentialsViewModel
         TokenRequestEndpoint = await _secureStorage.GetAsync(TokenRequestEndpointKey) ?? string.Empty;
         ResourceUri = await _secureStorage.GetAsync(ResourceUriKey) ?? string.Empty;
         TenantId = await _secureStorage.GetAsync(TenantIdKey) ?? string.Empty;
+        AcceptableThumbprint = await _secureStorage.GetAsync(AcceptableThumbprintKey) ?? string.Empty;
         IgnoreSsl = await _secureStorage.GetBoolAsync(IgnoreSslKey);
         MaxConnections = await _secureStorage.GetIntAsync(MaxConnectionsKey);
 
@@ -97,6 +100,7 @@ internal class CredentialsViewModel : ICredentialsViewModel
         await _secureStorage.SetStringAsync(ClientIdKey, ClientId);
         await _secureStorage.SetStringAsync(ClientSecretKey, ClientSecret);
         await _secureStorage.SetStringAsync(TenantIdKey, TenantId);
+        await _secureStorage.SetAsync(AcceptableThumbprintKey, AcceptableThumbprint);
         await _secureStorage.SetBoolAsync(IgnoreSslKey, IgnoreSsl);
         await _secureStorage.SetIntAsync(MaxConnectionsKey, MaxConnections);
 
@@ -109,6 +113,7 @@ internal class CredentialsViewModel : ICredentialsViewModel
 
         _httpClientOptions.AcceptAnySsl = IgnoreSsl;
         _httpClientOptions.MaxConnectionsPerServer = MaxConnections;
+        _httpClientOptions.AcceptableThumbprint = AcceptableThumbprint;
     }
 
     private void ClearCache()
@@ -187,6 +192,7 @@ public interface ICredentialsViewModel
     string TokenRequestEndpoint { get; set; }
     string ResourceUri { get; set; }
     string TenantId { get; set; }
+    string AcceptableThumbprint { get; set; }
     bool CacheCredentials { get; set; }
     bool IgnoreSsl { get; set; }
     int MaxConnections { get; set; }

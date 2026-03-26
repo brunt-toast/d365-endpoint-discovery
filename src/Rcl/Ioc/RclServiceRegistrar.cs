@@ -25,6 +25,7 @@ public static class RclServiceRegistrar
         sc.AddSingleton<ISecureStorage>(_ => SecureStorage.Default);
         sc.AddSingleton<IMessenger, WeakReferenceMessenger>();
 
+        sc.AddTransient<IConnectionOptionsViewModel, ConnectionOptionsViewModel>();
         sc.AddTransient<ICredentialsViewModel, CredentialsViewModel>();
         sc.AddTransient<ISelectGroupsViewModel, SelectGroupsViewModel>();
         sc.AddTransient<ISelectServicesViewModel, SelectServicesViewModel>();

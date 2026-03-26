@@ -8,6 +8,10 @@ internal static class FluentIconRepository
     public static Icon IntroStepCurIcon => new Microsoft.FluentUI.AspNetCore.Components.Icons.Filled.Size20.Home();
     public static Icon IntroStepNextIcon => new Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.Size20.Home();
 
+    public static Icon ConnectionOptionsStepPrevIcon => new Microsoft.FluentUI.AspNetCore.Components.Icons.Filled.Size20.Link();
+    public static Icon ConnectionOptionsStepCurIcon => new Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.Size20.Link();
+    public static Icon ConnectionOptionsStepNextIcon => new Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.Size20.Link();
+
     public static Icon ConnectStepPrevIcon => new Microsoft.FluentUI.AspNetCore.Components.Icons.Filled.Size20.Password();
     public static Icon ConnectStepCurIcon => new Microsoft.FluentUI.AspNetCore.Components.Icons.Filled.Size20.Password();
     public static Icon ConnectStepNextIcon => new Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.Size20.Password();

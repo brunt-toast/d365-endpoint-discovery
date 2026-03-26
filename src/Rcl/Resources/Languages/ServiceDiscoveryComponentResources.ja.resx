@@ -171,4 +171,7 @@
   <data name="WarningMessage" xml:space="preserve">
     <value>&lt;b&gt;警告:&lt;/b&gt; このツールを過度に使用すると、リクエストが一時的にブロックされる可能性があります。他のアプリで使用されていない専用のアプリ登録を使用することをお勧めします。</value>
   </data>
+    <data name="ConnectionOptions" xml:space="preserve">
+      <value>接続オプション</value>
+    </data>
 </root>

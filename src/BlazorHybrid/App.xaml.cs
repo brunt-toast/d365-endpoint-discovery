@@ -13,7 +13,7 @@ public partial class App : Microsoft.Maui.Controls.Application
         {
             Title = "Dynamics Service Endpoint Discovery Tool",
             Width = 800,
-            Height = 600,
+            Height = 700,
         };
     }
 }
