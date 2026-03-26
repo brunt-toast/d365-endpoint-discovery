@@ -1,17 +1,23 @@
-﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Config;
+﻿using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Config;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Consts;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Extensions.Serilog;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
 
 internal class ConfigurableHttpClientFactory : IHttpClientFactory
 {
+    private readonly ILogger _logger;
     private readonly HttpClientOptions _opts;
     private readonly ServiceProvider _sp;
 
-    public ConfigurableHttpClientFactory(HttpClientOptions opts)
+    public ConfigurableHttpClientFactory(HttpClientOptions opts, ILogger logger)
     {
         _opts = opts;
+        _logger = logger;
         IServiceCollection sc = new ServiceCollection();
         sc.AddHttpClient();
         sc.AddHttpClient(HttpClientIdConsts.UserConfigurable)
@@ -24,10 +30,7 @@ internal class ConfigurableHttpClientFactory : IHttpClientFactory
                     handler.MaxConnectionsPerServer = opts.MaxConnectionsPerServer;
                 }
 
-                if (opts.AcceptAnySsl)
-                {
-                    handler.SslOptions.RemoteCertificateValidationCallback = (_, _, _, _) => true;
-                }
+                handler.SslOptions.RemoteCertificateValidationCallback = SslOptionsRemoteCertificateValidationCallback;
 
                 return handler;
             });
@@ -36,25 +39,24 @@ internal class ConfigurableHttpClientFactory : IHttpClientFactory
 
     public HttpClient CreateClient(string name)
     {
-        if (name == HttpClientIdConsts.UserConfigurable)
-        {
-            if (_opts.MaxConnectionsPerServer == 0)
-            {
-                if (_opts.AcceptAnySsl)
-                {
-                    return new HttpClient(
-                        new HttpClientHandler
-                        {
-                            ServerCertificateCustomValidationCallback =
-                                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-                        });
-                }
+        return _sp.GetRequiredService<IHttpClientFactory>().CreateClient(name);
+    }
 
-                return new HttpClient();
-            }
+    private bool SslOptionsRemoteCertificateValidationCallback(object o, X509Certificate? x509Cert, X509Chain? x509Chain, SslPolicyErrors sslErrors)
+    {
+        if (_opts.AcceptAnySsl)
+        {
+            return true;
         }
 
-        return _sp.GetRequiredService<IHttpClientFactory>().CreateClient(name);
+        if (!string.IsNullOrWhiteSpace(_opts.AcceptableThumbprint)
+            && x509Cert is X509Certificate2 x509Cert2
+            && x509Cert2.Thumbprint.Equals(_opts.AcceptableThumbprint, StringComparison.InvariantCultureIgnoreCase))
+        {
+            return true;
+        }
+
+        return sslErrors == SslPolicyErrors.None;
     }
 }
 

@@ -42,10 +42,20 @@ internal class AxCallingService
                                                            "because of errors in the certificate chain: " +
                                                            "UntrustedRoot"
                                               })
-
         {
             _logger.Error("Couldn't connect to {resource} because the SSL certificate came from an untrusted root. " +
                           "Try skipping SSL validation or importing a certificate. " +
+                          "Expect cascading errors from this failure.", endpoint);
+            return string.Empty;
+        }
+        catch (HttpRequestException ex) when (ex.InnerException is AuthenticationException
+                                              {
+                                                  Message: "The remote certificate was rejected " +
+                                                           "by the provided RemoteCertificateValidationCallback."
+                                              })
+        {
+            _logger.Error("Couldn't connect to {resource} because the SSL certificate failed validation. " +
+                          "Try skipping SSL validation or specifying an acceptable thumbprint. " +
                           "Expect cascading errors from this failure.", endpoint);
             return string.Empty;
         }

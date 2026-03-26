@@ -30,6 +30,7 @@ public static class CliServiceRegistrar
         sc.AddTransient<MinifyOption>();
         sc.AddTransient<TenantIdOption>();
         sc.AddTransient<AuthKindOption>();
+        sc.AddTransient<AcceptThumbprintOption>();
 
         sc.AddTransient<ServiceDiscoveryCommand>();
         sc.AddTransient<DynSvcDiscoveryRootCommand>();

@@ -36,6 +36,7 @@ internal class ServiceDiscoveryCommand : Command
     private readonly MinifyOption _minifyOption;
     private readonly TenantIdOption _tenantIdOption;
     private readonly AuthKindOption _authKindOption;
+    private readonly AcceptThumbprintOption _acceptThumbprintOption;
 
     public ServiceDiscoveryCommand(IMainService mainService,
         ICommandParseResultSink sink,
@@ -57,7 +58,8 @@ internal class ServiceDiscoveryCommand : Command
         IgnoreSslOption ignoreSslOption,
         MinifyOption minifyOption,
         TenantIdOption tenantIdOption,
-        AuthKindOption authKindOption) 
+        AuthKindOption authKindOption,
+        AcceptThumbprintOption acceptThumbprintOption)
         : base("service-discovery", "Discover Dynamics 365 service endpoints automatically.")
     {
         _mainService = mainService;
@@ -82,6 +84,7 @@ internal class ServiceDiscoveryCommand : Command
         _minifyOption = minifyOption;
         _tenantIdOption = tenantIdOption;
         _authKindOption = authKindOption;
+        _acceptThumbprintOption = acceptThumbprintOption;
 
         IEnumerable<Option> opts =
         [
@@ -101,7 +104,8 @@ internal class ServiceDiscoveryCommand : Command
             _ignoreSslOption,
             _minifyOption,
             _tenantIdOption,
-            _authKindOption
+            _authKindOption,
+            _acceptThumbprintOption,
         ];
 
         foreach (var opt in opts.OrderBy(x => x.Name))
@@ -131,11 +135,13 @@ internal class ServiceDiscoveryCommand : Command
         int maxConnections = parseResult.GetValue(_maxConnectionsOption);
         bool ignoreSsl = parseResult.GetValue(_ignoreSslOption);
         AuthKind authKind = parseResult.GetValue(_authKindOption);
+        string acceptableThumbprint = parseResult.GetRequiredValue(_acceptThumbprintOption);
 
         using var _ = _sink.Configure(parseResult, logLevel, logStream);
 
         _httpClientOptions.MaxConnectionsPerServer = maxConnections;
         _httpClientOptions.AcceptAnySsl = ignoreSsl;
+        _httpClientOptions.AcceptableThumbprint = acceptableThumbprint;
 
         _config.ClientId = clientId;
         _config.ClientSecret = clientSecret;
