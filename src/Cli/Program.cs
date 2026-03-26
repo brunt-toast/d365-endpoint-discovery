@@ -6,4 +6,4 @@ ServiceCollection sc = new ServiceCollection();
 CliServiceRegistrar.RegisterServices(sc);
 var services = sc.BuildServiceProvider();
 
-return await services.GetRequiredService<DynSvcDiscoveryRootCommand>().Parse(args).InvokeAsync();
+return await services.GetRequiredService<ServiceDiscoveryCommand>().Parse(args).InvokeAsync();

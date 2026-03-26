@@ -49,11 +49,17 @@ internal class ConfigurableHttpClientFactory : IHttpClientFactory
             return true;
         }
 
-        if (!string.IsNullOrWhiteSpace(_opts.AcceptableThumbprint)
-            && x509Cert is X509Certificate2 x509Cert2
-            && x509Cert2.Thumbprint.Equals(_opts.AcceptableThumbprint, StringComparison.InvariantCultureIgnoreCase))
+        if (!string.IsNullOrWhiteSpace(_opts.AcceptableThumbprint) && x509Cert is X509Certificate2 x509Cert2)
         {
-            return true;
+            if (x509Cert2.Thumbprint.Equals(_opts.AcceptableThumbprint, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return true;
+            }
+
+            _logger.LogWarning("The server's X.509 certificate has thumbprint {serverThumbprint}, " +
+                               "which does not match our expected thumbprint {ourThumbprint}. " +
+                               "The certificate may still pass validation if it is trusted by the system.", 
+                x509Cert2.Thumbprint, _opts.AcceptableThumbprint);
         }
 
         return sslErrors == SslPolicyErrors.None;
