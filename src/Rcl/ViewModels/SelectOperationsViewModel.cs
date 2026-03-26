@@ -5,6 +5,7 @@ using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Extensions.System.Collections.ObjectModel;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Models;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Utils;
 using PropertyChanged;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.ViewModels;
@@ -18,6 +19,8 @@ internal class SelectOperationsViewModel : ObservableObject, ISelectOperationsVi
 
     [OnChangedMethod(nameof(OnQueryChanged))]
     public string Query { get; set; } = string.Empty;
+
+    public bool IsLoading { get; set; }
     
     public bool SelectAll
     {
@@ -38,6 +41,8 @@ internal class SelectOperationsViewModel : ObservableObject, ISelectOperationsVi
 
     public async Task InitAsync(ISelectServicesViewModel services)
     {
+        await using var _ = ILoading.UseLoadingAsync(this);
+
         var ops = await _mainService.GetOperationsForServices(new GetOperationsForServicesRequest
         {
             Services = services.VisibleServiceGroups.SelectMany(x => x.Children).Where(x => x.IsSelected).Select(x => x.Item).ToArray(),
@@ -80,7 +85,7 @@ internal class SelectOperationsViewModel : ObservableObject, ISelectOperationsVi
     }
 }
 
-public interface ISelectOperationsViewModel
+public interface ISelectOperationsViewModel : ILoading
 {
     Task InitAsync(ISelectServicesViewModel services);
     ObservableCollection<SelectableDynSvcGroupModel> VisibleServiceGroups { get; }

@@ -7,6 +7,16 @@
 
 <hr />
 
+@if (ViewModel.IsLoading)
+{
+    <FluentStack Orientation="Orientation.Horizontal">
+        <FluentSpacer />
+        <FluentProgressRing />
+        <FluentSpacer />
+    </FluentStack>
+    return;
+}
+
 @if (!ViewModel.VisibleServiceGroups.Any())
 {
     <p style="text-align: center;">

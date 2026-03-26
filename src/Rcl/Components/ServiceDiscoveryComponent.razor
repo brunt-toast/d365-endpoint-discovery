@@ -72,7 +72,7 @@
                               @bind-SelectedOption="Culture" />
             </FluentWizardStep>
             
-            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.ConnectionOptions" OnChange="arg => RunIfAdvancing(arg, () => CredentialsVm.InitAsync())"
+            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.ConnectionOptions" OnChange="arg => RunIfAdvancing(arg, () => CredentialsVm.InitAsync(ConnectionOptionsVm))"
                               DisplayStepNumber="false"
                               IconPrevious="FluentIconRepository.ConnectionOptionsStepPrevIcon"
                               IconCurrent="FluentIconRepository.ConnectionOptionsStepCurIcon"

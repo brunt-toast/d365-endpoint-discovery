@@ -1,15 +1,16 @@
-﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Config;
+﻿using CommunityToolkit.Maui.Storage;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Config;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Enums;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Requests;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Config;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Enums;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Extensions.Microsoft.Maui.Storage;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Types;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Utils;
+using Newtonsoft.Json;
 using System.Collections;
 using System.Text;
-using CommunityToolkit.Maui.Storage;
-using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Types;
-using Newtonsoft.Json;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.ViewModels;
 
@@ -27,9 +28,6 @@ internal class CredentialsViewModel : ICredentialsViewModel
     private const string TokenRequestEndpointKey = "AxTokenRequestEndpoint";
     private const string ResourceUriKey = "AxResourceUri";
     private const string TenantIdKey = "AxTenantId";
-    private const string AcceptableThumbprintKey = "AcceptableThumbprint";
-    private const string IgnoreSslKey = "IgnoreSsl";
-    private const string MaxConnectionsKey = "MaxConnections";
 
     public AuthKind AuthKind { get; set; }
     public string ClientId { get; set; } = string.Empty;
@@ -37,10 +35,9 @@ internal class CredentialsViewModel : ICredentialsViewModel
     public string TokenRequestEndpoint { get; set; } = string.Empty;
     public string ResourceUri { get; set; } = string.Empty;
     public string TenantId { get; set; } = string.Empty;
-    public string AcceptableThumbprint { get; set; } = string.Empty;
     public bool CacheCredentials { get; set; }
-    public bool IgnoreSsl { get; set; }
-    public int MaxConnections { get; set; }
+
+    public bool IsLoading { get; set; }
 
     public CredentialsViewModel(ISecureStorage secureStorage, 
         IAxConfig axConfig, 
@@ -55,8 +52,12 @@ internal class CredentialsViewModel : ICredentialsViewModel
         _filePicker = filePicker;
     }
 
-    public async Task InitAsync()
+    public async Task InitAsync(IConnectionOptionsViewModel connectionOptionsViewModel)
     {
+        await using var _ = ILoading.UseLoadingAsync(this);
+
+        connectionOptionsViewModel.Save();
+
         if (!string.IsNullOrWhiteSpace(ClientId)
             || !string.IsNullOrWhiteSpace(ClientSecret)
             || !string.IsNullOrWhiteSpace(TokenRequestEndpoint)
@@ -71,9 +72,6 @@ internal class CredentialsViewModel : ICredentialsViewModel
         TokenRequestEndpoint = await _secureStorage.GetAsync(TokenRequestEndpointKey) ?? string.Empty;
         ResourceUri = await _secureStorage.GetAsync(ResourceUriKey) ?? string.Empty;
         TenantId = await _secureStorage.GetAsync(TenantIdKey) ?? string.Empty;
-        AcceptableThumbprint = await _secureStorage.GetAsync(AcceptableThumbprintKey) ?? string.Empty;
-        IgnoreSsl = await _secureStorage.GetBoolAsync(IgnoreSslKey);
-        MaxConnections = await _secureStorage.GetIntAsync(MaxConnectionsKey);
 
         if (!string.IsNullOrWhiteSpace(ClientId)
             || !string.IsNullOrWhiteSpace(ClientSecret)
@@ -100,9 +98,6 @@ internal class CredentialsViewModel : ICredentialsViewModel
         await _secureStorage.SetStringAsync(ClientIdKey, ClientId);
         await _secureStorage.SetStringAsync(ClientSecretKey, ClientSecret);
         await _secureStorage.SetStringAsync(TenantIdKey, TenantId);
-        await _secureStorage.SetAsync(AcceptableThumbprintKey, AcceptableThumbprint);
-        await _secureStorage.SetBoolAsync(IgnoreSslKey, IgnoreSsl);
-        await _secureStorage.SetIntAsync(MaxConnectionsKey, MaxConnections);
 
         _axConfig.ClientId = ClientId;
         _axConfig.ClientSecret = ClientSecret;
@@ -110,10 +105,6 @@ internal class CredentialsViewModel : ICredentialsViewModel
         _axConfig.Resource = ResourceUri;
         _axConfig.TenantId = TenantId;
         _axConfig.AuthKind = AuthKind;
-
-        _httpClientOptions.AcceptAnySsl = IgnoreSsl;
-        _httpClientOptions.MaxConnectionsPerServer = MaxConnections;
-        _httpClientOptions.AcceptableThumbprint = AcceptableThumbprint;
     }
 
     private void ClearCache()
@@ -124,8 +115,6 @@ internal class CredentialsViewModel : ICredentialsViewModel
         _secureStorage.Remove(TokenRequestEndpointKey);
         _secureStorage.Remove(ResourceUriKey);
         _secureStorage.Remove(TenantIdKey);
-        _secureStorage.Remove(IgnoreSslKey);
-        _secureStorage.Remove(MaxConnectionsKey);
     }
 
     public void ClearValues()
@@ -136,9 +125,6 @@ internal class CredentialsViewModel : ICredentialsViewModel
         TokenRequestEndpoint = string.Empty;
         ResourceUri = string.Empty;
         TenantId = string.Empty;
-        IgnoreSsl = false;
-        MaxConnections = 0;
-
     }
 
     public async Task SaveProfileAsync()
@@ -184,7 +170,7 @@ internal class CredentialsViewModel : ICredentialsViewModel
     }
 }
 
-public interface ICredentialsViewModel
+public interface ICredentialsViewModel : ILoading
 {
     AuthKind AuthKind { get; set; }
     string ClientId { get; set; }
@@ -192,12 +178,9 @@ public interface ICredentialsViewModel
     string TokenRequestEndpoint { get; set; }
     string ResourceUri { get; set; }
     string TenantId { get; set; }
-    string AcceptableThumbprint { get; set; }
     bool CacheCredentials { get; set; }
-    bool IgnoreSsl { get; set; }
-    int MaxConnections { get; set; }
 
-    Task InitAsync();
+    Task InitAsync(IConnectionOptionsViewModel connectionOptionsViewModel);
     void ClearValues();
     Task SaveAsync();
     Task SaveProfileAsync();

@@ -3,6 +3,7 @@ using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Extensions.Serilog;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Extensions.System.Collections.ObjectModel;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Models;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Utils;
 using Serilog;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.ViewModels;
@@ -14,6 +15,7 @@ internal class SelectGroupsViewModel : ISelectGroupsViewModel
 
     public ObservableCollection<SelectableDynSvcGroupModel> ServiceGroups { get; } = [];
     public string Query { get; set; } = string.Empty;
+    public bool IsLoading { get; set; }
 
     public bool SelectAll
     {
@@ -35,6 +37,7 @@ internal class SelectGroupsViewModel : ISelectGroupsViewModel
 
     public async Task InitAsync(ICredentialsViewModel credentials)
     {
+        await using var _ = ILoading.UseLoadingAsync(this);
         await credentials.SaveAsync();
 
         try
@@ -49,7 +52,7 @@ internal class SelectGroupsViewModel : ISelectGroupsViewModel
     }
 }
 
-public interface ISelectGroupsViewModel
+public interface ISelectGroupsViewModel : ILoading
 {
     Task InitAsync(ICredentialsViewModel credentials);
     ObservableCollection<SelectableDynSvcGroupModel> ServiceGroups { get; }
