@@ -1,11 +1,12 @@
-﻿using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Requests;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Extensions.System.Collections.ObjectModel;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Models;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Utils;
 using PropertyChanged;
+using System.Collections.ObjectModel;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.ViewModels;
 
@@ -18,6 +19,8 @@ internal class SelectServicesViewModel : ObservableObject, ISelectServicesViewMo
 
     [OnChangedMethod(nameof(OnQueryChanged))]
     public string Query { get; set; } = string.Empty;
+
+    public bool IsLoading { get; set; }
 
     public bool SelectAll
     {
@@ -38,6 +41,8 @@ internal class SelectServicesViewModel : ObservableObject, ISelectServicesViewMo
 
     public async Task InitAsync(ISelectGroupsViewModel groups)
     {
+        await using var _ = ILoading.UseLoadingAsync(this);
+
         var services = await _mainService.GetServicesForGroups(new GetServicesForGroupsRequest
         {
             Groups = groups.ServiceGroups.Where(x => x.IsSelected).Select(x => x.Item).ToArray()
@@ -66,7 +71,7 @@ internal class SelectServicesViewModel : ObservableObject, ISelectServicesViewMo
     }
 }
 
-public interface ISelectServicesViewModel
+public interface ISelectServicesViewModel : ILoading
 {
     Task InitAsync(ISelectGroupsViewModel groups);
     ObservableCollection<SelectableDynSvcGroupModel> VisibleServiceGroups { get; }

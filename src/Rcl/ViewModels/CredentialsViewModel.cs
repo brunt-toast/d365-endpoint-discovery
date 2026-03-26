@@ -1,15 +1,16 @@
-﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Config;
+﻿using CommunityToolkit.Maui.Storage;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Config;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Enums;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Requests;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Config;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Enums;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Extensions.Microsoft.Maui.Storage;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Types;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Utils;
+using Newtonsoft.Json;
 using System.Collections;
 using System.Text;
-using CommunityToolkit.Maui.Storage;
-using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Types;
-using Newtonsoft.Json;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.ViewModels;
 
@@ -42,6 +43,8 @@ internal class CredentialsViewModel : ICredentialsViewModel
     public bool IgnoreSsl { get; set; }
     public int MaxConnections { get; set; }
 
+    public bool IsLoading { get; set; }
+
     public CredentialsViewModel(ISecureStorage secureStorage, 
         IAxConfig axConfig, 
         HttpClientOptions httpClientOptions,
@@ -57,6 +60,8 @@ internal class CredentialsViewModel : ICredentialsViewModel
 
     public async Task InitAsync()
     {
+        await using var _ = ILoading.UseLoadingAsync(this);
+
         if (!string.IsNullOrWhiteSpace(ClientId)
             || !string.IsNullOrWhiteSpace(ClientSecret)
             || !string.IsNullOrWhiteSpace(TokenRequestEndpoint)
@@ -184,7 +189,7 @@ internal class CredentialsViewModel : ICredentialsViewModel
     }
 }
 
-public interface ICredentialsViewModel
+public interface ICredentialsViewModel : ILoading
 {
     AuthKind AuthKind { get; set; }
     string ClientId { get; set; }

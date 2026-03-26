@@ -49,7 +49,24 @@ public partial class ServiceDiscoveryComponent
 
     private Task RunIfAdvancing(FluentWizardStepChangeEventArgs arg, Func<Task> action)
     {
-        return arg.TargetIndex <= _wizard.Value ? Task.CompletedTask : action.Invoke();
+        if (arg.TargetIndex > _wizard.Value)
+        {
+            _ = RunInBackgroundAndRefreshAsync(action);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private async Task RunInBackgroundAndRefreshAsync(Func<Task> action)
+    {
+        try
+        {
+            await action.Invoke();
+        }
+        finally
+        {
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private Task RunIfAdvancing(FluentWizardStepChangeEventArgs arg, Action action)

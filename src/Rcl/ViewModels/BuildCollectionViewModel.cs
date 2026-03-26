@@ -1,10 +1,11 @@
-﻿using System.Text;
-using CommunityToolkit.Maui.Storage;
+﻿using CommunityToolkit.Maui.Storage;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Enums;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Requests;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Models;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Utils;
+using System.Text;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.ViewModels;
 
@@ -26,6 +27,7 @@ internal class BuildCollectionViewModel : IBuildCollectionViewModel
     public bool Minify { get; set; } = true;
 
     public string OutputPath { get; private set; } = string.Empty;
+    public bool IsLoading { get; set; }
 
     public BuildCollectionViewModel(IMainService mainService, IFileSaver fileSaver, ILauncher launcher)
     {
@@ -39,6 +41,8 @@ internal class BuildCollectionViewModel : IBuildCollectionViewModel
 
     public void Init(ICredentialsViewModel credentials, ISelectOperationsViewModel operations)
     {
+        using var _ = ILoading.UseLoading(this);
+
         _resource = credentials.ResourceUri;
 
         var targetedOps = operations.VisibleServiceGroups
@@ -99,7 +103,7 @@ internal class BuildCollectionViewModel : IBuildCollectionViewModel
     }
 }
 
-public interface IBuildCollectionViewModel
+public interface IBuildCollectionViewModel : ILoading
 {
     OutputSchemas[] AvailableOutputSchemas { get; }
     OutputFormats[] AvailableOutputFormats { get; }
