@@ -100,7 +100,7 @@ internal class CredentialsViewModel : ICredentialsViewModel
         await _secureStorage.SetStringAsync(ClientIdKey, ClientId);
         await _secureStorage.SetStringAsync(ClientSecretKey, ClientSecret);
         await _secureStorage.SetStringAsync(TenantIdKey, TenantId);
-        await _secureStorage.SetAsync(AcceptableThumbprintKey, AcceptableThumbprint);
+        await _secureStorage.SetStringAsync(AcceptableThumbprintKey, AcceptableThumbprint);
         await _secureStorage.SetBoolAsync(IgnoreSslKey, IgnoreSsl);
         await _secureStorage.SetIntAsync(MaxConnectionsKey, MaxConnections);
 
