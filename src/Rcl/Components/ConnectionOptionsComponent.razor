@@ -15,6 +15,7 @@
     </FluentButton>
 
     <FluentTextField style="width: 100%;"
+                     Id="acceptableThumbprintQuestion"
                      Label="@ConnectionOptionsComponentResources.AcceptableThumbprint"
                      Disabled="ViewModel.IgnoreSsl"
                      @bind-Value="ViewModel.AcceptableThumbprint" />
@@ -34,6 +35,13 @@
                MaxWidth="300px"
                Position="TooltipPosition.Top">
     @ConnectionOptionsComponentResources.IgnoreSslHelp
+</FluentTooltip>
+
+<FluentTooltip Anchor="acceptableThumbprintQuestion"
+               Delay="100"
+               MaxWidth="300px"
+               Position="TooltipPosition.Top">
+    @ConnectionOptionsComponentResources.AcceptableThumbprintHelp
 </FluentTooltip>
 
 <FluentTooltip Anchor="maxConnectionsQuestion"

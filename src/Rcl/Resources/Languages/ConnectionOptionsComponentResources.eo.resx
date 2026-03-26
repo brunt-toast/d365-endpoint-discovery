@@ -120,6 +120,9 @@
   <data name="AcceptableThumbprint" xml:space="preserve">
     <value>Akceptebla X.509 fingrospuro</value>
   </data>
+  <data name="AcceptableThumbprintHelp" xml:space="preserve">
+    <value>Akceptebla fingrospuro por la X.509-atestilo dum SSL-validigo. Tio estos konsiderata valida krom iuj ajn atestiloj jam fidataj de la sistemo.</value>
+  </data>
   <data name="IgnoreSsl" xml:space="preserve">
     <value>Ignoru SSL</value>
   </data>

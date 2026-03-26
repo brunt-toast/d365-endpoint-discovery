@@ -120,6 +120,9 @@
   <data name="AcceptableThumbprint" xml:space="preserve">
     <value>Digiti impressio X.509 acceptabilis</value>
   </data>
+  <data name="AcceptableThumbprintHelp" xml:space="preserve">
+    <value>Digiti impressio acceptabilis pro testimonio X.509 in validatione SSL. Haec valida habebitur praeter quaelibet testimonia a systemate iam fide digna.</value>
+  </data>
   <data name="IgnoreSsl" xml:space="preserve">
     <value>Ignore SSL</value>
   </data>

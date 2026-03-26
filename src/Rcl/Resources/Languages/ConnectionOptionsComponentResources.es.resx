@@ -120,6 +120,9 @@
   <data name="AcceptableThumbprint" xml:space="preserve">
     <value>Huella digital X.509 aceptable</value>
   </data>
+  <data name="AcceptableThumbprintHelp" xml:space="preserve">
+    <value>Huella digital aceptable para el certificado X.509 durante la validación SSL. Se considerará válida además de cualquier certificado que ya sea de confianza para el sistema.</value>
+  </data>
   <data name="IgnoreSsl" xml:space="preserve">
     <value>Ignorar SSL</value>
   </data>

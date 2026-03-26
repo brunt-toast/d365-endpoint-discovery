@@ -120,6 +120,9 @@
   <data name="AcceptableThumbprint" xml:space="preserve">
     <value>許容されるX.509サムプリント</value>
   </data>
+  <data name="AcceptableThumbprintHelp" xml:space="preserve">
+    <value>SSL 検証中の X.509 証明書で許容されるサムプリントです。これは、システムが既に信頼している証明書に加えて有効と見なされます。</value>
+  </data>
   <data name="IgnoreSsl" xml:space="preserve">
     <value>SSLを無視する</value>
   </data>

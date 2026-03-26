@@ -120,6 +120,9 @@
   <data name="AcceptableThumbprint" xml:space="preserve">
     <value>Acceptable X.509 thumbprint</value>
   </data>
+  <data name="AcceptableThumbprintHelp" xml:space="preserve">
+    <value>Acceptable thumbprint for the X.509 certificate during SSL validation. This will be considered valid in addition to any certificates already trusted by the system. </value>
+  </data>
   <data name="IgnoreSsl" xml:space="preserve">
     <value>Ignore SSL</value>
   </data>
