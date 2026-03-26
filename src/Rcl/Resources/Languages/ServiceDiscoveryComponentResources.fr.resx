@@ -171,4 +171,7 @@
   <data name="WarningMessage" xml:space="preserve">
     <value>&lt;b&gt;Attention!&lt;/b&gt; L'utilisation excessive de cette outil peut entraîner être temporairement bloqué de faire des requests. C'est recommandé d'utiliser un app resigration specialisé qui n'est pas utilisé par des autres applications.</value>
   </data>
+    <data name="ConnectionOptions" xml:space="preserve">
+      <value>Options de connexion</value>
+    </data>
 </root>

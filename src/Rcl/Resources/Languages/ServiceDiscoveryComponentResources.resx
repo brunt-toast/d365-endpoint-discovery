@@ -171,4 +171,7 @@
   <data name="WarningMessage" xml:space="preserve">
     <value>&lt;b&gt;Warning:&lt;/b&gt; Excessive use of this tool can result in being temporarily blocked from making requests. It is recommended to use a dedicated app registration that's not used by any other apps.</value>
   </data>
+  <data name="ConnectionOptions" xml:space="preserve">
+    <value>Connection options</value>
+  </data>
 </root>

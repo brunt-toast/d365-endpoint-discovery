@@ -117,61 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AllDoneMessage" xml:space="preserve">
-    <value>Ĉio farita!</value>
+  <data name="AcceptableThumbprint" xml:space="preserve">
+    <value>Acceptable X.509 thumbprint</value>
   </data>
-  <data name="BuildCollection" xml:space="preserve">
-    <value>Konstruu kolekton</value>
+  <data name="AcceptableThumbprintHelp" xml:space="preserve">
+    <value>Acceptable thumbprint for the X.509 certificate during SSL validation. This will be considered valid in addition to any certificates already trusted by the system. </value>
   </data>
-  <data name="CancelledMessage" xml:space="preserve">
-    <value>Ŝajnas, ke vi nuligis la konservadon de la kolekto. Vi ĉiam povas reiri kaj konservi ĝin denove.</value>
+  <data name="IgnoreSsl" xml:space="preserve">
+    <value>Ignore SSL</value>
   </data>
-  <data name="CollectionReadyMessage" xml:space="preserve">
-    <value>Via kolekto estas preta! Vi povas trovi ĝin ĉi tie:</value>
+  <data name="IgnoreSslHelp" xml:space="preserve">
+    <value>Disable SSL checks when exploring the Dynamics instance. This is insecure! SSL will always be enabled when getting a bearer token.</value>
   </data>
-  <data name="ConnectToD365" xml:space="preserve">
-    <value>Konektiĝu al D365</value>
+  <data name="MaxConnections" xml:space="preserve">
+    <value>Max connections</value>
   </data>
-  <data name="Finish" xml:space="preserve">
-    <value>Finu</value>
+  <data name="MaxConnectionsHelp" xml:space="preserve">
+    <value>Limit the number of connections made at any given time. This helps to avoid socket exhaustion for large jobs, but causes a significant performance hit.</value>
   </data>
-  <data name="Intro" xml:space="preserve">
-    <value>Enkonduko</value>
-  </data>
-  <data name="Language" xml:space="preserve">
-    <value>Lingvo</value>
-  </data>
-  <data name="Previous" xml:space="preserve">
-    <value>Antaŭa</value>
-  </data>
-  <data name="Next" xml:space="preserve">
-    <value>Sekva</value>
-  </data>
-  <data name="Done" xml:space="preserve">
-    <value>Finite</value>
-  </data>
-  <data name="SelectGroups" xml:space="preserve">
-    <value>Elektu grupojn</value>
-  </data>
-  <data name="SelectOperations" xml:space="preserve">
-    <value>Elektu operaciojn</value>
-  </data>
-  <data name="SelectServices" xml:space="preserve">
-    <value>Elektu servojn</value>
-  </data>
-  <data name="Title" xml:space="preserve">
-    <value>Sorĉisto pri Malkovro de Servaj Finpunktoj</value>
-  </data>
-  <data name="UsageInstructions1" xml:space="preserve">
-    <value>Por uzi ĉi tiun asistanton, vi bezonos akreditaĵojn por registrado de Azure-aplikaĵo kun plena aliro al Dynamics 365.</value>
-  </data>
-  <data name="UsageInstructions2" xml:space="preserve">
-    <value>Se vi ne scias kiel akiri ĉi tiujn akreditaĵojn, parolu kun administranto en via organizo.</value>
-  </data>
-  <data name="WarningMessage" xml:space="preserve">
-    <value>&lt;b&gt;Averto:&lt;/b&gt; Troa uzado de ĉi tiu ilo povas rezultigi provizoran blokadon de petoj. Estas rekomendinde uzi dediĉitan aplikaĵan registriĝon, kiun ne uzas aliaj aplikaĵoj.</value>
-  </data>
-    <data name="ConnectionOptions" xml:space="preserve">
-      <value>Eblecoj de konekto</value>
-    </data>
 </root>

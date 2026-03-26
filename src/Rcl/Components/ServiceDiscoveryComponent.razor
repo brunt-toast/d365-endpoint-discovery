@@ -4,6 +4,7 @@
 @using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Resources.Languages
 @using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Services
 @using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.ViewModels
+@inject IConnectionOptionsViewModel ConnectionOptionsVm
 @inject ICredentialsViewModel CredentialsVm
 @inject ISelectGroupsViewModel SelectGroupsVm
 @inject ISelectServicesViewModel SelectServicesVm
@@ -52,8 +53,7 @@
                               DisplayStepNumber="false"
                               IconPrevious="FluentIconRepository.IntroStepPrevIcon"
                               IconCurrent="FluentIconRepository.IntroStepCurIcon"
-                              IconNext="FluentIconRepository.IntroStepNextIcon"
-                              OnChange="arg => RunIfAdvancing(arg, CredentialsVm.InitAsync)">
+                              IconNext="FluentIconRepository.IntroStepNextIcon">
                 <h2 style="text-align: center;">@ServiceDiscoveryComponentResources.Title</h2>
                 <p>
                     @ServiceDiscoveryComponentResources.UsageInstructions1
@@ -70,6 +70,14 @@
                               Items="Enum.GetValues<KnownCultures>().OrderBy(x => x.ToDisplayName())"
                               OptionText="EnumExtensions.KnownCulturesToDisplayName"
                               @bind-SelectedOption="Culture" />
+            </FluentWizardStep>
+            
+            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.ConnectionOptions" OnChange="arg => RunIfAdvancing(arg, () => CredentialsVm.InitAsync())"
+                              DisplayStepNumber="false"
+                              IconPrevious="FluentIconRepository.ConnectionOptionsStepPrevIcon"
+                              IconCurrent="FluentIconRepository.ConnectionOptionsStepCurIcon"
+                              IconNext="FluentIconRepository.ConnectionOptionsStepNextIcon">
+                <ConnectionOptionsComponent ViewModel="ConnectionOptionsVm"/>
             </FluentWizardStep>
 
             <FluentWizardStep Label="@ServiceDiscoveryComponentResources.ConnectToD365" OnChange="arg => RunIfAdvancing(arg, () => SelectGroupsVm.InitAsync(CredentialsVm))"

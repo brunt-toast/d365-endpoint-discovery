@@ -171,4 +171,7 @@
   <data name="WarningMessage" xml:space="preserve">
     <value>&lt;b&gt;Monitum:&lt;/b&gt; Usus immodicus huius instrumenti potest impedire te a petitionibus faciendis ad tempus. Suadetur ut registratione applicationis dedicata utaris, quae ab aliis applicationibus non adhibetur.</value>
   </data>
+    <data name="ConnectionOptions" xml:space="preserve">
+      <value>Optiones connexionis</value>
+    </data>
 </root>
