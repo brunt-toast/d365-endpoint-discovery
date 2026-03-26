@@ -33,7 +33,6 @@ public static class CliServiceRegistrar
         sc.AddTransient<AcceptThumbprintOption>();
 
         sc.AddTransient<ServiceDiscoveryCommand>();
-        sc.AddTransient<DynSvcDiscoveryRootCommand>();
 
         sc.AddSingleton<CommandParseResultSink>();
         sc.AddSingleton<ILogEventSink>(x => x.GetRequiredService<CommandParseResultSink>());

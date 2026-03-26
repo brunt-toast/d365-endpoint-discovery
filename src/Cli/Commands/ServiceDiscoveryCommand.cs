@@ -12,7 +12,7 @@ using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Enums;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Commands;
 
-internal class ServiceDiscoveryCommand : Command
+internal class ServiceDiscoveryCommand : RootCommand
 {
     private readonly IMainService _mainService;
     private readonly ICommandParseResultSink _sink;
@@ -60,8 +60,9 @@ internal class ServiceDiscoveryCommand : Command
         TenantIdOption tenantIdOption,
         AuthKindOption authKindOption,
         AcceptThumbprintOption acceptThumbprintOption)
-        : base("service-discovery", "Discover Dynamics 365 service endpoints automatically.")
     {
+        Description = "Discover Dynamics 365 service endpoints automatically.";
+
         _mainService = mainService;
         _sink = sink;
         _config = config;
