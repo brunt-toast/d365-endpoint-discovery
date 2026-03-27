@@ -112,7 +112,7 @@
                 <SelectOperationsComponent ViewModel="SelectOperationsVm"/>
             </FluentWizardStep>
 
-            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.BuildCollection" OnChange="arg => RunIfAdvancing(arg, BuildCollectionVm.SaveToFileAsync)"
+            <FluentWizardStep Label="@ServiceDiscoveryComponentResources.BuildCollection" OnChange="arg => RunIfAdvancing(arg, BuildCollectionVm.SaveToFileAsync, true)"
                               DisplayStepNumber="false"
                               IconPrevious="FluentIconRepository.CollectionStepPrevIcon"
                               IconCurrent="FluentIconRepository.CollectionStepCurIcon"

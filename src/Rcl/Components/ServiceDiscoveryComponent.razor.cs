@@ -6,7 +6,7 @@ namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Components;
 public partial class ServiceDiscoveryComponent
 {
     private const int IntroStepIndex = 0;
-    private const int LastStepIndex = 6;
+    private const int LastStepIndex = 7;
 
     private FluentWizard _wizard = null!;
 
@@ -47,14 +47,20 @@ public partial class ServiceDiscoveryComponent
         await _wizard.FinishAsync(validateEditContexts: true);
     }
 
-    private Task RunIfAdvancing(FluentWizardStepChangeEventArgs arg, Func<Task> action)
+    private async Task RunIfAdvancing(FluentWizardStepChangeEventArgs arg, Func<Task> action, bool runWithAwait = false)
     {
         if (arg.TargetIndex > _wizard.Value)
         {
-            _ = RunInBackgroundAndRefreshAsync(action);
-        }
+            if (runWithAwait)
+            {
+                await action.Invoke();
+            }
+            else
+            {
 
-        return Task.CompletedTask;
+                _ = RunInBackgroundAndRefreshAsync(action);
+            }
+        }
     }
 
     private async Task RunInBackgroundAndRefreshAsync(Func<Task> action)
