@@ -2,6 +2,7 @@
 using System.Security.Authentication;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Consts;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Extensions.Serilog;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Config;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Auth;
 using Serilog;
 
@@ -12,12 +13,14 @@ internal class AxCallingService
     private readonly AxAuthFactory _authFactory;
     private readonly ILogger _logger;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IAxConfig _axConfig;
 
-    public AxCallingService(AxAuthFactory authFactory, ILogger logger, IHttpClientFactory httpClientFactory)
+    public AxCallingService(AxAuthFactory authFactory, ILogger logger, IHttpClientFactory httpClientFactory, IAxConfig axConfig)
     {
         _authFactory = authFactory;
         _logger = logger;
         _httpClientFactory = httpClientFactory;
+        _axConfig = axConfig;
     }
 
     public async Task<string> GetHttp(string endpoint)
@@ -30,6 +33,7 @@ internal class AxCallingService
         request.Headers.Add("Authorization", $"Bearer {bearer}");
 
         var client = _httpClientFactory.CreateClient(HttpClientIdConsts.UserConfigurable);
+        client.BaseAddress = new Uri(_axConfig.Resource);
 
         HttpResponseMessage response;
         try

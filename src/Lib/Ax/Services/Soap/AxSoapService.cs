@@ -1,9 +1,6 @@
 ﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Extensions.Serilog;
-using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Config;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types.Soap;
 using Serilog;
-using System.Net;
-using System.Text.Json;
 using System.Xml.Linq;
 using Newtonsoft.Json;
 
@@ -12,13 +9,11 @@ namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Soap;
 internal class AxSoapService : IAxSoapService
 {
     private readonly AxCallingService _axCalling;
-    private readonly IAxConfig _config;
     private readonly ILogger _logger;
 
-    public AxSoapService(AxCallingService axCalling, IAxConfig config, ILogger logger)
+    public AxSoapService(AxCallingService axCalling, ILogger logger)
     {
         _axCalling = axCalling;
-        _config = config;
         _logger = logger;
     }
 
@@ -103,7 +98,7 @@ internal class AxSoapService : IAxSoapService
     {
         try
         {
-            string httpResponse = await _axCalling.GetHttp($"{_config.Resource}/soap/services/{serviceName}?wsdl");
+            string httpResponse = await _axCalling.GetHttp($"/soap/services/{serviceName}?wsdl");
             var doc = XDocument.Parse(httpResponse);
             XNamespace wsdl = "http://schemas.xmlsoap.org/wsdl/";
 
@@ -121,7 +116,7 @@ internal class AxSoapService : IAxSoapService
 
     private async Task<IEnumerable<string>> GetXsdSchemaLocationsForWsdlUri(string wsdlUri)
     {
-        string httpResponse = await _axCalling.GetHttp(wsdlUri);
+        string httpResponse = await _axCalling.GetHttp(ToEndpoint(wsdlUri));
         var doc = XDocument.Parse(httpResponse);
         XNamespace xsd = "http://www.w3.org/2001/XMLSchema";
 
@@ -133,8 +128,15 @@ internal class AxSoapService : IAxSoapService
 
     private async Task<string> GetXsd(string xsdUri)
     {
-        string httpResponse = await _axCalling.GetHttp(xsdUri);
+        string httpResponse = await _axCalling.GetHttp(ToEndpoint(xsdUri));
         return httpResponse;
+    }
+
+    private static string ToEndpoint(string uriOrEndpoint)
+    {
+        return Uri.TryCreate(uriOrEndpoint, UriKind.Absolute, out var absolute)
+            ? absolute.PathAndQuery
+            : uriOrEndpoint;
     }
 }
 
