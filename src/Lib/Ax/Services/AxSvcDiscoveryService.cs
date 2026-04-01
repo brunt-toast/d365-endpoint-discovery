@@ -1,9 +1,6 @@
-﻿using System.Net;
-using System.Text.RegularExpressions;
-using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Config;
+﻿using System.Text.RegularExpressions;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Responses;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types;
-using Newtonsoft.Json;
 using Serilog;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Extensions.Serilog;
 
@@ -12,14 +9,12 @@ namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services;
 internal class AxSvcDiscoveryService : IAxSvcDiscoveryService
 {
     private readonly AxCallingService _axCalling;
-    private readonly IAxConfig _config;
     private readonly ILogger _logger;
     private readonly IJsonConverterService _jsonConverter;
 
-    public AxSvcDiscoveryService(AxCallingService axCalling, IAxConfig config, ILogger logger, IJsonConverterService jsonConverter)
+    public AxSvcDiscoveryService(AxCallingService axCalling, ILogger logger, IJsonConverterService jsonConverter)
     {
         _axCalling = axCalling;
-        _config = config;
         _logger = logger;
         _jsonConverter = jsonConverter;
     }
@@ -52,7 +47,7 @@ internal class AxSvcDiscoveryService : IAxSvcDiscoveryService
 
     public async Task<IEnumerable<DynSvcGroup>> GetAllGroups()
     {
-        if (!_jsonConverter.TryDeserialise(await _axCalling.GetHttp($"{_config.Resource}/api/services"),
+        if (!_jsonConverter.TryDeserialise(await _axCalling.GetHttp("/api/services"),
                 out GetSvcGroupsResponse? res))
         {
             _logger.LogError("Deserialisation error while getting all groups.");
@@ -71,7 +66,7 @@ internal class AxSvcDiscoveryService : IAxSvcDiscoveryService
 
     private async Task<IEnumerable<DynSvc>> GetServicesForGroup(DynSvcGroup group)
     {
-        if (!_jsonConverter.TryDeserialise(await _axCalling.GetHttp($"{_config.Resource}/api/services/{group.Name}"), out GetSvcGroupResponse? res))
+        if (!_jsonConverter.TryDeserialise(await _axCalling.GetHttp($"/api/services/{group.Name}"), out GetSvcGroupResponse? res))
         {
             _logger.LogError("Deserialisation error while getting services for group {group}", group.Name);
             return [];
@@ -96,7 +91,7 @@ internal class AxSvcDiscoveryService : IAxSvcDiscoveryService
     private async Task<IEnumerable<DynSvcOp>> GetOperationsForService(DynSvc service)
     {
         if (!_jsonConverter.TryDeserialise(
-                await _axCalling.GetHttp($"{_config.Resource}/api/services/{service.ServiceGroupName}/{service.Name}"),
+                await _axCalling.GetHttp($"/api/services/{service.ServiceGroupName}/{service.Name}"),
                 out GetSvcResponse? res))
         {
             _logger.LogError("Deserialisation error while getting operations for service {group}/{service}", service.ServiceGroupName, service.Name);
@@ -111,7 +106,7 @@ internal class AxSvcDiscoveryService : IAxSvcDiscoveryService
     private async Task MutateOperationWithParamsAndReturnType(DynSvc service, DynSvcOp operation)
     {
         if (!_jsonConverter.TryDeserialise(
-                await _axCalling.GetHttp($"{_config.Resource}/api/services/{service.ServiceGroupName}/{service.Name}/{operation.Name}"),
+                await _axCalling.GetHttp($"/api/services/{service.ServiceGroupName}/{service.Name}/{operation.Name}"),
                 out GetOperationResponse? opRes))
         {
             _logger.LogError("Deserialisation error while getting parameter and return types for operation {group}/{service}/{operation}",

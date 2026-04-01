@@ -13,7 +13,7 @@ internal static class CommandGenerator
         CliServiceRegistrar.RegisterServices(sc);
         var provider = sc.BuildServiceProvider();
 
-        var rootCommand = provider.GetRequiredService<DynSvcDiscoveryRootCommand>();
+        var rootCommand = provider.GetRequiredService<ServiceDiscoveryCommand>();
         var stack = new Stack<Command>();
         stack.Push(rootCommand);
         while (stack.Count != 0)

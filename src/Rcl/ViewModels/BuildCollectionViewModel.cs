@@ -74,6 +74,8 @@ internal class BuildCollectionViewModel : IBuildCollectionViewModel
 
     public async Task SaveToFileAsync()
     {
+        using var _ = ILoading.UseLoading(this);
+
         string content = await _mainService.BuildCustomCollection(new BuildCustomCollectionRequest
         {
             OutputSchema = OutputSchema,
