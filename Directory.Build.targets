@@ -1,0 +1,28 @@
+<Project>
+    <Target Name="PreBootstrapSdk"
+        BeforeTargets="PrepareForBuild"
+        Condition="
+  '$(MSBuildProjectFullPath)' == '$(MSBuildProjectFullPath)' 
+  AND '$(IsCrossTargetingBuild)' != 'true'
+  AND '$(BuildingProject)' == 'true'
+  AND !Exists('$(BaseIntermediateOutputPath)prebootstrap.cache')">
+
+    <PropertyGroup>
+      <RepoRoot>$(MSBuildThisFileDirectory)</RepoRoot>
+    </PropertyGroup>
+
+    <MakeDir Directories="$(BaseIntermediateOutputPath)" />
+
+    <Exec Command="dotnet tool restore"
+          WorkingDirectory="$(RepoRoot)" />
+
+    <Exec Command="dotnet cake --target InstallSdk"
+          WorkingDirectory="$(RepoRoot)" />
+
+    <WriteLinesToFile
+        File="$(BaseIntermediateOutputPath)prebootstrap.cache"
+        Lines="done"
+        Overwrite="true" />
+
+    </Target>
+</Project>
