@@ -11,6 +11,7 @@
         "**/.vs": true,
         "**/bin": true,
         "**/obj": true,
+        ".prebootstrap.cache": true,
     },
 
     "explorer.fileNesting.enabled": true,
