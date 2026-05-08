@@ -14,7 +14,7 @@ internal class Program
         {
             while (true)
             {
-                Console.Write("dynsvcdiscovery ");
+                Console.Write(@"dynsvcdiscovery ");
                 string commandLine = Console.ReadLine() ?? string.Empty;
                 string[] newArgs = CommandLineParser.SplitCommandLine(commandLine).ToArray();
 
@@ -23,14 +23,14 @@ internal class Program
                 DateTimeOffset end = DateTimeOffset.Now;
 
                 Console.WriteLine();
-                Console.WriteLine("====================");
-                Console.WriteLine("Run report");
-                Console.WriteLine($"Args: [{Environment.NewLine}" +
-                                  $"{string.Join($",{Environment.NewLine}", newArgs.Select(x => $"    \"{x}\""))}" +
-                                  $"{Environment.NewLine}]");
-                Console.WriteLine($"Duration: {(end - start).TotalSeconds}s");
-                Console.WriteLine($"Exit code: {exitCode}");
-                Console.WriteLine("====================");
+                Console.WriteLine(@"====================");
+                Console.WriteLine(@"Run report");
+                Console.WriteLine(@$"Args: [{Environment.NewLine}" +
+                                  @$"{string.Join($",{Environment.NewLine}", newArgs.Select(x => $"    \"{x}\""))}" +
+                                  @$"{Environment.NewLine}]");
+                Console.WriteLine(@$"Duration: {(end - start).TotalSeconds}s");
+                Console.WriteLine(@$"Exit code: {exitCode}");
+                Console.WriteLine(@"====================");
                 Console.WriteLine();
             }
         }
