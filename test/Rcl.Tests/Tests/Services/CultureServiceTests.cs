@@ -1,4 +1,5 @@
 ﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Enums;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Ioc;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Services;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Tests.Rcl.Tests.Tests.Services;
@@ -16,7 +17,10 @@ public class CultureServiceTests
     [DynamicData(nameof(GetKnownCultures))]
     public void KnownCultures_ShouldResolve(KnownCultures culture)
     {
-        var sut = new CultureService();
+        var sc = new ServiceCollection();
+        RclServiceRegistrar.RegisterServices(sc);
+        IServiceProvider sp = sc.BuildServiceProvider();
+        var sut = sp.GetRequiredService<ICultureService>();
         sut.SetCulture(culture);
     }
 }
