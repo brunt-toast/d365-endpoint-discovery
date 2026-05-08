@@ -38,6 +38,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Resources\Languages\AuthKindResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AuthKindResources.resx</DependentUpon>
+    </Compile>
     <Compile Update="Resources\Languages\ConnectionOptionsComponentResources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -46,6 +51,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Resources\Languages\AuthKindResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="Resources\Languages\ConnectionOptionsComponentResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
