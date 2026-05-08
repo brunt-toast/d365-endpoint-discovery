@@ -6,6 +6,6 @@ internal class MinifyOption : Option<bool>
 {
     public MinifyOption() : base("--minify")
     {
-        Description = "Remove redundant whitespace in output";
+        Description = MinifyOptionResources.Description;
     }
 }

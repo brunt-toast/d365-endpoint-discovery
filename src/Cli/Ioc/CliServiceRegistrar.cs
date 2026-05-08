@@ -3,6 +3,8 @@ using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Logging.Sinks;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Options;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Serilog.Core;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Ioc;
@@ -12,6 +14,9 @@ public static class CliServiceRegistrar
     public static void RegisterServices(IServiceCollection sc)
     {
         ApplicationServiceRegistrar.RegisterServices(sc);
+
+        sc.AddSingleton<ILoggerFactory, NullLoggerFactory>();
+        sc.AddLocalization();
 
         sc.AddTransient<ClientIdOption>();
         sc.AddTransient<ClientSecretOption>();

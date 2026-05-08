@@ -1,25 +1,31 @@
 ﻿using System.CommandLine;
 using System.CommandLine.Parsing;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Extensions.System.CommandLine;
+using Microsoft.Extensions.Localization;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Options;
 
 internal class ResourceOption : Option<string>
 {
-    public ResourceOption() : base("--resource", "-r")
+    private readonly IStringLocalizer<ResourceOptionResources> _localizer;
+
+    public ResourceOption(IStringLocalizer<ResourceOptionResources> localizer) : base("--resource", "-r")
     {
+        _localizer = localizer;
         DefaultValueFactory = _ => Environment.GetEnvironmentVariable("DYNAMICS_RESOURCE") ?? string.Empty;
         Validators.Add(NotNullOrWhitespaceValidator);
         Validators.Add(ValidUriValidator);
-        Description = "A Dynamics 365 instance. Must be a valid URI. Usually looks like 'https://*.operations.dynamics.com'" +
-                      "or 'https://usnconeboxax1aos.cloud.onebox.dynamics.com/'. " +
-                      "Required for all authentication flows.";
+
+        Description = _localizer[nameof(ResourceOptionResources.Description),
+            "https://*.operations.dynamics.com",
+            "https://usnconeboxax1aos.cloud.onebox.dynamics.com/"];
     }
 
     private void NotNullOrWhitespaceValidator(OptionResult opt)
     {
         if (string.IsNullOrWhiteSpace(opt.GetValue(this)))
         {
-            opt.AddError($"The value for {nameof(ResourceOption)} must be populated.");
+            opt.AddError(_localizer[nameof(ResourceOptionResources.ValueMissingError), this.NameAndAliases()]);
         }
     }
 
@@ -27,7 +33,7 @@ internal class ResourceOption : Option<string>
     {
         if (!Uri.TryCreate(opt.GetValue(this), UriKind.Absolute, out _))
         {
-            opt.AddError($"The value for {nameof(ResourceOption)} must be a valid URI.");
+            opt.AddError(_localizer[nameof(ResourceOptionResources.ValueNotValidUriError), this.NameAndAliases()]);
         }
     }
 }

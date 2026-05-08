@@ -13,7 +13,10 @@ public class CliServiceRegistrarTests
         CliServiceRegistrar.RegisterServices(sc);
         foreach (var defn in sc)
         {
-            yield return [defn];
+            if (defn.ServiceType.FullName?.StartsWith("Dev.JoshBrunton.DynamicsEndpointDiscovery") == true)
+            {
+                yield return [defn];
+            }
         }
     }
 

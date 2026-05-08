@@ -7,6 +7,6 @@ internal class SchemaOption : Option<OutputSchemas>
 {
     public SchemaOption() : base("--schema")
     {
-        Description = "Specify the output schema.";
+        Description = SchemaOptionResources.Description;
     }
 }

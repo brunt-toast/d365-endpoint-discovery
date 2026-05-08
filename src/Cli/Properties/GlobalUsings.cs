@@ -1,0 +1,1 @@
+﻿global using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Resources.Languages;

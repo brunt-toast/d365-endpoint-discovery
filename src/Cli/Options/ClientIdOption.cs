@@ -1,23 +1,28 @@
 ﻿using System.CommandLine;
 using System.CommandLine.Parsing;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Extensions.System.CommandLine;
+using Microsoft.Extensions.Localization;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Options;
 
 internal class ClientIdOption : Option<string>
 {
-    public ClientIdOption() : base("--client-id", "-c")
+    private readonly IStringLocalizer<ClientIdOptionResources> _localizer;
+
+    public ClientIdOption(IStringLocalizer<ClientIdOptionResources> localizer) : base("--client-id", "-c")
     {
+        _localizer = localizer;
         DefaultValueFactory = _ => Environment.GetEnvironmentVariable("DYNAMICS_CLIENT_ID") ?? string.Empty;
         Validators.Add(NotNullOrWhitespaceValidator);
         Validators.Add(ValidGuidValidator);
-        Description = "An Azure application (client) ID. Must be a valid GUID. Required for all authentication flows.";
+        Description = _localizer[nameof(ClientIdOptionResources.Description)];
     }
 
     private void NotNullOrWhitespaceValidator(OptionResult opt)
     {
         if (string.IsNullOrWhiteSpace(opt.GetValue(this)))
         {
-            opt.AddError($"The value for {nameof(ClientIdOption)} must be populated.");
+            opt.AddError(_localizer[nameof(ClientIdOptionResources.ValueMissingError), this.NameAndAliases()]);
         }
     }
 
@@ -25,7 +30,7 @@ internal class ClientIdOption : Option<string>
     {
         if (!Guid.TryParse(opt.GetValue(this), out _))
         {
-            opt.AddError($"The value for {nameof(ClientIdOption)} must be a valid GUID.");
+            opt.AddError(_localizer[nameof(ClientIdOptionResources.ValueNotValidGuidError), this.NameAndAliases()]);
         }
     }
 }
