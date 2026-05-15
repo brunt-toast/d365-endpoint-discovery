@@ -3,6 +3,7 @@ using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Config;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Auth;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Soap;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.SvcDiscovery;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Ioc;
