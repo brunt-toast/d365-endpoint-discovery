@@ -2,8 +2,8 @@
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.CollectionBuilders;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.Serialisers;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Config;
-using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Soap;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.SvcDiscovery;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
