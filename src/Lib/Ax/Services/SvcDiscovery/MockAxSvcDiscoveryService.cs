@@ -5,6 +5,38 @@ namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.SvcDiscovery
 
 internal class MockAxSvcDiscoveryService : IAxSvcDiscoveryService
 {
+    private static readonly string[] GroupDomains =
+    [
+        "Customer", "Supplier", "Inventory", "Warehouse", "Order", "Sales", "Purchase", "Pricing",
+        "Tax", "Finance", "Ledger", "Project", "Production", "Quality", "Transport", "Retail",
+        "Asset", "Procurement", "Planning", "Analytics", "Compliance", "Identity", "Workflow", "Document"
+    ];
+
+    private static readonly string[] GroupCapabilities =
+    [
+        "Operations", "Management", "Orchestration", "Integration", "Insights", "Services", "Automation",
+        "Coordination", "Administration", "Lifecycle", "Hub", "Control", "Platform", "Intelligence"
+    ];
+
+    private static readonly string[] ServiceActions =
+    [
+        "Resolve", "Calculate", "Validate", "Sync", "Schedule", "Assign", "Track", "Create", "Update",
+        "Reconcile", "Allocate", "Approve", "Route", "Publish", "Generate", "Archive", "Import", "Export"
+    ];
+
+    private static readonly string[] ServiceTargets =
+    [
+        "Profile", "Account", "Invoice", "Shipment", "Return", "Contract", "Payment", "Quote", "Batch",
+        "WorkItem", "Request", "Transaction", "Adjustment", "Forecast", "Template", "Reference", "Order",
+        "Agreement", "Document", "Reservation"
+    ];
+
+    private static readonly string[] OperationQualifiers =
+    [
+        "Draft", "Final", "Bulk", "Detailed", "Summary", "Incremental", "Preview", "Validated", "Current",
+        "Historic", "Pending", "Approved", "Rejected", "Active", "Archived", "Delta", "Snapshot", "Secure"
+    ];
+
     public async Task<IEnumerable<DynSvcGroup>> MapServicesAsync(string grepGroupsRegexString = ".*",
         string grepServicesRegexString = ".*",
         string grepOperationsRegexString = ".*")
@@ -66,27 +98,62 @@ internal class MockAxSvcDiscoveryService : IAxSvcDiscoveryService
 
     private static IEnumerable<DynSvcGroup> CreateGroups(int groups, int servicesPerGroup, int opsPerService)
     {
+        Random random = Random.Shared;
+        HashSet<string> usedGroupNames = new(StringComparer.OrdinalIgnoreCase);
+
         return Enumerable.Range(0, groups)
-            .Select(i => new DynSvcGroup
+            .Select(_ =>
             {
-                Name = $"ServiceGroup{CharFor(i)}",
-                Services = Enumerable.Range(0, servicesPerGroup)
-                    .Select(j => new DynSvc
-                    {
-                        Name = $"Service{CharFor(i)}_{CharFor(j)}",
-                        ServiceGroupName = $"ServiceGroup{CharFor(i)}",
-                        Operations = Enumerable.Range(0, opsPerService)
-                            .Select(k => new DynSvcOp
+                string groupName = NextUniqueName(usedGroupNames,
+                    () => $"{Pick(GroupDomains, random)}{Pick(GroupCapabilities, random)}");
+
+                HashSet<string> usedServiceNames = new(StringComparer.OrdinalIgnoreCase);
+
+                return new DynSvcGroup
+                {
+                    Name = groupName,
+                    Services = Enumerable.Range(0, servicesPerGroup)
+                        .Select(_ =>
+                        {
+                            string serviceName = NextUniqueName(usedServiceNames,
+                                () => $"{Pick(ServiceActions, random)}{Pick(ServiceTargets, random)}");
+
+                            return new DynSvc
                             {
-                                ServiceGroupName = $"ServiceGroup{CharFor(i)}",
-                                ServiceName = $"Service{CharFor(i)}_{CharFor(j)}",
-                                Name = $"Service{CharFor(i)}_{CharFor(j)}_{CharFor(k)}",
-                                Parameters = [],
-                                Return = null
-                            }).ToArray()
-                    }).ToArray()
+                                Name = serviceName,
+                                ServiceGroupName = groupName,
+                                Operations = Enumerable.Range(0, opsPerService)
+                                    .Select(_ => new DynSvcOp
+                                    {
+                                        ServiceGroupName = groupName,
+                                        ServiceName = serviceName,
+                                        Name =
+                                            $"{Pick(ServiceActions, random)}{Pick(OperationQualifiers, random)}{Pick(ServiceTargets, random)}",
+                                        Parameters = [],
+                                        Return = null
+                                    }).ToArray()
+                            };
+                        }).ToArray()
+                };
             });
 
-        static string CharFor(int i) => ((char)(i + 65)).ToString();
+        static string Pick(IReadOnlyList<string> values, Random random) => values[random.Next(values.Count)];
+
+        static string NextUniqueName(ISet<string> usedNames, Func<string> nameFactory)
+        {
+            const int maxAttempts = 25;
+            for (int attempt = 0; attempt < maxAttempts; attempt++)
+            {
+                string candidate = nameFactory();
+                if (usedNames.Add(candidate))
+                {
+                    return candidate;
+                }
+            }
+
+            string fallback = $"{nameFactory()}{Random.Shared.Next(1000, 9999)}";
+            usedNames.Add(fallback);
+            return fallback;
+        }
     }
 }
