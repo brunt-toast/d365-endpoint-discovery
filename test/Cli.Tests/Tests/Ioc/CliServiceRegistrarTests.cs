@@ -27,6 +27,11 @@ public class CliServiceRegistrarTests
         var sc = new ServiceCollection();
         CliServiceRegistrar.RegisterServices(sc, _ => false);
         var sp = sc.BuildServiceProvider();
-        sp.GetRequiredService(sd.ServiceType);
+        ResolveService(sp, sd);
     }
+
+    private static void ResolveService(IServiceProvider sp, ServiceDescriptor sd) =>
+        _ = sd.IsKeyedService
+            ? sp.GetRequiredKeyedService(sd.ServiceType, sd.ServiceKey)
+            : sp.GetRequiredService(sd.ServiceType);
 }

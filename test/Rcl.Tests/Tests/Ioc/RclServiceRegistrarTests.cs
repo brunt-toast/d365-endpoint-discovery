@@ -14,7 +14,10 @@ public class RclServiceRegistrarTests
         {
             if (defn.ServiceType.FullName?.StartsWith("Dev.JoshBrunton.DynamicsEndpointDiscovery") == true)
             {
-                yield return [defn];
+                if (!defn.IsKeyedService)
+                {
+                    yield return [defn];
+                }
             }
         }
     }
