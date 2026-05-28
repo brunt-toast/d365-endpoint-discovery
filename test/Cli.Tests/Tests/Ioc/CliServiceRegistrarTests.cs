@@ -10,7 +10,7 @@ public class CliServiceRegistrarTests
     public static IEnumerable<object[]> GetServices()
     {
         var sc = new ServiceCollection();
-        CliServiceRegistrar.RegisterServices(sc);
+        CliServiceRegistrar.RegisterServices(sc, _ => false);
         foreach (var defn in sc)
         {
             if (defn.ServiceType.FullName?.StartsWith("Dev.JoshBrunton.DynamicsEndpointDiscovery") == true)
@@ -25,7 +25,7 @@ public class CliServiceRegistrarTests
     public void CanResolveAllServices(ServiceDescriptor sd)
     {
         var sc = new ServiceCollection();
-        CliServiceRegistrar.RegisterServices(sc);
+        CliServiceRegistrar.RegisterServices(sc, _ => false);
         var sp = sc.BuildServiceProvider();
         sp.GetRequiredService(sd.ServiceType);
     }

@@ -20,6 +20,12 @@ public partial class ServiceDiscoveryComponent
         }
     }
 
+    protected override void OnInitialized()
+    {
+        ConnectionOptionsVm.Init();
+        base.OnInitialized();
+    }
+
     private async Task OnWizardFinish()
     {
         CredentialsVm.ClearValues();

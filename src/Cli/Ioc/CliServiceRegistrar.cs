@@ -11,9 +11,9 @@ namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Cli.Ioc;
 
 public static class CliServiceRegistrar
 {
-    public static void RegisterServices(IServiceCollection sc)
+    public static void RegisterServices(IServiceCollection sc, Func<IServiceProvider, bool> mockPredicate)
     {
-        ApplicationServiceRegistrar.RegisterServices(sc);
+        ApplicationServiceRegistrar.RegisterServices(sc, mockPredicate);
 
         sc.AddSingleton<ILoggerFactory, NullLoggerFactory>();
         sc.AddLocalization();

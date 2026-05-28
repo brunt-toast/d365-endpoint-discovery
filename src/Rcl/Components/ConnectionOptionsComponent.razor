@@ -6,13 +6,22 @@
 @inject IStringLocalizer<ConnectionOptionsComponentResources> Localizer
 
 <FluentStack Orientation="Orientation.Vertical">
-
-    <FluentButton IconStart="IconRepository.Certificate"
-                  Id="ignoreSslQuestion"
-                  OnClick="@(() => ViewModel.IgnoreSsl = !ViewModel.IgnoreSsl)"
-                  Appearance="@(ViewModel.IgnoreSsl ? Appearance.Accent : Appearance.Outline)">
-        @ConnectionOptionsComponentResources.IgnoreSsl
-    </FluentButton>
+    
+    <FluentStack Orientation="Orientation.Horizontal">
+        <FluentButton IconStart="IconRepository.Certificate"
+                      Id="ignoreSslQuestion"
+                      OnClick="@(() => ViewModel.IgnoreSsl = !ViewModel.IgnoreSsl)"
+                      Appearance="@(ViewModel.IgnoreSsl ? Appearance.Accent : Appearance.Outline)">
+            @ConnectionOptionsComponentResources.IgnoreSsl
+        </FluentButton>
+        
+        <FluentButton IconStart="IconRepository.Mock"
+                      Id="mockQuestion"
+                      OnClick="@(() => ViewModel.UseMock = !ViewModel.UseMock)"
+                      Appearance="@(ViewModel.UseMock ? Appearance.Accent : Appearance.Outline)">
+            @ConnectionOptionsComponentResources.UseMock
+        </FluentButton>
+    </FluentStack>
 
     <FluentTextField style="width: 100%;"
                      Id="acceptableThumbprintQuestion"
@@ -35,6 +44,13 @@
                MaxWidth="300px"
                Position="TooltipPosition.Top">
     @ConnectionOptionsComponentResources.IgnoreSslHelp
+</FluentTooltip>
+
+<FluentTooltip Anchor="mockQuestion"
+               Delay="100"
+               MaxWidth="300px"
+               Position="TooltipPosition.Top">
+    @ConnectionOptionsComponentResources.MockHelp
 </FluentTooltip>
 
 <FluentTooltip Anchor="acceptableThumbprintQuestion"

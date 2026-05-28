@@ -13,9 +13,9 @@ namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Ioc;
 
 public static class ApplicationServiceRegistrar
 {
-    public static void RegisterServices(IServiceCollection sc)
+    public static void RegisterServices(IServiceCollection sc, Func<IServiceProvider, bool> mockPredicate)
     {
-        AxServiceRegistrar.RegisterServices(sc);
+        AxServiceRegistrar.RegisterServices(sc, mockPredicate);
 
         sc.AddSingleton<HttpClientOptions>();
         sc.AddSingleton<IHttpClientFactory, ConfigurableHttpClientFactory>();

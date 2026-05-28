@@ -37,7 +37,7 @@ internal class Program
 #endif
 
         ServiceCollection sc = new ServiceCollection();
-        CliServiceRegistrar.RegisterServices(sc);
+        CliServiceRegistrar.RegisterServices(sc, _ => args.Contains("--mock"));
         var services = sc.BuildServiceProvider();
 
         return await services.GetRequiredService<ServiceDiscoveryCommand>().Parse(args).InvokeAsync();
