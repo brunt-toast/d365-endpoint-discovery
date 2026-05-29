@@ -1,9 +1,12 @@
 @using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Components.Icons
 @using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Resources.Languages
+@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Services
 @using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.ViewModels
 @using Microsoft.Extensions.Localization
 @using Microsoft.FluentUI.AspNetCore.Components.Icons.Regular
 @inject IStringLocalizer<ConnectionOptionsComponentResources> Localizer
+@inject IAppRestartService AppRestartService
+@inject IDialogService DialogService
 
 <FluentStack Orientation="Orientation.Vertical">
     
@@ -17,7 +20,7 @@
         
         <FluentButton IconStart="IconRepository.Mock"
                       Id="mockQuestion"
-                      OnClick="@(() => ViewModel.UseMock = !ViewModel.UseMock)"
+                      OnClick="ToggleMockModeAsync"
                       Appearance="@(ViewModel.UseMock ? Appearance.Accent : Appearance.Outline)">
             @ConnectionOptionsComponentResources.UseMock
         </FluentButton>
@@ -70,4 +73,26 @@
 @code
 {
     [Parameter] public IConnectionOptionsViewModel ViewModel { get; set; } = null!;
+
+    private async Task ToggleMockModeAsync()
+    {
+        ViewModel.UseMock = !ViewModel.UseMock;
+        ViewModel.Save();
+
+        var dialog = await DialogService.ShowDialogAsync(builder =>
+        {
+            builder.AddContent(0, Localizer["MockModeRestartRequired"].Value);
+        }, new DialogParameters
+        {
+            Title = Localizer["MockModeRestartTitle"].Value,
+            PrimaryAction = Localizer["Dismiss"].Value,
+            ShowDismiss = false,
+            SecondaryAction = null,
+            TrapFocus = true,
+            Modal = true
+        });
+
+        await dialog.Result;
+        await AppRestartService.RestartAsync();
+    }
 }

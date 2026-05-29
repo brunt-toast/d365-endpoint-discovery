@@ -3,7 +3,9 @@ using CommunityToolkit.Mvvm.Messaging;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Ioc;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Ioc;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Logging.Sinks;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Services;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.ViewModels;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.BlazorHybrid.Services;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Serilog.Core;
 
@@ -20,6 +22,7 @@ internal static class BlazorHybridServiceRegistrar
         sc.AddSingleton<ILogEventSink, ToastSink>();
         sc.AddSingleton<ILogEventSink>(x => new AppdataFileSink(x.GetRequiredService<IFileSystem>(), 
             x.GetRequiredService<IMessenger>()).Init());
+        sc.AddSingleton<IAppRestartService, MauiAppRestartService>();
 
 
 #if DEBUG

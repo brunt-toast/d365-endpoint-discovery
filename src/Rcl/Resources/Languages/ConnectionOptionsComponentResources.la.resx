@@ -135,4 +135,13 @@
   <data name="MaxConnectionsHelp" xml:space="preserve">
     <value>Numerum connexionum quovis tempore factarum limita. Hoc adiuvat ne socketi in magnis operibus defatigentur, sed significanter perfunctionis detrimentum infert.</value>
   </data>
+  <data name="MockModeRestartRequired" xml:space="preserve">
+    <value>Mutationes modi simulatorii repositionem applicationis requirunt. Applicatio postquam hoc nuntium clauseris restituetur.</value>
+  </data>
+  <data name="MockModeRestartTitle" xml:space="preserve">
+    <value>Repositio necessaria</value>
+  </data>
+  <data name="Dismiss" xml:space="preserve">
+    <value>Bene</value>
+  </data>
 </root>

@@ -135,4 +135,13 @@
   <data name="MaxConnectionsHelp" xml:space="preserve">
     <value>Limite el número de conexiones realizadas en un momento dado. Esto ayuda a evitar el agotamiento de sockets en trabajos grandes, pero reduce significativamente el rendimiento.</value>
   </data>
+  <data name="MockModeRestartRequired" xml:space="preserve">
+    <value>Los cambios en el modo simulado requieren reiniciar la aplicación. La aplicación se reiniciará cuando cierre este mensaje.</value>
+  </data>
+  <data name="MockModeRestartTitle" xml:space="preserve">
+    <value>Reinicio necesario</value>
+  </data>
+  <data name="Dismiss" xml:space="preserve">
+    <value>Aceptar</value>
+  </data>
 </root>

@@ -138,6 +138,15 @@
   <data name="MockHelp" xml:space="preserve">
     <value>Use randomly generated fake data; ignore the AX connection credentials, if any.</value>
   </data>
+  <data name="MockModeRestartRequired" xml:space="preserve">
+    <value>Mock mode changes require an app restart. The app will restart after you close this message.</value>
+  </data>
+  <data name="MockModeRestartTitle" xml:space="preserve">
+    <value>Restart required</value>
+  </data>
+  <data name="Dismiss" xml:space="preserve">
+    <value>OK</value>
+  </data>
   <data name="UseMock" xml:space="preserve">
     <value>Use mock</value>
   </data>

@@ -17,6 +17,7 @@ public static class RclServiceRegistrar
         sc.AddFluentUIComponents();
 
         sc.AddSingleton<ICultureService, CultureService>();
+        sc.AddSingleton<IAppRestartService, NoOpAppRestartService>();
         sc.AddLocalization();
 
         sc.AddSingleton<AppSettings>(_ => new AppSettings("settings.json"));
