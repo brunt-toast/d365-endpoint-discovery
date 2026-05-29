@@ -12,6 +12,8 @@
         "**/bin": true,
         "**/obj": true,
         ".prebootstrap.cache": true,
+        "**/TestResults/": true,
+        "**/coveragereport/": true
     },
 
     "explorer.fileNesting.enabled": true,

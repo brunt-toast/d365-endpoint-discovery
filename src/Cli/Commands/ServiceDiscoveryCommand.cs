@@ -61,7 +61,7 @@ internal class ServiceDiscoveryCommand : RootCommand
         AuthKindOption authKindOption,
         AcceptThumbprintOption acceptThumbprintOption)
     {
-        Description = "Discover Dynamics 365 service endpoints automatically.";
+        Description = ServiceDiscoveryCommandResources.Description;
 
         _mainService = mainService;
         _sink = sink;

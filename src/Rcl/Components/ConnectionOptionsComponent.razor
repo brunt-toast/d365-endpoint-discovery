@@ -1,18 +1,30 @@
 @using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Components.Icons
 @using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Resources.Languages
+@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Services
 @using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.ViewModels
 @using Microsoft.Extensions.Localization
 @using Microsoft.FluentUI.AspNetCore.Components.Icons.Regular
 @inject IStringLocalizer<ConnectionOptionsComponentResources> Localizer
+@inject IAppRestartService AppRestartService
+@inject IDialogService DialogService
 
 <FluentStack Orientation="Orientation.Vertical">
-
-    <FluentButton IconStart="IconRepository.Certificate"
-                  Id="ignoreSslQuestion"
-                  OnClick="@(() => ViewModel.IgnoreSsl = !ViewModel.IgnoreSsl)"
-                  Appearance="@(ViewModel.IgnoreSsl ? Appearance.Accent : Appearance.Outline)">
-        @ConnectionOptionsComponentResources.IgnoreSsl
-    </FluentButton>
+    
+    <FluentStack Orientation="Orientation.Horizontal">
+        <FluentButton IconStart="IconRepository.Certificate"
+                      Id="ignoreSslQuestion"
+                      OnClick="@(() => ViewModel.IgnoreSsl = !ViewModel.IgnoreSsl)"
+                      Appearance="@(ViewModel.IgnoreSsl ? Appearance.Accent : Appearance.Outline)">
+            @ConnectionOptionsComponentResources.IgnoreSsl
+        </FluentButton>
+        
+        <FluentButton IconStart="IconRepository.Mock"
+                      Id="mockQuestion"
+                      OnClick="ToggleMockModeAsync"
+                      Appearance="@(ViewModel.UseMock ? Appearance.Accent : Appearance.Outline)">
+            @ConnectionOptionsComponentResources.UseMock
+        </FluentButton>
+    </FluentStack>
 
     <FluentTextField style="width: 100%;"
                      Id="acceptableThumbprintQuestion"
@@ -37,6 +49,13 @@
     @ConnectionOptionsComponentResources.IgnoreSslHelp
 </FluentTooltip>
 
+<FluentTooltip Anchor="mockQuestion"
+               Delay="100"
+               MaxWidth="300px"
+               Position="TooltipPosition.Top">
+    @ConnectionOptionsComponentResources.MockHelp
+</FluentTooltip>
+
 <FluentTooltip Anchor="acceptableThumbprintQuestion"
                Delay="100"
                MaxWidth="300px"
@@ -54,4 +73,26 @@
 @code
 {
     [Parameter] public IConnectionOptionsViewModel ViewModel { get; set; } = null!;
+
+    private async Task ToggleMockModeAsync()
+    {
+        ViewModel.UseMock = !ViewModel.UseMock;
+        ViewModel.Save();
+
+        var dialog = await DialogService.ShowDialogAsync(builder =>
+        {
+            builder.AddContent(0, Localizer["MockModeRestartRequired"].Value);
+        }, new DialogParameters
+        {
+            Title = Localizer["MockModeRestartTitle"].Value,
+            PrimaryAction = Localizer["Dismiss"].Value,
+            ShowDismiss = false,
+            SecondaryAction = null,
+            TrapFocus = true,
+            Modal = true
+        });
+
+        await dialog.Result;
+        await AppRestartService.RestartAsync();
+    }
 }

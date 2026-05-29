@@ -146,3 +146,6 @@ postmancollection.{json,yml,yaml}
 
 # C# Generated Designer Files 
 *.Designer.cs
+
+# Coverage
+coveragereport/

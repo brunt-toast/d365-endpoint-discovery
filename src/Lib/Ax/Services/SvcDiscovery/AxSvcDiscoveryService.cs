@@ -4,7 +4,7 @@ using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types;
 using Serilog;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Extensions.Serilog;
 
-namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services;
+namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.SvcDiscovery;
 
 internal class AxSvcDiscoveryService : IAxSvcDiscoveryService
 {
@@ -121,15 +121,4 @@ internal class AxSvcDiscoveryService : IAxSvcDiscoveryService
         operation.Parameters = opRes.Parameters;
         operation.Return = opRes.Return;
     }
-}
-
-public interface IAxSvcDiscoveryService
-{
-    Task<IEnumerable<DynSvcGroup>> MapServicesAsync(string grepGroupsRegexString = ".*",
-        string grepServicesRegexString = ".*",
-        string grepOperationsRegexString = ".*");
-
-    Task<IEnumerable<DynSvcGroup>> GetAllGroups();
-    Task<IEnumerable<DynSvc>> GetServicesForGroups(IEnumerable<DynSvcGroup> groups);
-    Task<IEnumerable<DynSvcOp>> GetOperationsForServices(IEnumerable<DynSvc> services);
 }

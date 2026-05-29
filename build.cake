@@ -1,5 +1,9 @@
+#tool "nuget:?package=ReportGenerator&version=5.5.10"
+
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Versioning;
+
+using Cake.Common.Tools.ReportGenerator;
 
 var target = Argument("target", "RunGui");
 var configuration = Argument("configuration", "Release");
@@ -113,7 +117,40 @@ Task("Test")
 
         foreach (var proj in projects)
         {
-            DotNetTest(proj.FullPath);
+            DotNetTest(proj.FullPath, new DotNetTestSettings
+            {
+                ArgumentCustomization = args => args.Append("--collect:\"XPlat Code Coverage\""),
+            });
+        }
+    });
+
+Task("GenerateCoverage")
+    .IsDependentOn("Test")
+    .Does(() =>
+    {
+        ReportGenerator(new GlobPattern("**/coverage.cobertura.xml"), Directory("./coveragereport"), new ReportGeneratorSettings
+        {
+            ReportTypes = [ReportGeneratorReportType.Html],
+        });
+    });
+
+Task("ShowCoverage")
+    .IsDependentOn("GenerateCoverage")
+    .Does(() =>
+    {
+        var coverageReport = MakeAbsolute(File("./coveragereport/index.html")).FullPath;
+
+        if (IsRunningOnWindows())
+        {
+            StartProcess("cmd", $"/c start \"\" \"{coverageReport}\"");
+        }
+        else if (IsRunningOnMacOs())
+        {
+            StartProcess("open", coverageReport);
+        }
+        else
+        {
+            StartProcess("xdg-open", coverageReport);
         }
     });
 

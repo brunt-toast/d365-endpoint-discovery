@@ -135,4 +135,13 @@
   <data name="MaxConnectionsHelp" xml:space="preserve">
     <value>一度に確立される接続数を制限します。これにより、大規模なジョブにおけるソケット枯渇を回避できますが、パフォーマンスが大幅に低下します。</value>
   </data>
+  <data name="MockModeRestartRequired" xml:space="preserve">
+    <value>モックモードの変更を反映するにはアプリの再起動が必要です。このメッセージを閉じるとアプリが再起動します。</value>
+  </data>
+  <data name="MockModeRestartTitle" xml:space="preserve">
+    <value>再起動が必要です</value>
+  </data>
+  <data name="Dismiss" xml:space="preserve">
+    <value>OK</value>
+  </data>
 </root>

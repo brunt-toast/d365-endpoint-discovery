@@ -135,4 +135,13 @@
   <data name="MaxConnectionsHelp" xml:space="preserve">
     <value>Limigu la nombron da konektoj faritaj samtempe. Tio helpas eviti elĉerpiĝon de ingoj por grandaj taskoj, sed kaŭzas signifan malpliigon de rendimento.</value>
   </data>
+  <data name="MockModeRestartRequired" xml:space="preserve">
+    <value>Ŝanĝoj de la moka reĝimo postulas rekomencigon de la aplikaĵo. La aplikaĵo rekomenciĝos post kiam vi fermos ĉi tiun mesaĝon.</value>
+  </data>
+  <data name="MockModeRestartTitle" xml:space="preserve">
+    <value>Rekomencigo bezonata</value>
+  </data>
+  <data name="Dismiss" xml:space="preserve">
+    <value>Bone</value>
+  </data>
 </root>

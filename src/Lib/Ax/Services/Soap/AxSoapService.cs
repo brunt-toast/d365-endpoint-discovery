@@ -139,8 +139,3 @@ internal class AxSoapService : IAxSoapService
             : uriOrEndpoint;
     }
 }
-
-public interface IAxSoapService
-{
-    Task<Dictionary<string, string>> GetDataContractsForServices(IEnumerable<string> serviceNames);
-}

@@ -7,7 +7,7 @@ internal class AuthKindOption : Option<AuthKind>
 {
     public AuthKindOption() : base("--auth")
     {
-        Description = "If more than one auth flow is available using the given parameters, which one to use.";
+        Description = AuthKindOptionResources.Description;
         DefaultValueFactory = _ => AuthKind.BestGuess;
     }
 }

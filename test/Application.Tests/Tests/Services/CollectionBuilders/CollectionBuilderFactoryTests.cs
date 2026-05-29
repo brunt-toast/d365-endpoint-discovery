@@ -18,7 +18,7 @@ public class CollectionBuilderFactoryTests
     public void ShouldResolve(OutputSchemas schema)
     {
         var sc = new ServiceCollection();
-        ApplicationServiceRegistrar.RegisterServices(sc);
+        ApplicationServiceRegistrar.RegisterServices(sc, _ => false);
         var sp = sc.BuildServiceProvider();
 
         var sut = sp.GetRequiredService<CollectionBuilderFactory>();

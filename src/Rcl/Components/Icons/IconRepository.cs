@@ -12,4 +12,5 @@ internal static class IconRepository
     public static Icon Download { get; } = new Size20.DrawerArrowDownload();
     public static Icon Remember { get; } = new Size20.Brain();
     public static Icon Certificate { get; } = new Size20.Certificate();
+    public static Icon Mock { get; } = new Size20.Wand();
 }

@@ -10,10 +10,13 @@ public class CliServiceRegistrarTests
     public static IEnumerable<object[]> GetServices()
     {
         var sc = new ServiceCollection();
-        CliServiceRegistrar.RegisterServices(sc);
+        CliServiceRegistrar.RegisterServices(sc, _ => false);
         foreach (var defn in sc)
         {
-            yield return [defn];
+            if (defn.ServiceType.FullName?.StartsWith("Dev.JoshBrunton.DynamicsEndpointDiscovery") == true)
+            {
+                yield return [defn];
+            }
         }
     }
 
@@ -22,8 +25,13 @@ public class CliServiceRegistrarTests
     public void CanResolveAllServices(ServiceDescriptor sd)
     {
         var sc = new ServiceCollection();
-        CliServiceRegistrar.RegisterServices(sc);
+        CliServiceRegistrar.RegisterServices(sc, _ => false);
         var sp = sc.BuildServiceProvider();
-        sp.GetRequiredService(sd.ServiceType);
+        ResolveService(sp, sd);
     }
+
+    private static void ResolveService(IServiceProvider sp, ServiceDescriptor sd) =>
+        _ = sd.IsKeyedService
+            ? sp.GetRequiredKeyedService(sd.ServiceType, sd.ServiceKey)
+            : sp.GetRequiredService(sd.ServiceType);
 }

@@ -24,14 +24,26 @@
     <PackageTags>cli tool dynamics dynamics-365 d365 ax</PackageTags>
     <PackageReleaseNotes></PackageReleaseNotes>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="System.CommandLine" Version="2.0.0-rc.1.25451.107" />
+    <PackageReference Include="Microsoft.Extensions.Localization" Version="10.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="Resources/Languages/*.resx">
+      <Generator>MSBuild:Compile</Generator>
+      <LastGenOutput>%(Filename).Designer.cs</LastGenOutput>
+      <StronglyTypedFileName>$(MSBuildProjectDirectory)\Resources\Languages\%(Filename).Designer.cs</StronglyTypedFileName>
+      <StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
+      <StronglyTypedNamespace>$(RootNamespace).Resources.Languages</StronglyTypedNamespace>
+      <StronglyTypedClassName>%(Filename)</StronglyTypedClassName>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

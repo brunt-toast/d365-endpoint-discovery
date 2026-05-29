@@ -5,11 +5,14 @@ on:
     tags: [ ci/*, v/* ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
 
   get-version:
     name: "Get version"
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     outputs:
       version: ${{ steps.get_version.outputs.version }}
@@ -18,37 +21,77 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install cURL (prerequisite for .NET install)
-        run: sudo apt install -y curl
-
       - name: Setup .NET 10.0
+        if: ${{ !env.ACT }}
         uses: actions/setup-dotnet@v4
+        env:
+          DOTNET_INSTALL_DIR: ${{ github.workspace }}\\.dotnet
         with:
           dotnet-version: '10.0.x'
 
+      - name: Verify local .NET SDK (act)
+        if: ${{ env.ACT }}
+        run: dotnet --version
+
       - name: Get project version
         id: get_version
-        shell: bash
+        shell: pwsh
         run: |
-          VERSION=$(dotnet msbuild src/Cli/Cli.csproj -nologo -getproperty:Version | tail -n 1)
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          $version = (dotnet msbuild src/Cli/Cli.csproj -nologo -getproperty:Version | Where-Object { $_ -and $_.Trim() } | Select-Object -Last 1).Trim()
+
+          if (-not $version) {
+            throw "Unable to determine project version from src/Cli/Cli.csproj"
+          }
+
+          "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
 
   pack:
-    name: Create NuGet package
-    runs-on: ubuntu-latest
+    name: Build Artifacts And Draft Release
+    runs-on: windows-latest
     needs: get-version
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install cURL (prerequisite for .NET install)
-        run: sudo apt install -y curl
-
       - name: Setup .NET 10.0
+        if: ${{ !env.ACT }}
         uses: actions/setup-dotnet@v4
+        env:
+          DOTNET_INSTALL_DIR: ${{ github.workspace }}\\.dotnet
         with:
           dotnet-version: '10.0.x'
+
+      - name: Verify local .NET SDK (act)
+        if: ${{ env.ACT }}
+        run: dotnet --version
+
+      - name: Restore .NET tools
+        run: dotnet tool restore
+
+      - name: Restore .NET workloads
+        run: dotnet workload restore ./DynamicsEndpointDiscovery.slnx
+
+      - name: Build MSIX package
+        shell: pwsh
+        run: ./Build-SignedMsix.ps1
+
+      - name: Package MSIX bundle artifact
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path artifacts -Force | Out-Null
+          $appPackagesPath = "./src/BlazorHybrid/bin/Release/net10.0-windows10.0.19041.0/win-x64/AppPackages"
+
+          if (-not (Test-Path $appPackagesPath)) {
+            throw "Expected AppPackages output not found at $appPackagesPath"
+          }
+
+          $output = "artifacts/DynamicsEndpointDiscovery-${{ needs.get-version.outputs.version }}-msix-bundle.zip"
+          if (Test-Path $output) {
+            Remove-Item $output -Force
+          }
+
+          Compress-Archive -Path "$appPackagesPath/*" -DestinationPath $output -Force
 
       - name: Pack NuGet package
         run: >
@@ -57,10 +100,89 @@ jobs:
           -p:PackageVersion=${{ needs.get-version.outputs.version }}
           -o ./artifacts/nuget
 
+      - name: Run tests with XPlat coverage
+        run: dotnet test --collect:"XPlat Code Coverage"
+
+      - name: Generate HTML coverage report
+        run: dotnet tool run reportgenerator -reports:"**/coverage.cobertura.xml" -targetdir:"coveragereport" -reporttypes:"Html"
+
+      - name: Package coverage artifacts
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path artifacts -Force | Out-Null
+
+          $htmlArchive = "artifacts/coverage-html-${{ needs.get-version.outputs.version }}.zip"
+          if (Test-Path $htmlArchive) {
+            Remove-Item $htmlArchive -Force
+          }
+          Compress-Archive -Path "coveragereport/*" -DestinationPath $htmlArchive -Force
+
+          $rawCoverageArchive = "artifacts/coverage-xml-${{ needs.get-version.outputs.version }}.zip"
+          if (Test-Path $rawCoverageArchive) {
+            Remove-Item $rawCoverageArchive -Force
+          }
+
+          $coverageFiles = Get-ChildItem -Path . -Recurse -Filter "coverage.cobertura.xml"
+          if ($coverageFiles.Count -eq 0) {
+            throw "No coverage.cobertura.xml files were generated."
+          }
+
+          $staging = "artifacts/coverage-xml"
+          if (Test-Path $staging) {
+            Remove-Item -Path $staging -Recurse -Force
+          }
+          New-Item -ItemType Directory -Path $staging -Force | Out-Null
+
+          $repoRoot = (Get-Location).Path
+
+          foreach ($coverageFile in $coverageFiles) {
+            $relativePath = $coverageFile.FullName.Substring($repoRoot.Length).TrimStart('\', '/')
+            $destinationPath = Join-Path $staging $relativePath
+
+            New-Item -ItemType Directory -Path (Split-Path -Path $destinationPath -Parent) -Force | Out-Null
+            Copy-Item -Path $coverageFile.FullName -Destination $destinationPath -Force
+          }
+
+          Compress-Archive -Path "$staging/*" -DestinationPath $rawCoverageArchive -Force
+
+      - name: Determine release tag
+        id: release_tag
+        shell: pwsh
+        run: |
+          if ("${{ github.ref_type }}" -eq "tag") {
+            $tag = "${{ github.ref_name }}"
+          }
+          else {
+            $tag = "v${{ needs.get-version.outputs.version }}"
+          }
+          "tag=$tag" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+      - name: Draft GitHub release
+        if: ${{ !env.ACT }}
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          tag_name: ${{ steps.release_tag.outputs.tag }}
+          name: ${{ needs.get-version.outputs.version }}
+          files: |
+            artifacts/DynamicsEndpointDiscovery-${{ needs.get-version.outputs.version }}-msix-bundle.zip
+            artifacts/coverage-html-${{ needs.get-version.outputs.version }}.zip
+            artifacts/coverage-xml-${{ needs.get-version.outputs.version }}.zip
+
       - name: Upload NuGet package artifact
         if: ${{ !env.ACT }}
         uses: actions/upload-artifact@v4
         with:
           name: Cli-${{ needs.get-version.outputs.version }}
           path: artifacts/nuget/*.nupkg
+
+      - name: Upload release assets as workflow artifacts
+        if: ${{ !env.ACT }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-assets-${{ needs.get-version.outputs.version }}
+          path: |
+            artifacts/DynamicsEndpointDiscovery-${{ needs.get-version.outputs.version }}-msix-bundle.zip
+            artifacts/coverage-html-${{ needs.get-version.outputs.version }}.zip
+            artifacts/coverage-xml-${{ needs.get-version.outputs.version }}.zip
 

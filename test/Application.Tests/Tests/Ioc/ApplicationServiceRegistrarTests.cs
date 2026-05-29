@@ -12,7 +12,7 @@ public class ApplicationServiceRegistrarTests
     public static IEnumerable<object[]> GetServices()
     {
         var sc = new ServiceCollection();
-        ApplicationServiceRegistrar.RegisterServices(sc);
+        ApplicationServiceRegistrar.RegisterServices(sc, _ => false);
         foreach (var defn in sc)
         {
             yield return [defn];
@@ -24,8 +24,13 @@ public class ApplicationServiceRegistrarTests
     public void CanResolveAllServices(ServiceDescriptor sd)
     {
         var sc = new ServiceCollection();
-        ApplicationServiceRegistrar.RegisterServices(sc);
+        ApplicationServiceRegistrar.RegisterServices(sc, _ => false);
         var sp = sc.BuildServiceProvider();
-        sp.GetRequiredService(sd.ServiceType);
+        ResolveService(sp, sd);
     }
+
+    private static void ResolveService(IServiceProvider sp, ServiceDescriptor sd) =>
+        _ = sd.IsKeyedService
+            ? sp.GetRequiredKeyedService(sd.ServiceType, sd.ServiceKey)
+            : sp.GetRequiredService(sd.ServiceType);
 }

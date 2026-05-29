@@ -10,7 +10,7 @@ internal static class CommandGenerator
     public static IEnumerable<object[]> GetCommands()
     {
         ServiceCollection sc = new ServiceCollection();
-        CliServiceRegistrar.RegisterServices(sc);
+        CliServiceRegistrar.RegisterServices(sc, _ => false);
         var provider = sc.BuildServiceProvider();
 
         var rootCommand = provider.GetRequiredService<ServiceDiscoveryCommand>();

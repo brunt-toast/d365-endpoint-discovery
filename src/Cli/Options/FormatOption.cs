@@ -7,6 +7,6 @@ internal class FormatOption : Option<OutputFormats>
 {
     public FormatOption() : base("--format", "-f")
     {
-        Description = "Data format to output.";
+        Description = FormatOptionResources.Description;
     }
 }
