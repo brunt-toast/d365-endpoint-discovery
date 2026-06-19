@@ -23,7 +23,7 @@ public static class ApplicationServiceRegistrar
         sc.AddTransient<DefaultCollectionBuilder>();
         sc.AddTransient<PostmanCollectionBuilder>();
         sc.AddTransient<OpenApiCollectionBuilder>();
-        sc.AddTransient<CSharpInterfaceCollectionBuilder>();
+        sc.AddTransient<CSharpCollectionBuilder>();
 
         sc.AddSingleton<IMainService, MainService>();
         sc.AddSingleton<SerialiserFactory>();

@@ -5,7 +5,7 @@ using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types.Soap;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.CollectionBuilders;
 
-public class CSharpInterfaceCollectionBuilder : CollectionBuilderBase<string>
+public class CSharpCollectionBuilder : CollectionBuilderBase<string>
 {
     protected override string BuildTypedCollection(
         IEnumerable<DynSvcGroup> groups,
@@ -13,8 +13,13 @@ public class CSharpInterfaceCollectionBuilder : CollectionBuilderBase<string>
         string resource,
         string collectionName = "Collection")
     {
-        var definitionsByName = types.Definitions.ToDictionary(x => x.Name, StringComparer.Ordinal);
-        var referencedTypeNames = GetReferencedTypeNames(groups, types.Definitions);
+        var validDefinitions = types.Definitions
+            .Where(x => HasUsableTypeName(x.Name))
+            .ToList();
+        var definitionsByName = validDefinitions.ToDictionary(x => x.Name, StringComparer.Ordinal);
+        var referencedTypeNames = GetReferencedTypeNames(groups, validDefinitions)
+            .OrderBy(x => x, StringComparer.Ordinal)
+            .ToList();
 
         StringBuilder sb = new();
 
@@ -38,9 +43,11 @@ public class CSharpInterfaceCollectionBuilder : CollectionBuilderBase<string>
         sb.AppendLine("using System.Text.Json.Serialization;");
         sb.AppendLine("using Newtonsoft.Json;");
         sb.AppendLine();
+        sb.AppendLine("#region interfaces");
 
-        foreach (var typeName in referencedTypeNames.OrderBy(x => x, StringComparer.Ordinal))
+        for (int i = 0; i < referencedTypeNames.Count; i++)
         {
+            var typeName = referencedTypeNames[i];
             if (definitionsByName.TryGetValue(typeName, out var definition))
             {
                 AppendInterface(sb, definition);
@@ -50,8 +57,37 @@ public class CSharpInterfaceCollectionBuilder : CollectionBuilderBase<string>
                 AppendUnknownInterface(sb, typeName);
             }
 
-            sb.AppendLine();
+            if (i != referencedTypeNames.Count - 1)
+            {
+                sb.AppendLine();
+                sb.AppendLine();
+            }
         }
+
+        sb.AppendLine("#endregion");
+        sb.AppendLine();
+        sb.AppendLine("#region implementations");
+
+        for (int i = 0; i < referencedTypeNames.Count; i++)
+        {
+            var typeName = referencedTypeNames[i];
+            if (definitionsByName.TryGetValue(typeName, out var definition))
+            {
+                AppendImplementation(sb, definition);
+            }
+            else
+            {
+                AppendUnknownImplementation(sb, typeName);
+            }
+
+            if (i != referencedTypeNames.Count - 1)
+            {
+                sb.AppendLine();
+                sb.AppendLine();
+            }
+        }
+
+        sb.AppendLine("#endregion");
 
         return sb.ToString().TrimEnd();
     }
@@ -98,46 +134,93 @@ public class CSharpInterfaceCollectionBuilder : CollectionBuilderBase<string>
 
     private static void AddTypeName(HashSet<string> typeNames, string typeName)
     {
-        if (!string.IsNullOrWhiteSpace(typeName) && !SoapPrimitiveTypes.IsPrimitive(typeName))
+        if (HasUsableTypeName(typeName) && !SoapPrimitiveTypes.IsPrimitive(typeName))
         {
             typeNames.Add(typeName);
         }
     }
 
+    private static bool HasUsableTypeName(string? typeName)
+    {
+        return !string.IsNullOrWhiteSpace(typeName) && !string.IsNullOrWhiteSpace(ToPascalCase(typeName));
+    }
+
     private static void AppendInterface(StringBuilder sb, AxDataContractDefn definition)
     {
+        var typeName = ToPascalCase(definition.Name);
         var baseInterface = string.IsNullOrWhiteSpace(definition.Extends)
             ? string.Empty
             : $" : I{ToPascalCase(definition.Extends)}";
 
-        sb.AppendLine($"public interface I{ToPascalCase(definition.Name)}{baseInterface}");
+        sb.AppendLine($"public interface I{typeName}{baseInterface}");
         sb.AppendLine("{");
 
-        var props = definition.Properties.OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
-
-        for (int i = 0; i < props.Count; i++)
-        {
-            var property = props[i];
-        
-            sb.AppendLine($"    [JsonProperty(\"{property.Name}\")]");
-            sb.AppendLine($"    [JsonPropertyName(\"{property.Name}\")]");
-            sb.AppendLine($"    {ResolvePropertyType(property)} {ToPascalCase(property.Name)} {{ get; }}");
-
-            if (i != props.Count - 1)
-            {
-                sb.AppendLine();
-            }
-        }
+        AppendMembers(sb, definition.Properties, includePublicModifier: false, includeInitAccessor: false);
 
         sb.AppendLine("}");
     }
 
     private static void AppendUnknownInterface(StringBuilder sb, string typeName)
     {
+        var sanitizedTypeName = ToPascalCase(typeName);
+
         sb.AppendLine($"#warning The definition for type {typeName} is not known. Please check the AOS for the definition.");
-        sb.AppendLine($"public interface I{ToPascalCase(typeName)}");
+        sb.AppendLine($"public interface I{sanitizedTypeName}");
         sb.AppendLine("{");
         sb.AppendLine("}");
+    }
+
+    private static void AppendImplementation(StringBuilder sb, AxDataContractDefn definition)
+    {
+        var typeName = ToPascalCase(definition.Name);
+        var baseClass = string.IsNullOrWhiteSpace(definition.Extends)
+            ? string.Empty
+            : $" : {ToPascalCase(definition.Extends)}, I{typeName}";
+        var implementsOnly = string.IsNullOrWhiteSpace(definition.Extends)
+            ? $" : I{typeName}"
+            : string.Empty;
+
+        sb.AppendLine($"public class {typeName}{baseClass}{implementsOnly}");
+        sb.AppendLine("{");
+
+        AppendMembers(sb, definition.Properties, includePublicModifier: true, includeInitAccessor: true);
+
+        sb.AppendLine("}");
+    }
+
+    private static void AppendUnknownImplementation(StringBuilder sb, string typeName)
+    {
+        var sanitizedTypeName = ToPascalCase(typeName);
+
+        sb.AppendLine($"#warning The definition for type {typeName} is not known. Please check the AOS for the definition.");
+        sb.AppendLine($"public class {sanitizedTypeName} : I{sanitizedTypeName}");
+        sb.AppendLine("{");
+        sb.AppendLine("}");
+    }
+
+    private static void AppendMembers(
+        StringBuilder sb,
+        IReadOnlyCollection<AxDataContractPropertyDefn> properties,
+        bool includePublicModifier,
+        bool includeInitAccessor)
+    {
+        var props = properties.OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
+
+        for (int i = 0; i < props.Count; i++)
+        {
+            var property = props[i];
+            sb.AppendLine($"    [JsonProperty(\"{property.Name}\")]");
+            sb.AppendLine($"    [JsonPropertyName(\"{property.Name}\")]");
+
+            var modifier = includePublicModifier ? "public " : string.Empty;
+            var accessors = includeInitAccessor ? "{ get; init; }" : "{ get; }";
+            sb.AppendLine($"    {modifier}{ResolvePropertyType(property)} {ToPascalCase(property.Name)} {accessors}");
+
+            if (i != props.Count - 1)
+            {
+                sb.AppendLine();
+            }
+        }
     }
 
     private static string ResolvePropertyType(AxDataContractPropertyDefn property)

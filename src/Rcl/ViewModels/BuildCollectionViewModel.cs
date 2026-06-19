@@ -91,7 +91,7 @@ internal class BuildCollectionViewModel : IBuildCollectionViewModel
 
         string suggestedExtension = OutputSchema switch
         {
-            OutputSchemas.CSharpInterfaces => "cs",
+            OutputSchemas.CSharp => "cs",
             _ => OutputFormat switch
             {
                 OutputFormats.Json => "json",

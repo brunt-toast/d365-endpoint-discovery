@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Enums;
 
 public enum OutputSchemas
@@ -5,5 +7,6 @@ public enum OutputSchemas
     Default,
     Postman,
     OpenApi,
-    CSharpInterfaces
+    [Display(Name = "C#")]
+    CSharp
 }
