@@ -46,6 +46,11 @@ internal class ConfigurableHttpClientFactory : IHttpClientFactory
     {
         if (_opts.AcceptAnySsl)
         {
+            if (x509Cert is X509Certificate2 x509Cert_2)
+            {
+                _logger.LogInformation("Auto-accepting SSL certificate thumbprint {tp}", x509Cert_2.Thumbprint);
+            }
+
             return true;
         }
 
