@@ -19,6 +19,7 @@ public class CollectionBuilderFactory
             OutputSchemas.Default => _services.GetRequiredService<DefaultCollectionBuilder>(),
             OutputSchemas.Postman => _services.GetRequiredService<PostmanCollectionBuilder>(),
             OutputSchemas.OpenApi => _services.GetRequiredService<OpenApiCollectionBuilder>(),
+            OutputSchemas.CSharpInterfaces => _services.GetRequiredService<CSharpInterfaceCollectionBuilder>(),
             _ => throw new ArgumentOutOfRangeException(nameof(schema), schema, null)
         };
     }

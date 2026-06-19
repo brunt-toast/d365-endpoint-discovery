@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Maui.Storage;
+using CommunityToolkit.Maui.Storage;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Enums;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Requests;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
@@ -57,7 +57,8 @@ internal class BuildCollectionViewModel : IBuildCollectionViewModel
                 ServiceGroupName = x.First().Item.ServiceGroupName,
                 Name = x.First().Item.ServiceName,
                 Operations = x.Select(y => y.Item).ToArray()
-            }, x.ToArray())).ToArray();
+            }, x.ToArray()))
+            .ToArray();
 
         var groupModels = serviceModels
             .GroupBy(x => x.Item.ServiceGroupName)
@@ -88,11 +89,15 @@ internal class BuildCollectionViewModel : IBuildCollectionViewModel
 
         using var stream = new MemoryStream(Encoding.Default.GetBytes(content));
 
-        string suggestedExtension = OutputFormat switch
+        string suggestedExtension = OutputSchema switch
         {
-            OutputFormats.Json => "json",
-            OutputFormats.Yaml => "yml",
-            _ => "txt"
+            OutputSchemas.CSharpInterfaces => "cs",
+            _ => OutputFormat switch
+            {
+                OutputFormats.Json => "json",
+                OutputFormats.Yaml => "yml",
+                _ => "txt"
+            }
         };
 
         var fileSaveResult = await _fileSaver.SaveAsync($"{CollectionName}.{suggestedExtension}", stream);

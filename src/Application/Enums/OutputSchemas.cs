@@ -1,8 +1,9 @@
-﻿namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Enums;
+namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Enums;
 
 public enum OutputSchemas
 {
-    Default, 
+    Default,
     Postman,
-    OpenApi
+    OpenApi,
+    CSharpInterfaces
 }
