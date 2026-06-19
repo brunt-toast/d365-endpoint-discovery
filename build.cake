@@ -94,10 +94,7 @@ Task("InstallGui")
         StartProcess("pwsh.exe", $"{root}/{dir}/Install.ps1");
     });
 
-Task("RunGui")
-    .IsDependentOn("InstallSdk")
-    .IsDependentOn("Restore")
-    .IsDependentOn("RestoreWorkloads")
+Task("FastRunGui")
     .Does(() =>
     {
         DotNetRun("./src/BlazorHybrid/BlazorHybrid.csproj", new DotNetRunSettings
@@ -106,6 +103,13 @@ Task("RunGui")
             Framework = "net10.0-windows10.0.19041.0"
         });
     });
+
+Task("RunGui")
+    .IsDependentOn("InstallSdk")
+    .IsDependentOn("Restore")
+    .IsDependentOn("RestoreWorkloads")
+    .IsDependentOn("FastRunGui")
+    .Does(() => { });
 
 Task("Test")
     .IsDependentOn("InstallSdk")
