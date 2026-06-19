@@ -40,10 +40,19 @@ public class CSharpCollectionBuilder : CollectionBuilderBase<string>
         sb.AppendLine();
         sb.AppendLine("using System;");
         sb.AppendLine("using System.Collections.Generic;");
+        sb.AppendLine("using System.Threading;");
+        sb.AppendLine("using System.Threading.Tasks;");
+        sb.AppendLine("using Microsoft.Extensions.DependencyInjection;");
+        sb.AppendLine("using Microsoft.Extensions.Hosting;");
         sb.AppendLine("using System.Text.Json.Serialization;");
         sb.AppendLine("using Newtonsoft.Json;");
         sb.AppendLine();
         sb.AppendLine("#region interfaces");
+        sb.AppendLine("public interface IAxCallingService");
+        sb.AppendLine("{");
+        sb.AppendLine("    Task<TResponse> MakeRequestAsync<TRequest, TResponse>(TRequest request, string groupName, string serviceName, string opName, CancellationToken ct);");
+        sb.AppendLine("}");
+        sb.AppendLine();
 
         for (int i = 0; i < referencedTypeNames.Count; i++)
         {
@@ -86,6 +95,18 @@ public class CSharpCollectionBuilder : CollectionBuilderBase<string>
                 sb.AppendLine();
             }
         }
+
+        sb.AppendLine("#endregion");
+        sb.AppendLine();
+        sb.AppendLine("#region services");
+
+        AppendServices(sb, groups);
+
+        sb.AppendLine("#endregion");
+        sb.AppendLine();
+        sb.AppendLine("#region registration");
+
+        AppendRegistrationExtensions(sb, groups);
 
         sb.AppendLine("#endregion");
 
@@ -198,6 +219,164 @@ public class CSharpCollectionBuilder : CollectionBuilderBase<string>
         sb.AppendLine("}");
     }
 
+    private static void AppendServices(StringBuilder sb, IEnumerable<DynSvcGroup> groups)
+    {
+        var validGroups = groups
+            .Where(x => HasUsableTypeName(x.Name))
+            .OrderBy(x => x.Name, StringComparer.Ordinal)
+            .ToList();
+
+        for (int groupIndex = 0; groupIndex < validGroups.Count; groupIndex++)
+        {
+            var group = validGroups[groupIndex];
+            var groupName = ToTypeName(group.Name, "Group");
+
+            sb.AppendLine($"public static class {groupName}");
+            sb.AppendLine("{");
+
+            var validServices = group.Services
+                .Where(x => HasUsableTypeName(x.Name))
+                .OrderBy(x => x.Name, StringComparer.Ordinal)
+                .ToList();
+
+            for (int serviceIndex = 0; serviceIndex < validServices.Count; serviceIndex++)
+            {
+                AppendService(sb, groupName, validServices[serviceIndex]);
+
+                if (serviceIndex != validServices.Count - 1)
+                {
+                    sb.AppendLine();
+                }
+            }
+
+            sb.AppendLine("}");
+
+            if (groupIndex != validGroups.Count - 1)
+            {
+                sb.AppendLine();
+                sb.AppendLine();
+            }
+        }
+    }
+
+    private static void AppendRegistrationExtensions(StringBuilder sb, IEnumerable<DynSvcGroup> groups)
+    {
+        var serviceTypeNames = groups
+            .Where(x => HasUsableTypeName(x.Name))
+            .SelectMany(x => x.Services)
+            .Where(x => HasUsableTypeName(x.Name))
+            .Select(x => ToTypeName(x.Name, "Service"))
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(x => x, StringComparer.Ordinal)
+            .ToList();
+
+        sb.AppendLine("public static class DynamicsEndpointDiscoveryExtensions");
+        sb.AppendLine("{");
+        sb.AppendLine("    public static void AddAxServices(IHostApplicationBuilder builder)");
+        sb.AppendLine("    {");
+        sb.AppendLine("        AddAxServices(builder.Services);");
+        sb.AppendLine("    }");
+        sb.AppendLine();
+        sb.AppendLine("    public static void AddAxServices(IServiceCollection sc)");
+        sb.AppendLine("    {");
+
+        foreach (var serviceTypeName in serviceTypeNames)
+        {
+            sb.AppendLine($"        sc.AddScoped<I{serviceTypeName}, {serviceTypeName}>();");
+        }
+
+        sb.AppendLine("    }");
+        sb.AppendLine("}");
+    }
+
+    private static void AppendService(StringBuilder sb, string groupName, DynSvc service)
+    {
+        var serviceName = ToTypeName(service.Name, "Service");
+        var validOperations = service.Operations
+            .Where(ShouldGenerateOperation)
+            .OrderBy(x => x.Name, StringComparer.Ordinal)
+            .ToList();
+
+        sb.AppendLine($"    public interface I{serviceName}");
+        sb.AppendLine("    {");
+
+        for (int operationIndex = 0; operationIndex < validOperations.Count; operationIndex++)
+        {
+            AppendOperationSignature(sb, validOperations[operationIndex]);
+
+            if (operationIndex != validOperations.Count - 1)
+            {
+                sb.AppendLine();
+            }
+        }
+
+        sb.AppendLine("    }");
+        sb.AppendLine();
+
+        sb.AppendLine($"    public class {serviceName} : I{serviceName}");
+        sb.AppendLine("    {");
+        sb.AppendLine("        private readonly IAxCallingService _axCallingService;");
+        sb.AppendLine();
+        sb.AppendLine($"        public {serviceName}(IAxCallingService axCallingService)");
+        sb.AppendLine("        {");
+        sb.AppendLine("            _axCallingService = axCallingService;");
+        sb.AppendLine("        }");
+
+        if (validOperations.Count > 0)
+        {
+            sb.AppendLine();
+        }
+
+        for (int operationIndex = 0; operationIndex < validOperations.Count; operationIndex++)
+        {
+            AppendOperation(sb, service.ServiceGroupName, service.Name, validOperations[operationIndex]);
+
+            if (operationIndex != validOperations.Count - 1)
+            {
+                sb.AppendLine();
+                sb.AppendLine();
+            }
+        }
+
+        sb.AppendLine("    }");
+    }
+
+    private static bool ShouldGenerateOperation(DynSvcOp operation)
+    {
+        return HasUsableTypeName(operation.Name) &&
+               operation.Return is not null &&
+               HasUsableTypeName(operation.Return.Type) &&
+               operation.Parameters.Any(x => HasUsableTypeName(x.Type));
+    }
+
+    private static void AppendOperation(StringBuilder sb, string groupName, string serviceName, DynSvcOp operation)
+    {
+        var operationName = ToPascalCase(operation.Name);
+        var requestParameter = operation.Parameters.First(x => HasUsableTypeName(x.Type));
+        var requestTypeName = ResolveConcreteTypeName(requestParameter.Type);
+        var responseTypeName = ResolveConcreteTypeName(operation.Return!.Type);
+        var requestArgumentName = ToCamelCase(ToPascalCase(requestParameter.Name));
+        var groupLiteral = ToCSharpStringLiteral(groupName);
+        var serviceLiteral = ToCSharpStringLiteral(serviceName);
+        var operationLiteral = ToCSharpStringLiteral(operation.Name);
+
+        sb.AppendLine($"        public Task<{responseTypeName}> {operationName}({requestTypeName} {requestArgumentName}, CancellationToken ct)");
+        sb.AppendLine("        {");
+        sb.AppendLine($"            return _axCallingService.MakeRequestAsync<{requestTypeName}, {responseTypeName}>({requestArgumentName}, {groupLiteral}, {serviceLiteral}, {operationLiteral}, ct);");
+        sb.AppendLine("        }");
+    }
+
+    private static void AppendOperationSignature(StringBuilder sb, DynSvcOp operation)
+    {
+        var operationName = ToPascalCase(operation.Name);
+        var requestParameter = operation.Parameters.First(x => HasUsableTypeName(x.Type));
+        var requestTypeName = ResolveConcreteTypeName(requestParameter.Type);
+        var responseTypeName = ResolveConcreteTypeName(operation.Return!.Type);
+        var requestArgumentName = ToCamelCase(ToPascalCase(requestParameter.Name));
+
+        sb.AppendLine($"        Task<{responseTypeName}> {operationName}({requestTypeName} {requestArgumentName}, CancellationToken ct);");
+    }
+
     private static void AppendMembers(
         StringBuilder sb,
         IReadOnlyCollection<AxDataContractPropertyDefn> properties,
@@ -266,6 +445,41 @@ public class CSharpCollectionBuilder : CollectionBuilderBase<string>
         }
 
         return $"I{ToPascalCase(typeName)}";
+    }
+
+    private static string ResolveConcreteTypeName(string typeName)
+    {
+        if (SoapPrimitiveTypes.IsPrimitive(typeName))
+        {
+            return ResolveTypeName(typeName);
+        }
+
+        return ToPascalCase(typeName);
+    }
+
+    private static string ToCamelCase(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return value;
+        }
+
+        return value.Length == 1
+            ? value.ToLowerInvariant()
+            : char.ToLowerInvariant(value[0]) + value[1..];
+    }
+
+    private static string ToTypeName(string value, string suffix)
+    {
+        var typeName = ToPascalCase(value);
+        return typeName.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)
+            ? typeName
+            : typeName + suffix;
+    }
+
+    private static string ToCSharpStringLiteral(string value)
+    {
+        return $"\"{value.Replace("\\", "\\\\").Replace("\"", "\\\"")}\"";
     }
 
     private static string ToPascalCase(string value)
