@@ -1,5 +1,6 @@
-﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Types.OpenApi;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Types.OpenApi;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types.Soap;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -7,8 +8,9 @@ namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.Collect
 
 public class OpenApiCollectionBuilder : CollectionBuilderBase<OpenApiCollection>
 {
-    protected override OpenApiCollection BuildTypedCollection(IEnumerable<DynSvcGroup> groups,
-        Dictionary<string, string> typeDefs,
+    protected override OpenApiCollection BuildTypedCollection(
+        IEnumerable<DynSvcGroup> groups,
+        SoapTypeCollection types,
         string resource,
         string collectionName = "Collection")
     {
@@ -38,20 +40,22 @@ public class OpenApiCollectionBuilder : CollectionBuilderBase<OpenApiCollection>
             Info = info,
             Servers =
             [
-                new OpenApiServerDefn {Uri = resource}
+                new OpenApiServerDefn { Uri = resource }
             ],
-            Paths = GetPathDefns(groupsList, typeDefs).ToDictionary()
+            Paths = GetPathDefns(groupsList, types.Samples).ToDictionary()
         };
     }
 
-    private static IEnumerable<KeyValuePair<string, OpenApiPathDefn>> GetPathDefns(IEnumerable<DynSvcGroup> groups,
+    private static IEnumerable<KeyValuePair<string, OpenApiPathDefn>> GetPathDefns(
+        IEnumerable<DynSvcGroup> groups,
         Dictionary<string, string> typeDefs)
     {
         var operations = groups.SelectMany(x => x.Services).SelectMany(x => x.Operations);
         foreach (var operation in operations)
         {
             var resolvedBody = operation.Parameters
-                .Select(x => new KeyValuePair<string, JObject>(x.Name,
+                .Select(x => new KeyValuePair<string, JObject>(
+                    x.Name,
                     JObject.Parse(typeDefs.FirstOrDefault(y => y.Key == x.Type).Value ?? $"{{\"Unknown Type\": \"{x.Type}\"}}")))
                 .ToDictionary();
 
@@ -77,11 +81,11 @@ public class OpenApiCollectionBuilder : CollectionBuilderBase<OpenApiCollection>
                                                            }
                                                          }
                                                        """);
-            responseBodyContent["application/json"]!["example"] = 
-                JObject.Parse(typeDefs.FirstOrDefault(x => x.Key == operation.Return?.Type).Value ?? 
+            responseBodyContent["application/json"]!["example"] =
+                JObject.Parse(typeDefs.FirstOrDefault(x => x.Key == operation.Return?.Type).Value ??
                               $"{{\"Unknown type\": \"{operation.Return?.Type}\"}}");
 
-            OpenApiPathDefn pd = new OpenApiPathDefn
+            OpenApiPathDefn pd = new()
             {
                 Post = new OpenApiPostRequestDefn
                 {
@@ -107,7 +111,8 @@ public class OpenApiCollectionBuilder : CollectionBuilderBase<OpenApiCollection>
             };
 
             yield return new KeyValuePair<string, OpenApiPathDefn>(
-                        $"/api/services/{operation.ServiceGroupName}/{operation.ServiceName}/{operation.Name}", pd);
+                $"/api/services/{operation.ServiceGroupName}/{operation.ServiceName}/{operation.Name}",
+                pd);
         }
     }
 }

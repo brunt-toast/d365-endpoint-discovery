@@ -1,8 +1,8 @@
-﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Extensions.Serilog;
-using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types.Soap;
-using Serilog;
 using System.Xml.Linq;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Extensions.Serilog;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types.Soap;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Soap;
 
@@ -17,7 +17,7 @@ internal class AxSoapService : IAxSoapService
         _logger = logger;
     }
 
-    public async Task<Dictionary<string, string>> GetDataContractsForServices(IEnumerable<string> serviceNames)
+    public async Task<SoapTypeCollection> GetDataContractsForServices(IEnumerable<string> serviceNames)
     {
         var getWsdlLocationsTasks = serviceNames.Select(GetWsdlLocationsForService);
         var getWsdlLocationsResults = await Task.WhenAll(getWsdlLocationsTasks);
@@ -43,13 +43,19 @@ internal class AxSoapService : IAxSoapService
 
         NormalizeArrayUsages(parsed, DetectArrayWrappers(parsed));
 
-        return parsed.Select(x =>
+        var samples = parsed.Select(x =>
         {
             var tree = treeBuilder.Build(parsed, x.Name);
             var defaultObject = DefaultValueGenerator.Generate(tree);
             var json = JsonConvert.SerializeObject(defaultObject, Formatting.Indented);
             return new KeyValuePair<string, string>(x.Name, json);
         }).ToDictionary();
+
+        return new SoapTypeCollection
+        {
+            Samples = samples,
+            Definitions = parsed
+        };
     }
 
     private static Dictionary<string, string> DetectArrayWrappers(IEnumerable<AxDataContractDefn> types)
@@ -93,7 +99,7 @@ internal class AxSoapService : IAxSoapService
             }
         }
     }
-    
+
     private async Task<IEnumerable<string>> GetWsdlLocationsForService(string serviceName)
     {
         try

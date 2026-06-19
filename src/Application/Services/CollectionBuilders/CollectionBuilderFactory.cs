@@ -1,4 +1,4 @@
-﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Enums;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Enums;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.CollectionBuilders;
