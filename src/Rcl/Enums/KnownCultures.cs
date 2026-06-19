@@ -7,6 +7,12 @@ public enum KnownCultures
     [Display(Name="English")]
     En,
 
+    [Display(Name = "简体中文")]
+    ZhHans,
+
+    [Display(Name = "繁體中文")]
+    ZhHant,
+
     [Display(Name= "Fran\u00e7ais")]
     Fr,
 
