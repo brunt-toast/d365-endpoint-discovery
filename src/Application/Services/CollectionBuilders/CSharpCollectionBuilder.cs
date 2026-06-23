@@ -272,14 +272,10 @@ public class CSharpCollectionBuilder : CollectionBuilderBase<string>
 
         sb.AppendLine("public static class DynamicsEndpointDiscoveryExtensions");
         sb.AppendLine("{");
-        sb.AppendLine("    public static void AddAxServices(IHostApplicationBuilder builder)");
+        sb.AppendLine("    public static void AddAxServices(IServiceCollection sc, Func<IServiceProvider,IAxCallingService> axCallingFactory)");
         sb.AppendLine("    {");
-        sb.AppendLine("        AddAxServices(builder.Services);");
-        sb.AppendLine("    }");
-        sb.AppendLine();
-        sb.AppendLine("    public static void AddAxServices(IServiceCollection sc)");
-        sb.AppendLine("    {");
-
+        sb.AppendLine("        sc.AddScoped<IAxCallingService>(axCallingFactory);");
+            
         foreach (var serviceTypeName in serviceTypeNames)
         {
             sb.AppendLine($"        sc.AddScoped<I{serviceTypeName}, {serviceTypeName}>();");
