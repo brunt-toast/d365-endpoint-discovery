@@ -18,6 +18,8 @@ internal class CultureService : ICultureService
         string cultureKey = culture switch
         {
             KnownCultures.En => "en-GB",
+            KnownCultures.ZhHans => "zh-Hans",
+            KnownCultures.ZhHant => "zh-Hant",
             KnownCultures.Fr => "fr-FR",
             KnownCultures.Ja => "ja-JA",
             KnownCultures.Eo => "eo-EO",

@@ -1,4 +1,4 @@
-﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Requests;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Requests;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.CollectionBuilders;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.Serialisers;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Config;
@@ -16,9 +16,10 @@ internal class MainService : IMainService
     private readonly SerialiserFactory _serialiserFactory;
     private readonly IAxSoapService _soapService;
 
-    public MainService(IAxConfig config, 
-        IAxSvcDiscoveryService discoveryService, 
-        CollectionBuilderFactory collectionBuilderFactory, 
+    public MainService(
+        IAxConfig config,
+        IAxSvcDiscoveryService discoveryService,
+        CollectionBuilderFactory collectionBuilderFactory,
         SerialiserFactory serialiserFactory,
         IAxSoapService soapService)
     {
@@ -34,11 +35,16 @@ internal class MainService : IMainService
         var collectionBuilder = _collectionBuilderFactory.GetCollectionBuilder(request.OutputSchema);
         var serialiser = _serialiserFactory.GetSerialiser(request.OutputFormat);
 
-        var services = (await _discoveryService.MapServicesAsync(request.GrepGroupsRegex, request.GrepServicesRegex, request.GrepOperationsRegex))
+        var services = (await _discoveryService.MapServicesAsync(
+                request.GrepGroupsRegex,
+                request.GrepServicesRegex,
+                request.GrepOperationsRegex))
             .ToList();
         var types = await _soapService.GetDataContractsForServices(services.Select(x => x.Name));
         var collection = collectionBuilder.BuildCollection(services, types, _config.Resource, request.CollectionName);
-        var serialisation = serialiser.Serialise(collection, request.Minify);
+        var serialisation = collection is string generatedCode
+            ? generatedCode
+            : serialiser.Serialise(collection, request.Minify);
 
         return serialisation;
     }
@@ -67,7 +73,9 @@ internal class MainService : IMainService
         var serialiser = _serialiserFactory.GetSerialiser(request.OutputFormat);
         var types = await _soapService.GetDataContractsForServices(request.Services.Select(x => x.Name));
         var collection = collectionBuilder.BuildCollection(request.Services, types, request.Resource, request.CollectionName);
-        var serialisation = serialiser.Serialise(collection, request.Minify);
+        var serialisation = collection is string generatedCode
+            ? generatedCode
+            : serialiser.Serialise(collection, request.Minify);
         return serialisation;
     }
 }

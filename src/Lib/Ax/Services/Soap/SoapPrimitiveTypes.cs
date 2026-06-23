@@ -1,6 +1,6 @@
 ﻿namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Soap;
 
-internal static class SoapPrimitiveTypes
+public static class SoapPrimitiveTypes
 {
     private static readonly HashSet<string> Names = 
     [

@@ -1,9 +1,10 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Mapping;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Types.Postman;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Extensions.Serilog;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types.Soap;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types.Xpp;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -20,8 +21,9 @@ public class PostmanCollectionBuilder : CollectionBuilderBase<PostmanCollection>
         _logger = logger;
     }
 
-    protected override PostmanCollection BuildTypedCollection(IEnumerable<DynSvcGroup> groups,
-        Dictionary<string, string> typeDefs,
+    protected override PostmanCollection BuildTypedCollection(
+        IEnumerable<DynSvcGroup> groups,
+        SoapTypeCollection types,
         string resource,
         string collectionName = "Collection")
     {
@@ -36,7 +38,7 @@ public class PostmanCollectionBuilder : CollectionBuilderBase<PostmanCollection>
         return new PostmanCollection
         {
             Info = collectionInfo,
-            Items = groups.Select(x => GetPostmanItem(x, typeDefs)).ToArray()
+            Items = groups.Select(x => GetPostmanItem(x, types.Samples)).ToArray()
         };
     }
 
@@ -77,9 +79,13 @@ public class PostmanCollectionBuilder : CollectionBuilderBase<PostmanCollection>
             }
             else
             {
-                _logger.LogWarning("We don't have a definition for type {paramType} for parameter {paramName} " +
-                                   "of {operationServiceGroupName}/{operationServiceName}/{operationName}",
-                    param.Type, param.Name, operation.ServiceGroupName, operation.ServiceName, operation.Name);
+                _logger.LogWarning(
+                    "We don't have a definition for type {paramType} for parameter {paramName} of {operationServiceGroupName}/{operationServiceName}/{operationName}",
+                    param.Type,
+                    param.Name,
+                    operation.ServiceGroupName,
+                    operation.ServiceName,
+                    operation.Name);
                 p[param.Name] = $"[Unknown type {param.Type}]";
             }
         }
@@ -97,7 +103,7 @@ public class PostmanCollectionBuilder : CollectionBuilderBase<PostmanCollection>
             }
         };
 
-        PostmanUrl uri = new PostmanUrl
+        PostmanUrl uri = new()
         {
             Raw = $"{{{{resource}}}}/api/services/{operation.ServiceGroupName}/{operation.ServiceName}/{operation.Name}",
             Host = ["{{resource}}"],
