@@ -169,9 +169,7 @@ public class CSharpCollectionBuilderTests
         StringAssert.Contains(result, "public Task<MissingResponse> GetCustomer(MissingRequest request, CancellationToken ct)");
         StringAssert.Contains(result, "return _axCallingService.MakeRequestAsync<MissingRequest, MissingResponse>(request, \"Sales\", \"CustomerService\", \"GetCustomer\", ct);");
         StringAssert.Contains(result, "public static class DynamicsEndpointDiscoveryExtensions");
-        StringAssert.Contains(result, "public static void AddAxServices(IHostApplicationBuilder builder)");
-        StringAssert.Contains(result, "AddAxServices(builder.Services);");
-        StringAssert.Contains(result, "public static void AddAxServices(IServiceCollection sc)");
+        StringAssert.Contains(result, "public static void AddAxServices(IServiceCollection sc, Func<IServiceProvider,IAxCallingService> axCallingFactory)");
         StringAssert.Contains(result, "sc.AddScoped<ICaseService, CaseService>();");
         StringAssert.Contains(result, "sc.AddScoped<ICustomerService, CustomerService>();");
         Assert.IsFalse(result.Contains("public interface I   ", StringComparison.Ordinal));
