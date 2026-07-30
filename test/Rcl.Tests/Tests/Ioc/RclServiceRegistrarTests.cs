@@ -1,6 +1,6 @@
 using CommunityToolkit.Maui.Storage;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Ioc;
-using Microsoft.AspNetCore.Components;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Tests.Rcl.Tests.DataSources.Tests.Ioc;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Storage;
 
@@ -9,24 +9,8 @@ namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Tests.Rcl.Tests.Tests.Ioc;
 [TestClass]
 public class RclServiceRegistrarTests
 {
-    public static IEnumerable<object[]> GetServices()
-    {
-        var sc = new ServiceCollection();
-        RclServiceRegistrar.RegisterServices(sc);
-        foreach (var defn in sc)
-        {
-            if (defn.ServiceType.FullName?.StartsWith("Dev.JoshBrunton.DynamicsEndpointDiscovery") == true)
-            {
-                if (!defn.IsKeyedService)
-                {
-                    yield return [defn];
-                }
-            }
-        }
-    }
-
     [TestMethod]
-    [DynamicData(nameof(GetServices))]
+    [ServiceDataSource]
     public void GetRequiredService_ShouldNotThrow(ServiceDescriptor sd)
     {
         var sc = new ServiceCollection();
@@ -36,27 +20,16 @@ public class RclServiceRegistrarTests
         sp.GetRequiredService(sd.ServiceType);
     }
 
-    public static IEnumerable<object[]> GetAllComponentTypes()
-    {
-        return typeof(RclServiceRegistrar)
-            .Assembly
-            .GetTypes()
-            .Where(t =>
-                t is { IsAbstract: false, IsInterface: false, ContainsGenericParameters: false } &&
-                typeof(ComponentBase).IsAssignableFrom(t))
-            .Select(x => new object[] { x });
-    }
-
     [TestMethod]
-    [DynamicData(nameof(GetAllComponentTypes))]
+    [ComponentTypeDataSource]
     public void ComponentGeneration_ShouldNotThrow(Type componentType)
     {
         IServiceCollection sc = new ServiceCollection();
         RclServiceRegistrar.RegisterServices(sc);
         RegisterTestPlatformServices(sc);
-        foreach (var t in GetAllComponentTypes())
+        foreach (var component in ComponentTypeDataSourceAttribute.GetComponentTypes())
         {
-            sc.AddTransient((Type)t[0]);
+            sc.AddTransient(component);
         }
         IServiceProvider sp = sc.BuildServiceProvider();
 

@@ -1,20 +1,16 @@
-﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Ioc;
-using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.CollectionBuilders;
-using Microsoft.Extensions.DependencyInjection;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Enums;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Ioc;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.CollectionBuilders;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Tests.Application.Tests.DataSources.Tests.Services.CollectionBuilders;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Tests.Application.Tests.Tests.Services.CollectionBuilders;
 
 [TestClass]
 public class CollectionBuilderFactoryTests
 {
-    public static IEnumerable<object[]> GetOutputSchemas()
-    {
-        return Enum.GetValues<OutputSchemas>().Select(x => new object[] { x });
-    }
-
     [TestMethod]
-    [DynamicData(nameof(GetOutputSchemas))]
+    [OutputSchemaDataSource]
     public void ShouldResolve(OutputSchemas schema)
     {
         var sc = new ServiceCollection();
@@ -24,4 +20,5 @@ public class CollectionBuilderFactoryTests
         var sut = sp.GetRequiredService<CollectionBuilderFactory>();
         sut.GetCollectionBuilder(schema);
     }
+
 }

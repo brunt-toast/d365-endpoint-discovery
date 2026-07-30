@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Ioc;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Tests.Application.Tests.DataSources.Tests.Ioc;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Tests.Application.Tests.Tests.Ioc;
@@ -9,18 +7,8 @@ namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Tests.Application.Tests.Test
 [TestClass]
 public class ApplicationServiceRegistrarTests
 {
-    public static IEnumerable<object[]> GetServices()
-    {
-        var sc = new ServiceCollection();
-        ApplicationServiceRegistrar.RegisterServices(sc, _ => false);
-        foreach (var defn in sc)
-        {
-            yield return [defn];
-        }
-    }
-
     [TestMethod]
-    [DynamicData(nameof(GetServices))]
+    [ServiceDataSource]
     public void CanResolveAllServices(ServiceDescriptor sd)
     {
         var sc = new ServiceCollection();
@@ -33,4 +21,5 @@ public class ApplicationServiceRegistrarTests
         _ = sd.IsKeyedService
             ? sp.GetRequiredKeyedService(sd.ServiceType, sd.ServiceKey)
             : sp.GetRequiredService(sd.ServiceType);
+
 }
