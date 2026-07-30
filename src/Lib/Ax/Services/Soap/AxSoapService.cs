@@ -8,6 +8,8 @@ namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Soap;
 
 internal class AxSoapService : IAxSoapService
 {
+    private const int MaxConcurrentMetadataRequests = 8;
+
     private readonly AxCallingService _axCalling;
     private readonly ILogger _logger;
 
@@ -19,20 +21,18 @@ internal class AxSoapService : IAxSoapService
 
     public async Task<SoapTypeCollection> GetDataContractsForServices(IEnumerable<string> serviceNames)
     {
-        var getWsdlLocationsTasks = serviceNames.Select(GetWsdlLocationsForService);
-        var getWsdlLocationsResults = await Task.WhenAll(getWsdlLocationsTasks);
+        var getWsdlLocationsResults = await RunMetadataRequests(serviceNames, GetWsdlLocationsForService);
         var wsdlUris = getWsdlLocationsResults.SelectMany(x => x);
 
-        var getXsdLocationsTasks = wsdlUris.Select(GetXsdSchemaLocationsForWsdlUri);
-        var getXsdLocationsResult = await Task.WhenAll(getXsdLocationsTasks);
+        var getXsdLocationsResult = await RunMetadataRequests(wsdlUris, GetXsdSchemaLocationsForWsdlUri);
         var xsdLocations = getXsdLocationsResult.SelectMany(x => x);
 
-        var getXsdTasks = xsdLocations.Select(GetXsd);
-        var getXsdResult = await Task.WhenAll(getXsdTasks);
+        var getXsdResult = await RunMetadataRequests(xsdLocations, GetXsd);
 
         XNamespace xs = "http://www.w3.org/2001/XMLSchema";
 
-        var parsed = getXsdResult.Select(XDocument.Parse)
+        var parsed = getXsdResult.Where(x => !string.IsNullOrWhiteSpace(x))
+            .Select(XDocument.Parse)
             .SelectMany(x => x.Descendants(xs + "complexType"))
             .Select(AxDataContractDefn.Parse)
             .DistinctBy(x => x.Name)
@@ -56,6 +56,25 @@ internal class AxSoapService : IAxSoapService
             Samples = samples,
             Definitions = parsed
         };
+    }
+
+    private static async Task<TResult[]> RunMetadataRequests<TInput, TResult>(IEnumerable<TInput> inputs, Func<TInput, Task<TResult>> action)
+    {
+        var throttler = new SemaphoreSlim(MaxConcurrentMetadataRequests, MaxConcurrentMetadataRequests);
+        var tasks = inputs.Select(async input =>
+        {
+            await throttler.WaitAsync();
+            try
+            {
+                return await action(input);
+            }
+            finally
+            {
+                throttler.Release();
+            }
+        });
+
+        return await Task.WhenAll(tasks);
     }
 
     private static Dictionary<string, string> DetectArrayWrappers(IEnumerable<AxDataContractDefn> types)
@@ -122,20 +141,36 @@ internal class AxSoapService : IAxSoapService
 
     private async Task<IEnumerable<string>> GetXsdSchemaLocationsForWsdlUri(string wsdlUri)
     {
-        string httpResponse = await _axCalling.GetHttp(ToEndpoint(wsdlUri));
-        var doc = XDocument.Parse(httpResponse);
-        XNamespace xsd = "http://www.w3.org/2001/XMLSchema";
+        try
+        {
+            string httpResponse = await _axCalling.GetHttp(ToEndpoint(wsdlUri));
+            var doc = XDocument.Parse(httpResponse);
+            XNamespace xsd = "http://www.w3.org/2001/XMLSchema";
 
-        return doc.Descendants(xsd + "import")
-            .Select(e => (string?)e.Attribute("schemaLocation"))
-            .Where(s => !string.IsNullOrWhiteSpace(s))
-            .Cast<string>();
+            return doc.Descendants(xsd + "import")
+                .Select(e => (string?)e.Attribute("schemaLocation"))
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .Cast<string>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error while getting XSD locations for WSDL {wsdlUri}: {ex}", wsdlUri, ex.Message);
+            return [];
+        }
     }
 
     private async Task<string> GetXsd(string xsdUri)
     {
-        string httpResponse = await _axCalling.GetHttp(ToEndpoint(xsdUri));
-        return httpResponse;
+        try
+        {
+            string httpResponse = await _axCalling.GetHttp(ToEndpoint(xsdUri));
+            return httpResponse;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error while getting XSD {xsdUri}: {ex}", xsdUri, ex.Message);
+            return string.Empty;
+        }
     }
 
     private static string ToEndpoint(string uriOrEndpoint)
