@@ -1,9 +1,5 @@
-#tool "nuget:?package=ReportGenerator&version=5.5.10"
-
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Versioning;
-
-using Cake.Common.Tools.ReportGenerator;
 
 var target = Argument("target", "RunGui");
 var configuration = Argument("configuration", "Release");
@@ -132,10 +128,7 @@ Task("GenerateCoverage")
     .IsDependentOn("Test")
     .Does(() =>
     {
-        ReportGenerator(new GlobPattern("**/coverage.cobertura.xml"), Directory("./coveragereport"), new ReportGeneratorSettings
-        {
-            ReportTypes = [ReportGeneratorReportType.Html],
-        });
+        StartProcess("dotnet", "tool run reportgenerator -- -reports:**/coverage.cobertura.xml -targetdir:./coveragereport -reporttypes:Html");
     });
 
 Task("ShowCoverage")
