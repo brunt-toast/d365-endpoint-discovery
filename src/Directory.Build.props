@@ -11,5 +11,11 @@
     <PropertyGroup>
         <CsprojName>$([System.IO.Path]::GetFileNameWithoutExtension($(MSBuildProjectFile)))</CsprojName>
         <RootNamespace>Dev.JoshBrunton.DynamicsEndpointDiscovery.$(CsprojName)</RootNamespace>
+        <NoWarn>
+            $(NoWarn); 
+            
+            <!-- Source file specified multiple times. This happens with resource designer files. -->
+            CS2002
+        </NoWarn>
     </PropertyGroup>
 </Project>
