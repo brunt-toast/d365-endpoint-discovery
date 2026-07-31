@@ -46,8 +46,16 @@ public class CSharpCollectionBuilder : CollectionBuilderBase<CSharpCollectionBui
         sb.AppendLine("using System.Threading.Tasks;");
         sb.AppendLine("using Microsoft.Extensions.DependencyInjection;");
         sb.AppendLine("using Microsoft.Extensions.Hosting;");
-        sb.AppendLine("using System.Text.Json.Serialization;");
-        sb.AppendLine("using Newtonsoft.Json;");
+        if (options.IncludeSystemTextJsonAttributes)
+        {
+            sb.AppendLine("using System.Text.Json.Serialization;");
+        }
+
+        if (options.IncludeNewtonsoftJsonAttributes)
+        {
+            sb.AppendLine("using Newtonsoft.Json;");
+        }
+
         sb.AppendLine();
         sb.AppendLine("#region interfaces");
         sb.AppendLine("public interface IAxCallingService");
@@ -61,7 +69,7 @@ public class CSharpCollectionBuilder : CollectionBuilderBase<CSharpCollectionBui
             var typeName = referencedTypeNames[i];
             if (definitionsByName.TryGetValue(typeName, out var definition))
             {
-                AppendInterface(sb, definition);
+                AppendInterface(sb, definition, options);
             }
             else
             {
@@ -84,7 +92,7 @@ public class CSharpCollectionBuilder : CollectionBuilderBase<CSharpCollectionBui
             var typeName = referencedTypeNames[i];
             if (definitionsByName.TryGetValue(typeName, out var definition))
             {
-                AppendImplementation(sb, definition);
+                AppendImplementation(sb, definition, options);
             }
             else
             {
@@ -168,7 +176,7 @@ public class CSharpCollectionBuilder : CollectionBuilderBase<CSharpCollectionBui
         return !string.IsNullOrWhiteSpace(typeName) && !string.IsNullOrWhiteSpace(ToPascalCase(typeName));
     }
 
-    private static void AppendInterface(StringBuilder sb, AxDataContractDefn definition)
+    private static void AppendInterface(StringBuilder sb, AxDataContractDefn definition, CSharpCollectionBuilderOptions options)
     {
         var typeName = ToPascalCase(definition.Name);
         var baseInterface = string.IsNullOrWhiteSpace(definition.Extends)
@@ -178,7 +186,7 @@ public class CSharpCollectionBuilder : CollectionBuilderBase<CSharpCollectionBui
         sb.AppendLine($"public interface I{typeName}{baseInterface}");
         sb.AppendLine("{");
 
-        AppendMembers(sb, definition.Properties, includePublicModifier: false, includeInitAccessor: false);
+        AppendMembers(sb, definition.Properties, includePublicModifier: false, includeInitAccessor: false, options);
 
         sb.AppendLine("}");
     }
@@ -193,7 +201,7 @@ public class CSharpCollectionBuilder : CollectionBuilderBase<CSharpCollectionBui
         sb.AppendLine("}");
     }
 
-    private static void AppendImplementation(StringBuilder sb, AxDataContractDefn definition)
+    private static void AppendImplementation(StringBuilder sb, AxDataContractDefn definition, CSharpCollectionBuilderOptions options)
     {
         var typeName = ToPascalCase(definition.Name);
         var baseClass = string.IsNullOrWhiteSpace(definition.Extends)
@@ -206,7 +214,7 @@ public class CSharpCollectionBuilder : CollectionBuilderBase<CSharpCollectionBui
         sb.AppendLine($"public class {typeName}{baseClass}{implementsOnly}");
         sb.AppendLine("{");
 
-        AppendMembers(sb, definition.Properties, includePublicModifier: true, includeInitAccessor: true);
+        AppendMembers(sb, definition.Properties, includePublicModifier: true, includeInitAccessor: true, options);
 
         sb.AppendLine("}");
     }
@@ -379,15 +387,23 @@ public class CSharpCollectionBuilder : CollectionBuilderBase<CSharpCollectionBui
         StringBuilder sb,
         IReadOnlyCollection<AxDataContractPropertyDefn> properties,
         bool includePublicModifier,
-        bool includeInitAccessor)
+        bool includeInitAccessor,
+        CSharpCollectionBuilderOptions options)
     {
         var props = properties.OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
 
         for (int i = 0; i < props.Count; i++)
         {
             var property = props[i];
-            sb.AppendLine($"    [JsonProperty(\"{property.Name}\")]");
-            sb.AppendLine($"    [JsonPropertyName(\"{property.Name}\")]");
+            if (options.IncludeNewtonsoftJsonAttributes)
+            {
+                sb.AppendLine($"    [JsonProperty(\"{property.Name}\")]");
+            }
+
+            if (options.IncludeSystemTextJsonAttributes)
+            {
+                sb.AppendLine($"    [JsonPropertyName(\"{property.Name}\")]");
+            }
 
             var modifier = includePublicModifier ? "public " : string.Empty;
             var accessors = includeInitAccessor ? "{ get; init; }" : "{ get; }";

@@ -132,6 +132,7 @@ public class CSharpCollectionBuilderTests
         StringAssert.Contains(result, "using System.Threading.Tasks;");
         StringAssert.Contains(result, "using Microsoft.Extensions.DependencyInjection;");
         StringAssert.Contains(result, "using Microsoft.Extensions.Hosting;");
+        StringAssert.Contains(result, "using Newtonsoft.Json;");
         StringAssert.Contains(result, "#region interfaces");
         StringAssert.Contains(result, "#endregion");
         StringAssert.Contains(result, "#region implementations");
@@ -181,5 +182,95 @@ public class CSharpCollectionBuilderTests
         Assert.IsFalse(result.Contains("SupportGroupGroup", StringComparison.Ordinal));
         Assert.IsFalse(result.Contains("CustomerServiceService", StringComparison.Ordinal));
         Assert.IsFalse(result.Contains(" set; ", StringComparison.Ordinal));
+    }
+
+    [TestMethod]
+    public void ShouldOmitNewtonsoftJsonAttributesWhenDisabled()
+    {
+        var sut = new CSharpCollectionBuilder();
+        var groups = Array.Empty<DynSvcGroup>();
+        var types = new SoapTypeCollection
+        {
+            Samples = new Dictionary<string, string>(),
+            Definitions =
+            [
+                new AxDataContractDefn
+                {
+                    Name = "customer_record",
+                    Extends = string.Empty,
+                    Properties =
+                    [
+                        new AxDataContractPropertyDefn
+                        {
+                            Name = "customer_name",
+                            Type = "string",
+                            IsNullable = false,
+                            MinimumOccurances = 1,
+                            MaximumOccurances = 1
+                        }
+                    ]
+                }
+            ]
+        };
+
+        var result = sut.BuildCollection(
+            groups,
+            types,
+            "https://example.test",
+            "Collection",
+            new CSharpCollectionBuilderOptions
+            {
+                IncludeNewtonsoftJsonAttributes = false
+            });
+
+        Assert.IsFalse(result.Contains("using Newtonsoft.Json;", StringComparison.Ordinal));
+        Assert.IsFalse(result.Contains("[JsonProperty(\"customer_name\")]", StringComparison.Ordinal));
+        StringAssert.Contains(result, "using System.Text.Json.Serialization;");
+        StringAssert.Contains(result, "[JsonPropertyName(\"customer_name\")]");
+    }
+
+    [TestMethod]
+    public void ShouldOmitSystemTextJsonAttributesWhenDisabled()
+    {
+        var sut = new CSharpCollectionBuilder();
+        var groups = Array.Empty<DynSvcGroup>();
+        var types = new SoapTypeCollection
+        {
+            Samples = new Dictionary<string, string>(),
+            Definitions =
+            [
+                new AxDataContractDefn
+                {
+                    Name = "customer_record",
+                    Extends = string.Empty,
+                    Properties =
+                    [
+                        new AxDataContractPropertyDefn
+                        {
+                            Name = "customer_name",
+                            Type = "string",
+                            IsNullable = false,
+                            MinimumOccurances = 1,
+                            MaximumOccurances = 1
+                        }
+                    ]
+                }
+            ]
+        };
+
+        var result = sut.BuildCollection(
+            groups,
+            types,
+            "https://example.test",
+            "Collection",
+            new CSharpCollectionBuilderOptions
+            {
+                IncludeSystemTextJsonAttributes = false
+            });
+
+        Assert.IsFalse(result.Contains("using System.Text.Json.Serialization;", StringComparison.Ordinal));
+        Assert.IsFalse(result.Contains("[JsonPropertyName(\"customer_name\")]", StringComparison.Ordinal));
+        StringAssert.Contains(result, "using Newtonsoft.Json;");
+        StringAssert.Contains(result, "[JsonProperty(\"customer_name\")]");
     }
 }

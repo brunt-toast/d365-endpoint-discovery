@@ -32,7 +32,7 @@ public class CollectionBuilderOptionsFactoryTests
     }
 
     [TestMethod]
-    public void ShouldNotExposeEditableOptionsForCSharp()
+    public void ShouldExposeNewtonsoftJsonOptionForCSharp()
     {
         var sut = new CSharpCollectionBuilderOptions();
         var editableProperties = sut
@@ -41,6 +41,10 @@ public class CollectionBuilderOptionsFactoryTests
             .Where(x => x.CanRead && x.CanWrite)
             .ToArray();
 
-        Assert.IsEmpty(editableProperties);
+        Assert.HasCount(2, editableProperties);
+        Assert.AreEqual(nameof(CSharpCollectionBuilderOptions.IncludeNewtonsoftJsonAttributes), editableProperties[0].Name);
+        Assert.AreEqual(nameof(CSharpCollectionBuilderOptions.IncludeSystemTextJsonAttributes), editableProperties[1].Name);
+        Assert.IsTrue(sut.IncludeNewtonsoftJsonAttributes);
+        Assert.IsTrue(sut.IncludeSystemTextJsonAttributes);
     }
 }
