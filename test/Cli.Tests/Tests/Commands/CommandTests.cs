@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Tests.Cli.Tests.DataSources.Tests.Commands;
 using System.CommandLine;
-using System.Text;
-using Dev.JoshBrunton.DynamicsEndpointDiscovery.Tests.Cli.Tests.Generators.Commands;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Tests.Cli.Tests.Tests.Commands;
 
@@ -10,7 +7,7 @@ namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Tests.Cli.Tests.Tests.Comman
 public class CommandTests
 {
     [TestMethod]
-    [DynamicData(nameof(CommandGenerator.GetCommands), typeof(CommandGenerator))]
+    [CommandDataSource]
     public void Command_ShouldHaveDescription(Command command)
     {
         if (string.IsNullOrWhiteSpace(command.Description))
@@ -18,6 +15,5 @@ public class CommandTests
             Assert.Fail($"{command.GetType().FullName} must have a description.");
         }
     }
-
 
 }

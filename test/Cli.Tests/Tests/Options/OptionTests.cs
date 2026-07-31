@@ -1,5 +1,5 @@
-﻿using System.CommandLine;
-using Dev.JoshBrunton.DynamicsEndpointDiscovery.Tests.Cli.Tests.Generators.Options;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Tests.Cli.Tests.DataSources.Tests.Options;
+using System.CommandLine;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Tests.Cli.Tests.Tests.Options;
 
@@ -7,7 +7,7 @@ namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Tests.Cli.Tests.Tests.Option
 public class OptionTests
 {
     [TestMethod]
-    [DynamicData(nameof(OptionsGenerator.GetOptions), typeof(OptionsGenerator))]
+    [OptionDataSource]
     public void Option_ShouldHaveDescription(Option option)
     {
         if (string.IsNullOrWhiteSpace(option.Description))
@@ -15,4 +15,5 @@ public class OptionTests
             Assert.Fail($"{option.GetType().FullName} must have a description.");
         }
     }
+
 }

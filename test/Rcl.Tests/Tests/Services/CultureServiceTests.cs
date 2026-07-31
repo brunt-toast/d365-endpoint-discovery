@@ -1,6 +1,7 @@
-﻿using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Enums;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Enums;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Ioc;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Services;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Tests.Rcl.Tests.DataSources.Tests.Services;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Tests.Rcl.Tests.Tests.Services;
 
@@ -8,13 +9,8 @@ namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Tests.Rcl.Tests.Tests.Servic
 [DoNotParallelize]
 public class CultureServiceTests
 {
-    public static IEnumerable<object[]> GetKnownCultures()
-    {
-        return Enum.GetValues<KnownCultures>().Select(value => (object[])[value]);
-    }
-
     [TestMethod]
-    [DynamicData(nameof(GetKnownCultures))]
+    [KnownCultureDataSource]
     public void KnownCultures_ShouldResolve(KnownCultures culture)
     {
         var sc = new ServiceCollection();
@@ -23,4 +19,5 @@ public class CultureServiceTests
         var sut = sp.GetRequiredService<ICultureService>();
         sut.SetCulture(culture);
     }
+
 }

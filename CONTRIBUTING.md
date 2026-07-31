@@ -1,1 +1,0 @@
-The use of AI-generated code is strictly prohibited in this repository.
