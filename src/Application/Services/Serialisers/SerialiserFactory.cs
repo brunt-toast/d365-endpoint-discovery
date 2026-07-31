@@ -2,9 +2,9 @@
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.Serialisers;
 
-internal class SerialiserFactory
+public class SerialiserFactory
 {
-    public ISerialiser GetSerialiser(OutputFormats format)
+    internal ISerialiser GetSerialiser(OutputFormats format)
     {
         return format switch
         {

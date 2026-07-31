@@ -1,3 +1,5 @@
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.CollectionBuilders.Options;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.Serialisers;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Types.OpenApi;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types.Soap;
@@ -6,13 +8,18 @@ using Newtonsoft.Json.Linq;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.CollectionBuilders;
 
-public class OpenApiCollectionBuilder : CollectionBuilderBase<OpenApiCollection>
+public class OpenApiCollectionBuilder : SerialisedCollectionBuilderBase<OpenApiCollectionBuilderOptions>
 {
-    protected override OpenApiCollection BuildTypedCollection(
+    public OpenApiCollectionBuilder(SerialiserFactory serialiserFactory) : base(serialiserFactory)
+    {
+    }
+
+    protected override object BuildSerializableCollection(
         IEnumerable<DynSvcGroup> groups,
         SoapTypeCollection types,
         string resource,
-        string collectionName = "Collection")
+        string collectionName,
+        OpenApiCollectionBuilderOptions options)
     {
         var groupsList = groups.ToList();
 

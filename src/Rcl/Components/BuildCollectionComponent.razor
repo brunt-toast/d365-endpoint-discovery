@@ -1,4 +1,4 @@
-﻿@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Resources.Languages
+@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Resources.Languages
 @using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.ViewModels
 @using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Extensions.System
 
@@ -20,8 +20,7 @@
 <FluentStack Orientation="Orientation.Vertical">
     <FluentTextField Style="width: 100%;" Label="@BuildCollectionComponentResources.CollectionName" @bind-Value="ViewModel.CollectionName" />
     <FluentCombobox Label="@BuildCollectionComponentResources.Schema" Items="ViewModel.AvailableOutputSchemas" OptionText="EnumExtensions.OutputSchemasToDisplayName" @bind-SelectedOption="ViewModel.OutputSchema" />
-    <FluentCombobox Label="@BuildCollectionComponentResources.Format" Items="ViewModel.AvailableOutputFormats" OptionText="EnumExtensions.OutputFormatsToDisplayName" @bind-SelectedOption="ViewModel.OutputFormat" />
-    <FluentCheckbox Label="@BuildCollectionComponentResources.Minify" @bind-Value="ViewModel.Minify" />
+    <CollectionBuilderOptionsFormComponent Options="ViewModel.CurrentOptions" />
 </FluentStack>
 
 @code

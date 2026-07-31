@@ -2,6 +2,7 @@ using CommunityToolkit.Maui.Storage;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Enums;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Requests;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.CollectionBuilders.Options;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Models;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Utils;
@@ -14,17 +15,27 @@ internal class BuildCollectionViewModel : IBuildCollectionViewModel
     private readonly IMainService _mainService;
     private readonly IFileSaver _fileSaver;
     private readonly ILauncher _launcher;
+    private readonly Dictionary<OutputSchemas, ICollectionBuilderOptions> _options;
 
     private string _resource = string.Empty;
     private DynSvcGroup[] _services = [];
+    private OutputSchemas _outputSchema;
 
     public OutputSchemas[] AvailableOutputSchemas { get; } = Enum.GetValues<OutputSchemas>();
-    public OutputFormats[] AvailableOutputFormats { get; } = Enum.GetValues<OutputFormats>();
 
     public string CollectionName { get; set; } = "Collection";
-    public OutputSchemas OutputSchema { get; set; }
-    public OutputFormats OutputFormat { get; set; }
-    public bool Minify { get; set; } = true;
+    public OutputSchemas OutputSchema
+    {
+        get => _outputSchema;
+        set
+        {
+            _outputSchema = value;
+            CurrentOptions = _options[value];
+            CurrentOptions.Validate();
+        }
+    }
+
+    public ICollectionBuilderOptions CurrentOptions { get; private set; }
 
     public string OutputPath { get; private set; } = string.Empty;
     public bool IsLoading { get; set; }
@@ -35,8 +46,9 @@ internal class BuildCollectionViewModel : IBuildCollectionViewModel
         _fileSaver = fileSaver;
         _launcher = launcher;
 
-        OutputSchema = AvailableOutputSchemas.First(x => x == OutputSchemas.Postman);
-        OutputFormat = AvailableOutputFormats.First(x => x == OutputFormats.Json);
+        _options = AvailableOutputSchemas.ToDictionary(x => x, CollectionBuilderOptionsFactory.Create);
+        CurrentOptions = _options[OutputSchemas.Postman];
+        OutputSchema = OutputSchemas.Postman;
     }
 
     public void Init(ICredentialsViewModel credentials, ISelectOperationsViewModel operations)
@@ -80,27 +92,15 @@ internal class BuildCollectionViewModel : IBuildCollectionViewModel
         string content = await _mainService.BuildCustomCollection(new BuildCustomCollectionRequest
         {
             OutputSchema = OutputSchema,
-            OutputFormat = OutputFormat,
             CollectionName = CollectionName,
             Services = _services,
             Resource = _resource,
-            Minify = Minify
+            Options = CurrentOptions
         });
 
         using var stream = new MemoryStream(Encoding.Default.GetBytes(content));
 
-        string suggestedExtension = OutputSchema switch
-        {
-            OutputSchemas.CSharp => "cs",
-            _ => OutputFormat switch
-            {
-                OutputFormats.Json => "json",
-                OutputFormats.Yaml => "yml",
-                _ => "txt"
-            }
-        };
-
-        var fileSaveResult = await _fileSaver.SaveAsync($"{CollectionName}.{suggestedExtension}", stream);
+        var fileSaveResult = await _fileSaver.SaveAsync($"{CollectionName}.{GetSuggestedExtension()}", stream);
         OutputPath = fileSaveResult.FilePath ?? string.Empty;
     }
 
@@ -108,17 +108,35 @@ internal class BuildCollectionViewModel : IBuildCollectionViewModel
     {
         await _launcher.OpenAsync(new Uri($"file:///{Path.GetDirectoryName(OutputPath)}"));
     }
+
+    private string GetSuggestedExtension()
+    {
+        if (OutputSchema == OutputSchemas.CSharp)
+        {
+            return "cs";
+        }
+
+        if (CurrentOptions is SerialisedCollectionBuilderOptions serialisedOptions)
+        {
+            return serialisedOptions.OutputFormat switch
+            {
+                OutputFormats.Json => "json",
+                OutputFormats.Yaml => "yml",
+                _ => "txt"
+            };
+        }
+
+        return "txt";
+    }
 }
 
 public interface IBuildCollectionViewModel : ILoading
 {
     OutputSchemas[] AvailableOutputSchemas { get; }
-    OutputFormats[] AvailableOutputFormats { get; }
 
     string CollectionName { get; set; }
     OutputSchemas OutputSchema { get; set; }
-    OutputFormats OutputFormat { get; set; }
-    bool Minify { get; set; }
+    ICollectionBuilderOptions CurrentOptions { get; }
 
     string OutputPath { get; }
 

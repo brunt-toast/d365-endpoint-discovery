@@ -1,0 +1,83 @@
+@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.CollectionBuilders.Options
+@using Dev.JoshBrunton.DynamicsEndpointDiscovery.Rcl.Extensions.System
+@using System.ComponentModel.DataAnnotations
+@using System.Reflection
+
+<FluentStack Orientation="Orientation.Vertical">
+    @foreach (var optionProperty in GetVisibleOptionProperties())
+    {
+        if (optionProperty.PropertyType.IsEnum)
+        {
+            <FluentCombobox
+                Label="@GetOptionLabel(optionProperty)"
+                Items="@GetEnumValues(optionProperty)"
+                OptionText="GetOptionText"
+                SelectedOption="@GetOptionValue(optionProperty)"
+                SelectedOptionChanged="@GetOptionChanged(optionProperty)"
+                Disabled="@Options.IsOptionDisabled(optionProperty.Name)" />
+        }
+        else if (optionProperty.PropertyType == typeof(bool))
+        {
+            <FluentCheckbox
+                Label="@GetOptionLabel(optionProperty)"
+                Value="@GetBooleanOptionValue(optionProperty)"
+                ValueChanged="@GetBooleanOptionChanged(optionProperty)"
+                Disabled="@Options.IsOptionDisabled(optionProperty.Name)" />
+        }
+    }
+</FluentStack>
+
+@code
+{
+    [Parameter] public ICollectionBuilderOptions Options { get; set; } = null!;
+
+    private IEnumerable<PropertyInfo> GetVisibleOptionProperties()
+    {
+        return Options
+            .GetType()
+            .GetProperties()
+            .Where(x => x.CanRead && x.CanWrite)
+            .OrderBy(x => x.MetadataToken);
+    }
+
+    private static string GetOptionLabel(PropertyInfo property)
+    {
+        return property.GetCustomAttribute<DisplayAttribute>()?.GetName() ?? property.Name;
+    }
+
+    private static object[] GetEnumValues(PropertyInfo property)
+    {
+        return Enum.GetValues(property.PropertyType).Cast<object>().ToArray();
+    }
+
+    private static string GetOptionText(object? value)
+    {
+        return value is Enum enumValue ? enumValue.ToDisplayName() : value?.ToString() ?? string.Empty;
+    }
+
+    private object? GetOptionValue(PropertyInfo property)
+    {
+        return property.GetValue(Options);
+    }
+
+    private bool GetBooleanOptionValue(PropertyInfo property)
+    {
+        return property.GetValue(Options) is true;
+    }
+
+    private EventCallback<object> GetOptionChanged(PropertyInfo property)
+    {
+        return EventCallback.Factory.Create<object>(this, value => SetOptionValue(property, value));
+    }
+
+    private EventCallback<bool> GetBooleanOptionChanged(PropertyInfo property)
+    {
+        return EventCallback.Factory.Create<bool>(this, value => SetOptionValue(property, value));
+    }
+
+    private void SetOptionValue(PropertyInfo property, object? value)
+    {
+        property.SetValue(Options, value);
+        Options.Validate();
+    }
+}

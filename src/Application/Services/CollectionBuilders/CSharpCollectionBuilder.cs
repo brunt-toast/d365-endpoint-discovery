@@ -1,17 +1,19 @@
 using System.Text;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.CollectionBuilders.Options;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Soap;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types.Soap;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.CollectionBuilders;
 
-public class CSharpCollectionBuilder : CollectionBuilderBase<string>
+public class CSharpCollectionBuilder : CollectionBuilderBase<CSharpCollectionBuilderOptions>
 {
-    protected override string BuildTypedCollection(
+    public override string BuildCollection(
         IEnumerable<DynSvcGroup> groups,
         SoapTypeCollection types,
         string resource,
-        string collectionName = "Collection")
+        string collectionName,
+        CSharpCollectionBuilderOptions options)
     {
         var validDefinitions = types.Definitions
             .Where(x => HasUsableTypeName(x.Name))

@@ -1,6 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Mapping;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.CollectionBuilders.Options;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.Serialisers;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Types.Postman;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Extensions.Serilog;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types;
@@ -12,20 +14,21 @@ using Serilog;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services.CollectionBuilders;
 
-public class PostmanCollectionBuilder : CollectionBuilderBase<PostmanCollection>
+public class PostmanCollectionBuilder : SerialisedCollectionBuilderBase<PostmanCollectionBuilderOptions>
 {
     private readonly ILogger _logger;
 
-    public PostmanCollectionBuilder(ILogger logger)
+    public PostmanCollectionBuilder(ILogger logger, SerialiserFactory serialiserFactory) : base(serialiserFactory)
     {
         _logger = logger;
     }
 
-    protected override PostmanCollection BuildTypedCollection(
+    protected override object BuildSerializableCollection(
         IEnumerable<DynSvcGroup> groups,
         SoapTypeCollection types,
         string resource,
-        string collectionName = "Collection")
+        string collectionName,
+        PostmanCollectionBuilderOptions options)
     {
         var collectionInfo = new PostmanCollectionInfo
         {
