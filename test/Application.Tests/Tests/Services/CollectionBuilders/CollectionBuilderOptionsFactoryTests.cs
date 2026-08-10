@@ -41,10 +41,12 @@ public class CollectionBuilderOptionsFactoryTests
             .Where(x => x.CanRead && x.CanWrite)
             .ToArray();
 
-        Assert.HasCount(2, editableProperties);
+        Assert.HasCount(3, editableProperties);
         Assert.AreEqual(nameof(CSharpCollectionBuilderOptions.IncludeNewtonsoftJsonAttributes), editableProperties[0].Name);
         Assert.AreEqual(nameof(CSharpCollectionBuilderOptions.IncludeSystemTextJsonAttributes), editableProperties[1].Name);
+        Assert.AreEqual(nameof(CSharpCollectionBuilderOptions.GenerateLocalisationResources), editableProperties[2].Name);
         Assert.IsTrue(sut.IncludeNewtonsoftJsonAttributes);
         Assert.IsTrue(sut.IncludeSystemTextJsonAttributes);
+        Assert.IsTrue(sut.GenerateLocalisationResources);
     }
 }

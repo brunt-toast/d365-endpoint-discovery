@@ -1,5 +1,6 @@
 using System.Xml.Linq;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Core.Extensions.Serilog;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Metadata;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types.Soap;
 using Newtonsoft.Json;
 using Serilog;
@@ -12,11 +13,13 @@ internal class AxSoapService : IAxSoapService
 
     private readonly AxCallingService _axCalling;
     private readonly ILogger _logger;
+    private readonly AxMetadataLabelService _labelService;
 
-    public AxSoapService(AxCallingService axCalling, ILogger logger)
+    public AxSoapService(AxCallingService axCalling, ILogger logger, AxMetadataLabelService labelService)
     {
         _axCalling = axCalling;
         _logger = logger;
+        _labelService = labelService;
     }
 
     public async Task<SoapTypeCollection> GetDataContractsForServices(IEnumerable<string> serviceNames)
@@ -51,10 +54,15 @@ internal class AxSoapService : IAxSoapService
             return new KeyValuePair<string, string>(x.Name, json);
         }).ToDictionary();
 
+        var labelIds = parsed
+            .Select(x => x.LabelId)
+            .Concat(parsed.SelectMany(x => x.Properties.Select(y => y.LabelId)));
+
         return new SoapTypeCollection
         {
             Samples = samples,
-            Definitions = parsed
+            Definitions = parsed,
+            Localisations = await _labelService.GetLabels(labelIds)
         };
     }
 

@@ -3,6 +3,7 @@ using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Config;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Extensions.Microsoft.Extensions.DependencyInjection;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Auth;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Metadata;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Soap;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.SvcDiscovery;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +32,7 @@ public static class AxServiceRegistrar
         sc.AddSingleton<AxAuthFactory>();
         
         sc.AddSingleton<AxODataService>();
+        sc.AddSingleton<AxMetadataLabelService>();
         sc.AddSingleton<IJsonConverterService, JsonConverterService>();
 
         sc.AddMockable<IAxSvcDiscoveryService, MockAxSvcDiscoveryService, AxSvcDiscoveryService>(ServiceLifetime.Singleton, mockPredicate);

@@ -1,5 +1,6 @@
 ﻿using System.Xml.Linq;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Interfaces;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Soap;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types.Soap;
 
@@ -9,6 +10,7 @@ public class AxDataContractDefn
     public required string Name { get; init; }
     public required AxDataContractPropertyDefn[] Properties { get; init; }
     public required string Extends { get; init; }
+    public string LabelId { get; init; } = string.Empty;
 
     public static AxDataContractDefn Parse(XElement document)
     {
@@ -20,6 +22,7 @@ public class AxDataContractDefn
         {
             Name = document.Attribute("name")?.Value ?? string.Empty,
             Properties = AxDataContractPropertyDefn.Parse(document).ToArray(),
+            LabelId = SoapLabelIdResolver.Resolve(document, includeDescendants: false),
             Extends = extension is null
                 ? string.Empty
                 : ResolveQName(extension.Attribute("base")!.Value)

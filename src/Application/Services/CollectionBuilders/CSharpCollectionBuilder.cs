@@ -22,6 +22,9 @@ public class CSharpCollectionBuilder : CollectionBuilderBase<CSharpCollectionBui
         var referencedTypeNames = GetReferencedTypeNames(groups, validDefinitions)
             .OrderBy(x => x, StringComparer.Ordinal)
             .ToList();
+        var localisations = options.GenerateLocalisationResources
+            ? BuildLocalisationContexts(referencedTypeNames, definitionsByName, types.Localisations)
+            : new Dictionary<string, CSharpLocalisationContext>(StringComparer.Ordinal);
 
         StringBuilder sb = new();
 
@@ -42,6 +45,11 @@ public class CSharpCollectionBuilder : CollectionBuilderBase<CSharpCollectionBui
         sb.AppendLine();
         sb.AppendLine("using System;");
         sb.AppendLine("using System.Collections.Generic;");
+        if (options.GenerateLocalisationResources)
+        {
+            sb.AppendLine("using System.ComponentModel.DataAnnotations;");
+        }
+
         sb.AppendLine("using System.Threading;");
         sb.AppendLine("using System.Threading.Tasks;");
         sb.AppendLine("using Microsoft.Extensions.DependencyInjection;");
@@ -69,7 +77,7 @@ public class CSharpCollectionBuilder : CollectionBuilderBase<CSharpCollectionBui
             var typeName = referencedTypeNames[i];
             if (definitionsByName.TryGetValue(typeName, out var definition))
             {
-                AppendInterface(sb, definition, options);
+                AppendInterface(sb, definition, options, localisations.GetValueOrDefault(typeName));
             }
             else
             {
@@ -92,7 +100,7 @@ public class CSharpCollectionBuilder : CollectionBuilderBase<CSharpCollectionBui
             var typeName = referencedTypeNames[i];
             if (definitionsByName.TryGetValue(typeName, out var definition))
             {
-                AppendImplementation(sb, definition, options);
+                AppendImplementation(sb, definition, options, localisations.GetValueOrDefault(typeName));
             }
             else
             {
@@ -114,6 +122,16 @@ public class CSharpCollectionBuilder : CollectionBuilderBase<CSharpCollectionBui
 
         sb.AppendLine("#endregion");
         sb.AppendLine();
+        if (options.GenerateLocalisationResources)
+        {
+            sb.AppendLine("#region Resources");
+
+            AppendResources(sb, localisations.Values);
+
+            sb.AppendLine("#endregion");
+            sb.AppendLine();
+        }
+
         sb.AppendLine("#region registration");
 
         AppendRegistrationExtensions(sb, groups);
@@ -176,7 +194,11 @@ public class CSharpCollectionBuilder : CollectionBuilderBase<CSharpCollectionBui
         return !string.IsNullOrWhiteSpace(typeName) && !string.IsNullOrWhiteSpace(ToPascalCase(typeName));
     }
 
-    private static void AppendInterface(StringBuilder sb, AxDataContractDefn definition, CSharpCollectionBuilderOptions options)
+    private static void AppendInterface(
+        StringBuilder sb,
+        AxDataContractDefn definition,
+        CSharpCollectionBuilderOptions options,
+        CSharpLocalisationContext? localisations)
     {
         var typeName = ToPascalCase(definition.Name);
         var baseInterface = string.IsNullOrWhiteSpace(definition.Extends)
@@ -186,7 +208,7 @@ public class CSharpCollectionBuilder : CollectionBuilderBase<CSharpCollectionBui
         sb.AppendLine($"public interface I{typeName}{baseInterface}");
         sb.AppendLine("{");
 
-        AppendMembers(sb, definition.Properties, includePublicModifier: false, includeInitAccessor: false, options);
+        AppendMembers(sb, definition.Properties, includePublicModifier: false, includeInitAccessor: false, options, localisations);
 
         sb.AppendLine("}");
     }
@@ -201,7 +223,11 @@ public class CSharpCollectionBuilder : CollectionBuilderBase<CSharpCollectionBui
         sb.AppendLine("}");
     }
 
-    private static void AppendImplementation(StringBuilder sb, AxDataContractDefn definition, CSharpCollectionBuilderOptions options)
+    private static void AppendImplementation(
+        StringBuilder sb,
+        AxDataContractDefn definition,
+        CSharpCollectionBuilderOptions options,
+        CSharpLocalisationContext? localisations)
     {
         var typeName = ToPascalCase(definition.Name);
         var baseClass = string.IsNullOrWhiteSpace(definition.Extends)
@@ -211,10 +237,11 @@ public class CSharpCollectionBuilder : CollectionBuilderBase<CSharpCollectionBui
             ? $" : I{typeName}"
             : string.Empty;
 
+        AppendDisplayAttribute(sb, string.Empty, localisations?.TypeResource);
         sb.AppendLine($"public class {typeName}{baseClass}{implementsOnly}");
         sb.AppendLine("{");
 
-        AppendMembers(sb, definition.Properties, includePublicModifier: true, includeInitAccessor: true, options);
+        AppendMembers(sb, definition.Properties, includePublicModifier: true, includeInitAccessor: true, options, localisations);
 
         sb.AppendLine("}");
     }
@@ -388,13 +415,16 @@ public class CSharpCollectionBuilder : CollectionBuilderBase<CSharpCollectionBui
         IReadOnlyCollection<AxDataContractPropertyDefn> properties,
         bool includePublicModifier,
         bool includeInitAccessor,
-        CSharpCollectionBuilderOptions options)
+        CSharpCollectionBuilderOptions options,
+        CSharpLocalisationContext? localisations)
     {
         var props = properties.OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
 
         for (int i = 0; i < props.Count; i++)
         {
             var property = props[i];
+            AppendDisplayAttribute(sb, "    ", localisations?.Properties.GetValueOrDefault(property.Name));
+
             if (options.IncludeNewtonsoftJsonAttributes)
             {
                 sb.AppendLine($"    [JsonProperty(\"{property.Name}\")]");
@@ -414,6 +444,128 @@ public class CSharpCollectionBuilder : CollectionBuilderBase<CSharpCollectionBui
                 sb.AppendLine();
             }
         }
+    }
+
+    private static Dictionary<string, CSharpLocalisationContext> BuildLocalisationContexts(
+        IReadOnlyCollection<string> referencedTypeNames,
+        IReadOnlyDictionary<string, AxDataContractDefn> definitionsByName,
+        IEnumerable<AxLabelLocalisation> localisations)
+    {
+        var labelValues = localisations
+            .GroupBy(x => x.LabelId, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(
+                x => x.Key,
+                x => x.ToDictionary(y => ResolveLanguageSuffix(y.Language), y => y.Value, StringComparer.Ordinal),
+                StringComparer.OrdinalIgnoreCase);
+        var ret = new Dictionary<string, CSharpLocalisationContext>(StringComparer.Ordinal);
+
+        foreach (var typeName in referencedTypeNames)
+        {
+            if (!definitionsByName.TryGetValue(typeName, out var definition))
+            {
+                continue;
+            }
+
+            var className = ToPascalCase(definition.Name);
+            var resourcesByLanguage = new Dictionary<string, CSharpResourceClass>(StringComparer.Ordinal);
+            CSharpResourceReference? typeResource = null;
+            Dictionary<string, CSharpResourceReference> propertyResources = [];
+
+            if (labelValues.TryGetValue(definition.LabelId, out var typeValues))
+            {
+                foreach (var (language, value) in typeValues)
+                {
+                    var resource = GetOrAddResourceClass(resourcesByLanguage, className, language);
+                    resource.Properties[className] = value;
+                }
+
+                var displayLanguage = typeValues.Keys.OrderBy(x => x, StringComparer.Ordinal).First();
+                typeResource = new CSharpResourceReference($"{className}Resources_{displayLanguage}", className);
+            }
+
+            foreach (var property in definition.Properties.Where(x => HasUsableTypeName(x.Name)))
+            {
+                if (!labelValues.TryGetValue(property.LabelId, out var propertyValues))
+                {
+                    continue;
+                }
+
+                var propertyName = ToPascalCase(property.Name);
+                foreach (var (language, value) in propertyValues)
+                {
+                    var resource = GetOrAddResourceClass(resourcesByLanguage, className, language);
+                    resource.Properties[propertyName] = value;
+                }
+
+                var displayLanguage = propertyValues.Keys.OrderBy(x => x, StringComparer.Ordinal).First();
+                propertyResources[property.Name] = new CSharpResourceReference($"{className}Resources_{displayLanguage}", propertyName);
+            }
+
+            if (resourcesByLanguage.Count > 0)
+            {
+                ret[typeName] = new CSharpLocalisationContext(typeResource, propertyResources, resourcesByLanguage.Values.ToArray());
+            }
+        }
+
+        return ret;
+    }
+
+    private static CSharpResourceClass GetOrAddResourceClass(
+        Dictionary<string, CSharpResourceClass> resourcesByLanguage,
+        string typeName,
+        string language)
+    {
+        if (!resourcesByLanguage.TryGetValue(language, out var resource))
+        {
+            resource = new CSharpResourceClass($"{typeName}Resources_{language}", []);
+            resourcesByLanguage[language] = resource;
+        }
+
+        return resource;
+    }
+
+    private static void AppendDisplayAttribute(StringBuilder sb, string indent, CSharpResourceReference? resource)
+    {
+        if (resource is null)
+        {
+            return;
+        }
+
+        sb.AppendLine($"{indent}[Display(Name = nameof({resource.ClassName}.{resource.PropertyName}), ResourceType = typeof({resource.ClassName}))]");
+    }
+
+    private static void AppendResources(StringBuilder sb, IEnumerable<CSharpLocalisationContext> localisations)
+    {
+        var resources = localisations
+            .SelectMany(x => x.ResourceClasses)
+            .OrderBy(x => x.Name, StringComparer.Ordinal)
+            .ToList();
+
+        for (int i = 0; i < resources.Count; i++)
+        {
+            var resource = resources[i];
+            sb.AppendLine($"public class {resource.Name}");
+            sb.AppendLine("{");
+
+            foreach (var property in resource.Properties.OrderBy(x => x.Key, StringComparer.Ordinal))
+            {
+                sb.AppendLine($"    public static string {property.Key} => {ToCSharpStringLiteral(property.Value)};");
+            }
+
+            sb.AppendLine("}");
+
+            if (i != resources.Count - 1)
+            {
+                sb.AppendLine();
+            }
+        }
+    }
+
+    private static string ResolveLanguageSuffix(string language)
+    {
+        var primaryLanguage = language.Split('-', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? language;
+        var suffix = ToCamelCase(ToPascalCase(primaryLanguage));
+        return string.IsNullOrWhiteSpace(suffix) ? "unknown" : suffix;
     }
 
     private static string ResolvePropertyType(AxDataContractPropertyDefn property)
@@ -571,4 +723,13 @@ public class CSharpCollectionBuilder : CollectionBuilderBase<CSharpCollectionBui
 
         return char.ToUpperInvariant(token[0]) + token[1..];
     }
+
+    private sealed record CSharpLocalisationContext(
+        CSharpResourceReference? TypeResource,
+        IReadOnlyDictionary<string, CSharpResourceReference> Properties,
+        IReadOnlyCollection<CSharpResourceClass> ResourceClasses);
+
+    private sealed record CSharpResourceClass(string Name, Dictionary<string, string> Properties);
+
+    private sealed record CSharpResourceReference(string ClassName, string PropertyName);
 }

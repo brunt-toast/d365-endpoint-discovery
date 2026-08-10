@@ -1,5 +1,6 @@
 ﻿using System.Xml.Linq;
 using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Interfaces;
+using Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Services.Soap;
 
 namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Lib.Ax.Types.Soap;
 
@@ -10,6 +11,7 @@ public record AxDataContractPropertyDefn
     public required int? MaximumOccurances { get; init; }
     public required bool IsNullable { get; init; }
     public required string Type { get; init; }
+    public string LabelId { get; init; } = string.Empty;
     public bool IsCollection => MaximumOccurances is null or > 1;
 
     public static IEnumerable<AxDataContractPropertyDefn> Parse(XElement document)
@@ -24,7 +26,8 @@ public record AxDataContractPropertyDefn
                 MinimumOccurances = int.Parse(element.Attribute("minOccurs")?.Value ?? "0"),
                 MaximumOccurances = ParseMaximumOccurances(element.Attribute("maxOccurs")?.Value),
                 IsNullable = element.Attribute("nillable")?.Value == "true",
-                Type = ResolveQName(element.Attribute("type")?.Value ?? string.Empty)
+                Type = ResolveQName(element.Attribute("type")?.Value ?? string.Empty),
+                LabelId = SoapLabelIdResolver.Resolve(element, includeDescendants: true)
             };
         }
     }

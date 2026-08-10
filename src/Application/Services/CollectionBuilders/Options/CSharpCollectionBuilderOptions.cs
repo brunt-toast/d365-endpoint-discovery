@@ -10,6 +10,9 @@ public class CSharpCollectionBuilderOptions : ICollectionBuilderOptions
     [Display(Name = "System.Text.Json serialisation support")]
     public bool IncludeSystemTextJsonAttributes { get; set; } = true;
 
+    [Display(Name = "Generate localisation resources")]
+    public bool GenerateLocalisationResources { get; set; } = true;
+
     public void Validate()
     {
     }
