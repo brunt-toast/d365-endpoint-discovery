@@ -10,6 +10,9 @@ namespace Dev.JoshBrunton.DynamicsEndpointDiscovery.Application.Services;
 
 internal class ConfigurableHttpClientFactory : IHttpClientFactory
 {
+    private static readonly HashSet<string> LoggedAutoAcceptedThumbprints = new(StringComparer.OrdinalIgnoreCase);
+    private static readonly Lock LoggedAutoAcceptedThumbprintsLock = new();
+
     private readonly ILogger _logger;
     private readonly HttpClientOptions _opts;
     private readonly ServiceProvider _sp;
@@ -46,9 +49,15 @@ internal class ConfigurableHttpClientFactory : IHttpClientFactory
     {
         if (_opts.AcceptAnySsl)
         {
-            if (x509Cert is X509Certificate2 x509Cert_2)
+            if (x509Cert is X509Certificate2 acceptedCert)
             {
-                _logger.LogInformation("Auto-accepting SSL certificate thumbprint {tp}", x509Cert_2.Thumbprint);
+                lock (LoggedAutoAcceptedThumbprintsLock)
+                {
+                    if (LoggedAutoAcceptedThumbprints.Add(acceptedCert.Thumbprint))
+                    {
+                        _logger.LogInformation("Auto-accepting SSL certificate thumbprint {tp}", acceptedCert.Thumbprint);
+                    }
+                }
             }
 
             return true;
